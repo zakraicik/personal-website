@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 240, 240, 255;
+  --background-start-rgb: 10, 10, 31;
+  --background-end-rgb: 20, 20, 40;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --foreground-rgb: 10, 10, 31;
+    --background-start-rgb: 240, 240, 255;
+    --background-end-rgb: 255, 255, 255;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+    to bottom,
+    rgb(var(--background-start-rgb)),
+    rgb(var(--background-end-rgb))
+  );
+  min-height: 100vh;
+  background-image: url("/noise.png"),
+    linear-gradient(
+      to bottom,
+      rgb(var(--background-start-rgb)),
+      rgb(var(--background-end-rgb))
+    );
+  background-blend-mode: overlay;
+}
+
+@layer components {
+  .section-padding {
+    @apply py-16 md:py-24;
+  }
+
+  .container-padding {
+    @apply px-4 md:px-6 lg:px-8;
+  }
+
+  .heading-1 {
+    @apply text-4xl md:text-5xl lg:text-6xl font-bold font-cyber;
+  }
+
+  .heading-2 {
+    @apply text-3xl md:text-4xl font-bold font-cyber;
+  }
+
+  .heading-3 {
+    @apply text-2xl md:text-3xl font-semibold font-cyber;
+  }
+
+  .cyber-card {
+    @apply relative overflow-hidden rounded-lg bg-cyber-dark/50 backdrop-blur-sm border border-cyber-purple/20;
+  }
+
+  .cyber-card::before {
+    content: "";
+    @apply absolute inset-0 bg-cyber-gradient opacity-0 transition-opacity duration-300;
+  }
+
+  .cyber-card:hover::before {
+    @apply opacity-10;
+  }
+
+  .cyber-button {
+    @apply relative overflow-hidden rounded-full bg-cyber-gradient px-6 py-3 text-white font-cyber transition-all duration-300 hover:shadow-lg hover:shadow-cyber-purple/20;
+  }
+
+  .cyber-button::after {
+    content: "";
+    @apply absolute inset-0 bg-white opacity-0 transition-opacity duration-300;
+  }
+
+  .cyber-button:hover::after {
+    @apply opacity-10;
+  }
+
+  .cyber-grid {
+    @apply absolute inset-0 bg-cyber-grid bg-[length:20px_20px] opacity-10;
+  }
+
+  .glitch-text {
+    @apply relative;
+  }
+
+  .glitch-text::before,
+  .glitch-text::after {
+    content: attr(data-text);
+    @apply absolute inset-0;
+  }
+
+  .glitch-text::before {
+    @apply text-cyber-pink -translate-x-1;
+    animation: glitch 1s linear infinite;
+  }
+
+  .glitch-text::after {
+    @apply text-cyber-blue translate-x-1;
+    animation: glitch 1s linear infinite reverse;
+  }
+
+  .gradient-text {
+    @apply bg-cyber-gradient bg-clip-text text-transparent;
+  }
+}
