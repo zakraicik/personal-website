@@ -13,8 +13,8 @@ module.exports = {
           purple: "#8A2BE2",
           blue: "#00BFFF",
           pink: "#FF1493",
-          dark: "#0A0A1F",
-          light: "#F0F0FF",
+          dark: "#FFFFFF",
+          light: "#0A0A1F",
         },
       },
       backgroundImage: {

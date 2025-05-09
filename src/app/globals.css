@@ -3,16 +3,16 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 240, 240, 255;
-  --background-start-rgb: 10, 10, 31;
-  --background-end-rgb: 20, 20, 40;
+  --foreground-rgb: 10, 10, 31;
+  --background-start-rgb: 240, 240, 255;
+  --background-end-rgb: 255, 255, 255;
 }
 
 @media (prefers-color-scheme: light) {
   :root {
-    --foreground-rgb: 10, 10, 31;
-    --background-start-rgb: 240, 240, 255;
-    --background-end-rgb: 255, 255, 255;
+    --foreground-rgb: 240, 240, 255;
+    --background-start-rgb: 10, 10, 31;
+    --background-end-rgb: 20, 20, 40;
   }
 }
 
@@ -106,5 +106,46 @@ body {
 
   .gradient-text {
     @apply bg-cyber-gradient bg-clip-text text-transparent;
+  }
+
+  .glass-button {
+    @apply relative rounded-full px-8 py-4 font-cyber text-lg text-cyber-dark bg-white/60 backdrop-blur-xl border-none shadow-xl overflow-hidden transition-all duration-300 flex items-center justify-center;
+    box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.08),
+      0 1.5px 6px 0 rgba(138, 43, 226, 0.08);
+  }
+
+  .glass-button::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    padding: 2px;
+    background: linear-gradient(135deg, #8a2be2, #00bfff 50%, #ff1493);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .glass-button > span,
+  .glass-button > svg {
+    @apply relative z-10 bg-cyber-gradient bg-clip-text text-transparent;
+  }
+
+  .glass-button:after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    box-shadow: 0 2px 8px 0 rgba(138, 43, 226, 0.06) inset;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .glass-button:hover {
+    @apply bg-white/80 shadow-2xl;
+    transform: translateY(-2px) scale(1.03);
   }
 }

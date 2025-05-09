@@ -44,14 +44,17 @@ export function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.6 }}
           >
-            <a href="#portfolio" className="cyber-button">
-              View My Work
+            <a
+              href="#portfolio"
+              className="glass-button bg-transparent border border-cyber-purple/50 hover:border-cyber-purple"
+            >
+              <span>View My Work</span>
             </a>
             <a
               href="#contact"
-              className="cyber-button bg-transparent border border-cyber-purple/50 hover:border-cyber-purple"
+              className="glass-button bg-transparent border border-cyber-purple/50 hover:border-cyber-purple"
             >
-              Contact Me
+              <span>Contact Me</span>
             </a>
           </motion.div>
         </motion.div>

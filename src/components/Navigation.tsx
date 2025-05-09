@@ -16,11 +16,11 @@ export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 w-full bg-cyber-dark/80 backdrop-blur-sm z-50">
+    <nav className="fixed top-0 w-full bg-cyber-dark/40 backdrop-blur-lg border-b border-white/20 z-50">
       <div className="container-padding mx-auto">
         <div className="flex items-center justify-between h-16">
           <a href="#home" className="text-xl font-bold">
-            Your Name
+            Zak Raicik
           </a>
 
           {/* Desktop Navigation */}
@@ -29,7 +29,7 @@ export function Navigation() {
               <a
                 key={item.name}
                 href={item.href}
-                className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors"
+                className="text-gray-300 hover:text-gray-100 dark:text-gray-700 dark:hover:text-black transition-colors"
               >
                 {item.name}
               </a>
@@ -59,7 +59,7 @@ export function Navigation() {
                 <a
                   key={item.name}
                   href={item.href}
-                  className="block px-3 py-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors"
+                  className="block px-3 py-2 text-gray-300 hover:text-gray-100 dark:text-gray-700 dark:hover:text-black transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   {item.name}
