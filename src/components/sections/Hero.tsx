@@ -1,16 +1,19 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { HiArrowDown } from "react-icons/hi";
+import { useScrollLock } from "@/hooks/useScrollLock";
 
 export function Hero() {
+  const { scrollToSection } = useScrollLock();
+
   return (
     <section
       id="home"
-      className="min-h-screen flex items-center justify-center section-padding relative overflow-hidden"
+      className="min-h-screen flex flex-col justify-between section-padding relative overflow-hidden"
     >
       <div className="cyber-grid" />
-      <div className="container-padding mx-auto text-center relative z-10">
+
+      <div className="container-padding mx-auto flex-1 flex items-center justify-center text-center relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -19,7 +22,7 @@ export function Hero() {
         >
           <div className="space-y-4">
             <motion.h1
-              className="heading-1 mb-6"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
@@ -28,7 +31,7 @@ export function Hero() {
               <span className="gradient-text">Zak Raicik</span>
             </motion.h1>
             <motion.p
-              className="text-xl md:text-2xl text-cyber-light/80 mb-8 max-w-2xl mx-auto"
+              className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-cyber-light/80 mb-8 max-w-2xl mx-auto px-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
@@ -39,57 +42,25 @@ export function Hero() {
           </div>
 
           <motion.div
-            className="flex gap-4 justify-center"
+            className="flex flex-col sm:flex-row gap-4 justify-center px-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.6 }}
           >
             <a
               href="#portfolio"
-              className="glass-button bg-transparent border border-cyber-purple/50 hover:border-cyber-purple"
+              className="glass-button bg-transparent border border-cyber-purple/50 hover:border-cyber-purple text-base sm:text-lg py-2 px-6"
             >
               <span>View My Work</span>
             </a>
             <a
               href="#contact"
-              className="glass-button bg-transparent border border-cyber-purple/50 hover:border-cyber-purple"
+              className="glass-button bg-transparent border border-cyber-purple/50 hover:border-cyber-purple text-base sm:text-lg py-2 px-6"
             >
               <span>Contact Me</span>
             </a>
           </motion.div>
         </motion.div>
-      </div>
-
-      {/* Move the arrow here, outside the main content container */}
-      <motion.div
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20"
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
-      >
-        <HiArrowDown className="text-cyber-blue text-2xl" />
-      </motion.div>
-
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-2 h-2 bg-cyber-purple/20 rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, -100],
-              opacity: [0, 1, 0],
-            }}
-            transition={{
-              duration: Math.random() * 3 + 2,
-              repeat: Infinity,
-              delay: Math.random() * 2,
-            }}
-          />
-        ))}
       </div>
     </section>
   );

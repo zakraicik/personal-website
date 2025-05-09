@@ -7,7 +7,9 @@ import {
   HiPhone,
   HiLocationMarker,
   HiPaperAirplane,
+  HiArrowUp,
 } from "react-icons/hi";
+import { useScrollLock } from "@/hooks/useScrollLock";
 
 export function Contact() {
   const [formData, setFormData] = useState({
@@ -15,6 +17,7 @@ export function Contact() {
     email: "",
     message: "",
   });
+  const { scrollToSection } = useScrollLock();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,161 +36,76 @@ export function Contact() {
   };
 
   return (
-    <section id="contact" className="section-padding relative overflow-hidden">
-      <div className="cyber-grid" />
-      <div className="container-padding mx-auto relative z-10">
+    <section
+      id="contact"
+      className="min-h-screen section-padding relative overflow-hidden flex items-center justify-center scroll-mt-24"
+    >
+      <div className="w-full max-w-6xl mx-auto z-10 px-8 sm:px-12 pl-64 flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="max-w-4xl mx-auto"
+          className="max-w-4xl mx-auto w-full"
         >
-          <h2 className="heading-2 text-center mb-12">
-            <span className="glitch-text" data-text="Get in Touch">
-              Get in Touch
-            </span>
-          </h2>
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="space-y-6">
-              <motion.div
-                className="flex items-center space-x-4"
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-              >
-                <div className="p-3 bg-cyber-dark/50 rounded-lg border border-cyber-blue/20">
-                  <HiMail className="text-cyber-blue text-2xl" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-cyber-light">Email</h3>
-                  <p className="text-cyber-light/80">your.email@example.com</p>
-                </div>
-              </motion.div>
-              <motion.div
-                className="flex items-center space-x-4"
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-              >
-                <div className="p-3 bg-cyber-dark/50 rounded-lg border border-cyber-blue/20">
-                  <HiPhone className="text-cyber-blue text-2xl" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-cyber-light">Phone</h3>
-                  <p className="text-cyber-light/80">+1 (555) 123-4567</p>
-                </div>
-              </motion.div>
-              <motion.div
-                className="flex items-center space-x-4"
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-              >
-                <div className="p-3 bg-cyber-dark/50 rounded-lg border border-cyber-blue/20">
-                  <HiLocationMarker className="text-cyber-blue text-2xl" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-cyber-light">Location</h3>
-                  <p className="text-cyber-light/80">San Francisco, CA</p>
-                </div>
-              </motion.div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Email Card */}
+            <div className="flex items-center gap-6 p-4 bg-transparent rounded-lg">
+              <div className="p-3 bg-cyber-dark/50 rounded-lg border border-cyber-blue/20 flex-shrink-0">
+                <HiMail className="text-cyber-blue text-2xl" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-cyber-light">Email</h3>
+                <p className="text-cyber-light/80">your.email@example.com</p>
+              </div>
             </div>
-            <motion.form
-              onSubmit={handleSubmit}
-              className="space-y-4"
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-            >
-              <div>
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-medium mb-1 text-cyber-light"
-                >
-                  Name
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 bg-cyber-dark/50 border border-cyber-blue/20 rounded-lg focus:ring-2 focus:ring-cyber-blue focus:border-transparent text-cyber-light placeholder-cyber-light/50"
-                  required
-                />
+            {/* Phone Card */}
+            <div className="flex items-center gap-6 p-4 bg-transparent rounded-lg">
+              <div className="p-3 bg-cyber-dark/50 rounded-lg border border-cyber-blue/20 flex-shrink-0">
+                <HiPhone className="text-cyber-blue text-2xl" />
               </div>
               <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium mb-1 text-cyber-light"
-                >
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 bg-cyber-dark/50 border border-cyber-blue/20 rounded-lg focus:ring-2 focus:ring-cyber-blue focus:border-transparent text-cyber-light placeholder-cyber-light/50"
-                  required
-                />
+                <h3 className="font-semibold text-cyber-light">Phone</h3>
+                <p className="text-cyber-light/80">+1 (555) 123-4567</p>
+              </div>
+            </div>
+            {/* Location Card */}
+            <div className="flex items-center gap-6 p-4 bg-transparent rounded-lg">
+              <div className="p-3 bg-cyber-dark/50 rounded-lg border border-cyber-blue/20 flex-shrink-0">
+                <HiLocationMarker className="text-cyber-blue text-2xl" />
               </div>
               <div>
-                <label
-                  htmlFor="message"
-                  className="block text-sm font-medium mb-1 text-cyber-light"
-                >
-                  Message
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  rows={4}
-                  className="w-full px-4 py-2 bg-cyber-dark/50 border border-cyber-blue/20 rounded-lg focus:ring-2 focus:ring-cyber-blue focus:border-transparent text-cyber-light placeholder-cyber-light/50"
-                  required
-                />
+                <h3 className="font-semibold text-cyber-light">Location</h3>
+                <p className="text-cyber-light/80">San Francisco, CA</p>
               </div>
-              <button
-                type="submit"
-                className="cyber-button w-full flex items-center justify-center space-x-2"
-              >
-                <span>Send Message</span>
-                <HiPaperAirplane className="transform rotate-90" />
-              </button>
-            </motion.form>
+            </div>
+            {/* GitHub Card */}
+            <div className="flex items-center gap-6 p-4 bg-transparent rounded-lg">
+              <div className="p-3 bg-cyber-dark/50 rounded-lg border border-cyber-blue/20 flex-shrink-0">
+                <svg
+                  className="text-cyber-blue text-2xl"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  height="24"
+                >
+                  <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.387.6.113.82-.263.82-.582 0-.288-.012-1.243-.017-2.252-3.338.726-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.09-.745.083-.729.083-.729 1.205.085 1.84 1.237 1.84 1.237 1.07 1.834 2.807 1.304 3.492.997.108-.775.418-1.305.762-1.606-2.665-.304-5.466-1.334-5.466-5.933 0-1.31.468-2.38 1.236-3.22-.124-.303-.535-1.523.117-3.176 0 0 1.008-.322 3.3 1.23.96-.267 1.98-.399 3-.404 1.02.005 2.04.137 3 .404 2.29-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.873.12 3.176.77.84 1.235 1.91 1.235 3.22 0 4.61-2.803 5.625-5.475 5.922.43.37.823 1.102.823 2.222 0 1.606-.015 2.898-.015 3.293 0 .322.216.699.825.58C20.565 21.796 24 17.297 24 12c0-6.63-5.37-12-12-12z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-cyber-light">GitHub</h3>
+                <a
+                  href="https://github.com/yourusername"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-cyber-light/80 hover:text-cyber-blue underline"
+                >
+                  github.com/yourusername
+                </a>
+              </div>
+            </div>
           </div>
         </motion.div>
-      </div>
-
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(8)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1 h-1 bg-cyber-blue/20 rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              scale: [1, 1.5, 1],
-              opacity: [0.2, 0.4, 0.2],
-            }}
-            transition={{
-              duration: Math.random() * 2 + 2,
-              repeat: Infinity,
-              delay: Math.random() * 2,
-            }}
-          />
-        ))}
       </div>
     </section>
   );

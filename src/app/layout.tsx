@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { Navigation } from "@/components/Navigation";
+import { AnimatedDotsBackground } from "@/components/AnimatedDotsBackground";
+import { ScrollToHashOnResize } from "@/components/ScrollToHashOnResize";
+import { SectionVisibilityProvider } from "@/context/SectionVisibilityContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,7 +22,16 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className={`${inter.className} antialiased`}>
-        <main className="flex min-h-screen flex-col">{children}</main>
+        <SectionVisibilityProvider>
+          <AnimatedDotsBackground />
+          <ScrollToHashOnResize />
+          <div className="grid grid-cols-[140px_1fr] min-h-screen">
+            <aside>
+              <Navigation />
+            </aside>
+            <main className="pl-16">{children}</main>
+          </div>
+        </SectionVisibilityProvider>
       </body>
     </html>
   );
