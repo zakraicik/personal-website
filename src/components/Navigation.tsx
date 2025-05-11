@@ -11,6 +11,7 @@ const navItems = [
   { name: "Skills", href: "#skills" },
   { name: "Portfolio", href: "#portfolio" },
   { name: "Experience", href: "#experience" },
+  { name: "Education", href: "#education" },
   { name: "Contact", href: "#contact" },
 ];
 

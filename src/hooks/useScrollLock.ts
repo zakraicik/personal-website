@@ -5,9 +5,6 @@ export const useScrollLock = () => {
   const sections = ["home", "about", "portfolio", "experience", "contact"];
 
   useEffect(() => {
-    // Disable scroll on mount
-    document.body.style.overflow = "hidden";
-
     // Set up intersection observer to track current section
     const observer = new IntersectionObserver(
       (entries) => {
@@ -35,7 +32,6 @@ export const useScrollLock = () => {
 
     // Cleanup
     return () => {
-      document.body.style.overflow = "auto";
       observer.disconnect();
     };
   }, []);

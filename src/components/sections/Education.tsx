@@ -1,59 +1,44 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  HiBriefcase,
-  HiChevronDown,
-  HiArrowUp,
-  HiArrowDown,
-} from "react-icons/hi";
+import { HiAcademicCap, HiChevronDown } from "react-icons/hi";
 import { useState } from "react";
 import { useScrollLock } from "@/hooks/useScrollLock";
 
-const experiences = [
+const education = [
   {
-    title: "Senior Developer",
-    company: "Tech Company",
-    period: "2021 - Present",
+    degree: "Master of Computer Science",
+    school: "University of Technology",
+    period: "2017 - 2019",
     description: [
-      "Led development of key features for enterprise applications",
-      "Mentored junior developers and conducted code reviews",
-      "Implemented CI/CD pipelines and improved deployment processes",
+      "Specialized in Artificial Intelligence and Machine Learning",
+      "Graduated with Distinction",
+      "Published research paper on Neural Network Optimization",
     ],
   },
   {
-    title: "Full Stack Developer",
-    company: "Startup Inc",
-    period: "2019 - 2021",
+    degree: "Bachelor of Science in Computer Science",
+    school: "State University",
+    period: "2013 - 2017",
     description: [
-      "Developed and maintained multiple web applications",
-      "Collaborated with design team to implement UI/UX improvements",
-      "Optimized application performance and reduced load times",
-    ],
-  },
-  {
-    title: "Junior Developer",
-    company: "Digital Agency",
-    period: "2018 - 2019",
-    description: [
-      "Built responsive websites for various clients",
-      "Worked with modern frontend frameworks and libraries",
-      "Participated in agile development processes",
+      "Dean's List for Academic Excellence",
+      "Senior Project: Developed a Real-time Data Processing System",
+      "Active member of the Computer Science Society",
     ],
   },
 ];
 
-export function Experience() {
+export function Education() {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const { scrollToSection } = useScrollLock();
 
-  const toggleExperience = (index: number) => {
+  const toggleEducation = (index: number) => {
     setExpandedIndex((current) => (current === index ? null : index));
   };
 
   return (
     <section
-      id="experience"
+      id="education"
       className="relative min-h-screen section-padding overflow-hidden grid grid-rows-[auto,1fr,auto] scroll-mt-24"
       style={{ minHeight: "100vh", gridTemplateRows: "auto 1fr auto" }}
     >
@@ -70,11 +55,11 @@ export function Experience() {
           className="w-full"
         >
           <div className="space-y-8">
-            {experiences.map((exp, index) => {
+            {education.map((edu, index) => {
               const isExpanded = expandedIndex === index;
               return (
                 <motion.div
-                  key={exp.title}
+                  key={edu.degree}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -82,25 +67,25 @@ export function Experience() {
                   className="bg-cyber-dark/30 backdrop-blur-sm rounded-lg border border-cyber-blue/20 shadow-lg relative"
                 >
                   <button
-                    onClick={() => toggleExperience(index)}
+                    onClick={() => toggleEducation(index)}
                     className="w-full p-6 flex items-center justify-between focus:outline-none hover:bg-cyber-blue/5 transition-colors cursor-pointer"
                     aria-expanded={isExpanded}
                   >
                     <div className="flex items-center gap-4">
                       <div className="p-2 bg-cyber-dark/50 rounded-lg border border-cyber-blue/20">
-                        <HiBriefcase className="text-cyber-blue text-xl" />
+                        <HiAcademicCap className="text-cyber-blue text-xl" />
                       </div>
                       <div className="text-left">
                         <h3 className="text-xl font-semibold text-cyber-light">
-                          {exp.title}
+                          {edu.degree}
                         </h3>
-                        <p className="text-cyber-light/80">{exp.company}</p>
+                        <p className="text-cyber-light/80">{edu.school}</p>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-3">
                       <span className="text-sm text-cyber-blue">
-                        {exp.period}
+                        {edu.period}
                       </span>
                       <motion.div
                         animate={{ rotate: isExpanded ? 180 : 0 }}
@@ -121,7 +106,7 @@ export function Experience() {
                         className="overflow-hidden border-t border-cyber-blue/20"
                       >
                         <ul className="p-6 space-y-3">
-                          {exp.description.map((item, i) => (
+                          {edu.description.map((item, i) => (
                             <motion.li
                               key={i}
                               initial={{ opacity: 0, x: -10 }}

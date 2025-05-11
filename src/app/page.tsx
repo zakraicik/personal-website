@@ -3,6 +3,7 @@ import { About } from "@/components/sections/About";
 import { Skills } from "@/components/sections/Skills";
 import { Portfolio } from "@/components/sections/Portfolio";
 import { Experience } from "@/components/sections/Experience";
+import { Education } from "@/components/sections/Education";
 import { Contact } from "@/components/sections/Contact";
 import { SectionWrapper } from "@/components/SectionWrapper";
 
@@ -23,6 +24,9 @@ export default function Home() {
       </SectionWrapper>
       <SectionWrapper id="experience">
         <Experience />
+      </SectionWrapper>
+      <SectionWrapper id="education">
+        <Education />
       </SectionWrapper>
       <SectionWrapper id="contact">
         <Contact />
