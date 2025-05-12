@@ -2,7 +2,15 @@ import { useEffect, useState, useCallback } from "react";
 
 export const useScrollLock = () => {
   const [currentSection, setCurrentSection] = useState(0);
-  const sections = ["home", "about", "portfolio", "experience", "contact"];
+  const sections = [
+    "home",
+    "about",
+    "portfolio",
+    "experience",
+    "education",
+    "skills",
+    "contact",
+  ];
 
   useEffect(() => {
     // Set up intersection observer to track current section

@@ -83,12 +83,12 @@ export function Experience() {
                 >
                   <button
                     onClick={() => toggleExperience(index)}
-                    className="w-full p-6 flex items-center justify-between focus:outline-none hover:bg-cyber-blue/5 transition-colors cursor-pointer"
+                    className="w-full p-6 flex items-center justify-between focus:outline-none hover:bg-gradient-to-r hover:from-cyber-purple/10 hover:via-cyber-blue/10 hover:to-cyber-pink/10 transition-all duration-300 cursor-pointer group"
                     aria-expanded={isExpanded}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="p-2 bg-cyber-dark/50 rounded-lg border border-cyber-blue/20">
-                        <HiBriefcase className="text-cyber-blue text-xl" />
+                      <div className="p-2 bg-cyber-dark/50 rounded-lg border border-cyber-blue/20 group-hover:border-cyber-purple/40 transition-colors duration-300">
+                        <HiBriefcase className="text-cyber-blue group-hover:text-cyber-purple transition-colors duration-300 text-xl" />
                       </div>
                       <div className="text-left">
                         <h3 className="text-xl font-semibold text-cyber-light">

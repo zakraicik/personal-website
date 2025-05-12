@@ -8,10 +8,10 @@ import { useSectionVisibility } from "../context/SectionVisibilityContext";
 const navItems = [
   { name: "Home", href: "#home" },
   { name: "About", href: "#about" },
-  { name: "Skills", href: "#skills" },
   { name: "Portfolio", href: "#portfolio" },
   { name: "Experience", href: "#experience" },
   { name: "Education", href: "#education" },
+  { name: "Skills", href: "#skills" },
   { name: "Contact", href: "#contact" },
 ];
 

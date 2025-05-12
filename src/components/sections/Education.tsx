@@ -8,22 +8,24 @@ import { useScrollLock } from "@/hooks/useScrollLock";
 const education = [
   {
     degree: "Master of Computer Science",
-    school: "University of Technology",
-    period: "2017 - 2019",
+    school: "University of Pennsylvania",
+    period: "",
     description: [
-      "Specialized in Artificial Intelligence and Machine Learning",
-      "Graduated with Distinction",
-      "Published research paper on Neural Network Optimization",
+      "Combined mathematical foundations with engineering principles to solve complex computing problems using Python, Java, and C",
+      "Designed and maintained high-quality software utilizing data structures, algorithms, and object-oriented programming techniques",
+      "Assessed and implemented modern techniques including blockchain development, natural language processing, and distributed computing",
+      "Applied algorithmic thinking to model software systems through advanced concepts in data structures, graph theory, and computational analysis",
     ],
   },
   {
-    degree: "Bachelor of Science in Computer Science",
-    school: "State University",
-    period: "2013 - 2017",
+    degree: "Bachelor of Science in Finance",
+    school: "Bentley University",
+    period: "",
     description: [
-      "Dean's List for Academic Excellence",
-      "Senior Project: Developed a Real-time Data Processing System",
-      "Active member of the Computer Science Society",
+      "Applied economic analysis to evaluate fiscal and monetary policies, international trade dynamics, and current economic challenges",
+      "Developed financial valuation models using advanced Excel, VBA, and statistical functions for securities, capital budgeting, and risk assessment",
+      "Executed trading simulations and portfolio management strategies in dedicated Trading Room environments",
+      "Implemented digital transformation strategies to optimize business processes and enhance organizational efficiency through information systems",
     ],
   },
 ];
@@ -68,12 +70,12 @@ export function Education() {
                 >
                   <button
                     onClick={() => toggleEducation(index)}
-                    className="w-full p-6 flex items-center justify-between focus:outline-none hover:bg-cyber-blue/5 transition-colors cursor-pointer"
+                    className="w-full p-6 flex items-center justify-between focus:outline-none hover:bg-gradient-to-r hover:from-cyber-purple/10 hover:via-cyber-blue/10 hover:to-cyber-pink/10 transition-all duration-300 cursor-pointer group"
                     aria-expanded={isExpanded}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="p-2 bg-cyber-dark/50 rounded-lg border border-cyber-blue/20">
-                        <HiAcademicCap className="text-cyber-blue text-xl" />
+                      <div className="p-2 bg-cyber-dark/50 rounded-lg border border-cyber-blue/20 group-hover:border-cyber-purple/40 transition-colors duration-300">
+                        <HiAcademicCap className="text-cyber-blue group-hover:text-cyber-purple transition-colors duration-300 text-xl" />
                       </div>
                       <div className="text-left">
                         <h3 className="text-xl font-semibold text-cyber-light">

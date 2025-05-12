@@ -1,9 +1,9 @@
 import { Hero } from "@/components/sections/Hero";
 import { About } from "@/components/sections/About";
-import { Skills } from "@/components/sections/Skills";
 import { Portfolio } from "@/components/sections/Portfolio";
 import { Experience } from "@/components/sections/Experience";
 import { Education } from "@/components/sections/Education";
+import { Skills } from "@/components/sections/Skills";
 import { Contact } from "@/components/sections/Contact";
 import { SectionWrapper } from "@/components/SectionWrapper";
 
@@ -16,9 +16,6 @@ export default function Home() {
       <SectionWrapper id="about">
         <About />
       </SectionWrapper>
-      <SectionWrapper id="skills">
-        <Skills />
-      </SectionWrapper>
       <SectionWrapper id="portfolio">
         <Portfolio />
       </SectionWrapper>
@@ -27,6 +24,9 @@ export default function Home() {
       </SectionWrapper>
       <SectionWrapper id="education">
         <Education />
+      </SectionWrapper>
+      <SectionWrapper id="skills">
+        <Skills />
       </SectionWrapper>
       <SectionWrapper id="contact">
         <Contact />
