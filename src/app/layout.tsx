@@ -9,9 +9,8 @@ import { SectionVisibilityProvider } from "@/context/SectionVisibilityContext";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Personal Portfolio",
-  description:
-    "Welcome to my personal portfolio website showcasing my work and experience.",
+  title: "Zak Raicik",
+  description: "A resume website for Zak Raicik",
 };
 
 export default function RootLayout({
@@ -21,15 +20,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={`${inter.className} antialiased`}>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </head>
+      <body className={`${inter.className} antialiased overflow-x-hidden`}>
         <SectionVisibilityProvider>
           <AnimatedDotsBackground />
           <ScrollToHashOnResize />
-          <div className="grid grid-cols-[140px_1fr] min-h-screen">
-            <aside>
-              <Navigation />
-            </aside>
-            <main className="pl-16">{children}</main>
+          <Navigation />
+          <div className="grid grid-cols-1 md:grid-cols-[140px_1fr] min-h-screen">
+            <aside className="hidden md:block"></aside>
+            <main className="md:pl-16">{children}</main>
           </div>
         </SectionVisibilityProvider>
       </body>

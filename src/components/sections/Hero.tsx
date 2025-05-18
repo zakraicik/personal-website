@@ -9,20 +9,20 @@ export function Hero() {
   return (
     <section
       id="home"
-      className="min-h-screen flex flex-col justify-between section-padding relative overflow-hidden"
+      className="min-h-screen flex flex-col justify-center section-padding relative overflow-hidden"
     >
-      <div className="cyber-grid" />
+      <div className="cyber-grid pointer-events-none w-full h-full left-0 top-0 absolute overflow-x-hidden" />
 
-      <div className="container-padding mx-auto flex-1 flex items-center justify-center text-center relative z-10">
+      <div className="container-padding w-full max-w-full sm:max-w-2xl mx-auto flex-1 flex items-center justify-center text-center relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="space-y-8"
+          className="space-y-6 sm:space-y-8"
         >
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             <motion.h1
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6"
+              className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-3 sm:mb-6 text-white/80"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
@@ -31,7 +31,7 @@ export function Hero() {
               <span className="gradient-text">Zak Raicik</span>
             </motion.h1>
             <motion.p
-              className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-cyber-light/80 mb-8 max-w-2xl mx-auto px-4"
+              className="text-base sm:text-lg md:text-2xl lg:text-3xl text-white/80 mb-4 sm:mb-8 max-w-xs sm:max-w-2xl mx-auto px-2 sm:px-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
@@ -41,20 +41,20 @@ export function Hero() {
           </div>
 
           <motion.div
-            className="flex flex-col sm:flex-row gap-4 justify-center px-4"
+            className="inline-flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.6 }}
           >
             <a
               href="#portfolio"
-              className="glass-button bg-transparent border border-cyber-purple/50 hover:border-cyber-purple text-base sm:text-lg py-2 px-6"
+              className="glass-button w-auto text-center bg-transparent border border-cyber-purple/50 hover:border-cyber-purple hover:bg-transparent text-sm sm:text-lg py-2 px-4"
             >
               <span>View My Work</span>
             </a>
             <a
               href="#contact"
-              className="glass-button bg-transparent border border-cyber-purple/50 hover:border-cyber-purple text-base sm:text-lg py-2 px-6"
+              className="glass-button w-auto text-center bg-transparent border border-cyber-purple/50 hover:border-cyber-purple hover:bg-transparent text-sm sm:text-lg py-2 px-4"
             >
               <span>Contact Me</span>
             </a>

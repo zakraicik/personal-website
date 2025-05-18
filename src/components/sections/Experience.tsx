@@ -54,20 +54,14 @@ export function Experience() {
   return (
     <section
       id="experience"
-      className="relative min-h-screen section-padding overflow-hidden grid grid-rows-[auto,1fr,auto] scroll-mt-24"
-      style={{ minHeight: "100vh", gridTemplateRows: "auto 1fr auto" }}
+      className="min-h-screen flex flex-col justify-center section-padding relative overflow-hidden"
     >
-      {/* Main Content - centered */}
-      <div
-        className="w-full max-w-6xl mx-auto z-10 px-8 sm:px-12 pl-64 flex items-center justify-center"
-        style={{ gridRow: 2 }}
-      >
+      <div className="container-padding w-full max-w-full mx-auto flex-1 flex items-center justify-center relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="w-full"
+          className="w-full max-w-6xl"
         >
           <div className="space-y-8">
             {experiences.map((exp, index) => {
@@ -76,8 +70,7 @@ export function Experience() {
                 <motion.div
                   key={exp.title}
                   initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   className="bg-cyber-dark/30 backdrop-blur-sm rounded-lg border border-cyber-blue/20 shadow-lg relative"
                 >

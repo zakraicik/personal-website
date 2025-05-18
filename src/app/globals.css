@@ -2,10 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
+body {
+  overflow-x: hidden;
+}
+
 :root {
   --foreground-rgb: 10, 10, 31;
-  --background-start-rgb: 240, 240, 255;
-  --background-end-rgb: 255, 255, 255;
+  --background-start-rgb: 25, 5, 35; /* Dark purple */
+  --background-end-rgb: 0, 0, 0; /* Black */
 }
 
 @media (prefers-color-scheme: light) {
@@ -31,6 +36,10 @@ body {
       rgb(var(--background-end-rgb))
     );
   background-blend-mode: overlay;
+}
+
+body.resizing {
+  scroll-behavior: auto !important;
 }
 
 @layer components {

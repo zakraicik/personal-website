@@ -71,25 +71,32 @@ export function AnimatedDotsBackground({
   defaultColor?: string;
   className?: string;
 }) {
-  const positions = useMemo(() => generateGridPositions(count), [count]);
+  // All hooks at the top
+  const [isMounted, setIsMounted] = useState(false);
   const [windowWidth, setWindowWidth] = useState(0);
 
-  // Update window width for responsive line rendering
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
     };
-
-    // Set initial width
     handleResize();
-
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [isMounted]);
 
-  // Calculate connections between nearby points
+  const positions = useMemo(
+    () => (isMounted ? generateGridPositions(count) : []),
+    [count, isMounted]
+  );
+
+  // Move the connections useMemo before the early return
   const connections = useMemo(() => {
-    if (!windowWidth) return [];
+    if (!isMounted || !windowWidth) return [];
 
     const lines = [];
     const proximityThreshold = 20;
@@ -115,7 +122,10 @@ export function AnimatedDotsBackground({
     }
 
     return lines;
-  }, [positions, windowWidth]);
+  }, [positions, windowWidth, isMounted]);
+
+  // Early return after all hooks
+  if (!isMounted) return null;
 
   const getShapeSize = (size: string) => {
     switch (size) {

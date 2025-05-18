@@ -76,7 +76,7 @@ export function Navigation() {
                   ${
                     isActive
                       ? "text-cyber-blue bg-cyber-blue/10"
-                      : "text-cyber-light/70 hover:text-cyber-blue hover:bg-cyber-blue/5"
+                      : "text-white hover:text-cyber-blue hover:bg-cyber-blue/5"
                   }
                 `}
                 aria-label={item.name}

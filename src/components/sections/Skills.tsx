@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { skills } from "@/data/skills";
+import { motion } from "framer-motion";
 
 interface Category {
   name: string;
@@ -177,7 +178,8 @@ const Skills = () => {
     const selectedCat = categories.find((cat) => cat.name === selectedCategory);
     if (selectedCat) {
       const catMidAngle = (selectedCat.startAngle + selectedCat.endAngle) / 2;
-      skillGroupRotation = 90 - catMidAngle;
+
+      skillGroupRotation = 0 - catMidAngle;
     }
   }
 
@@ -369,162 +371,24 @@ const Skills = () => {
   };
 
   return (
-    <>
-      <style>{transitionStyles}</style>
-      <section
-        id="skills"
-        className="relative min-h-screen section-padding overflow-hidden flex flex-col items-center justify-center scroll-mt-24"
-        onClick={() => {
-          if (selectedCategory) setSelectedCategory(null);
-        }}
-      >
-        <div className="relative" style={{ width, height }}>
-          {/* Curved category label outside the arc on hover only */}
-          {!selectedCategory &&
-            debouncedHoveredCategory &&
-            (() => {
-              const cat = categories.find(
-                (c) => c.name === debouncedHoveredCategory
-              );
-              if (!cat) return null;
-              const labelRadius = outerRadius + 40;
-              const displayText = cat.name;
-              // More conservative text wrapping for long names
-              let shouldWrap = displayText.length > 18;
-              let line1 = displayText;
-              let line2 = "";
-              if (shouldWrap) {
-                const words = displayText.split(" ");
-                if (words.length > 1) {
-                  const midPoint = Math.floor(words.length / 2);
-                  line1 = words.slice(0, midPoint).join(" ");
-                  line2 = words.slice(midPoint).join(" ");
-                } else if (displayText.length > 18) {
-                  const midPoint = Math.ceil(displayText.length / 2);
-                  line1 = displayText.substring(0, midPoint);
-                  line2 = displayText.substring(midPoint);
-                }
-              }
-              // More conservative arc sizing
-              const arcSpan = Math.min(50 + cat.name.length * 1.5, 70);
-              // Determine if we're in the bottom half of the circle (90° to 270°)
-              const angle = cat.midAngle;
-              const isBottomHalf = angle > 90 && angle < 270;
-              let startAngle, endAngle, arcStart, arcEnd;
-              if (isBottomHalf) {
-                startAngle = angle + arcSpan / 2;
-                endAngle = angle - arcSpan / 2;
-                arcStart = startAngle;
-                arcEnd = endAngle;
-              } else {
-                startAngle = angle - arcSpan / 2;
-                endAngle = angle + arcSpan / 2;
-                arcStart = startAngle;
-                arcEnd = endAngle;
-              }
-              // Convert to radians
-              const startRad = ((arcStart - 90) * Math.PI) / 180;
-              const endRad = ((arcEnd - 90) * Math.PI) / 180;
-              // SVG arc path for the label
-              const x1 = centerX + labelRadius * Math.cos(startRad);
-              const y1 = centerY + labelRadius * Math.sin(startRad);
-              const x2 = centerX + labelRadius * Math.cos(endRad);
-              const y2 = centerY + labelRadius * Math.sin(endRad);
-              const largeArcFlag = arcSpan > 180 ? 1 : 0;
-              const sweepFlag = isBottomHalf ? 0 : 1;
-              const arcPath = `M ${x1} ${y1} A ${labelRadius} ${labelRadius} 0 ${largeArcFlag} ${sweepFlag} ${x2} ${y2}`;
-              // For second line, use a slightly larger radius and smaller line spacing
-              const labelRadius2 = labelRadius + 16;
-              const x1b = centerX + labelRadius2 * Math.cos(startRad);
-              const y1b = centerY + labelRadius2 * Math.sin(startRad);
-              const x2b = centerX + labelRadius2 * Math.cos(endRad);
-              const y2b = centerY + labelRadius2 * Math.sin(endRad);
-              const arcPath2 = `M ${x1b} ${y1b} A ${labelRadius2} ${labelRadius2} 0 ${largeArcFlag} ${sweepFlag} ${x2b} ${y2b}`;
-              // Unique path ids
-              const safeId = cat.name.replace(/[^a-zA-Z0-9_-]/g, "-");
-              const pathId = `cat-label-arc-${safeId}`;
-              const pathId2 = `cat-label-arc2-${safeId}`;
-              // More sophisticated color handling
-              const textColor = isBottomHalf
-                ? darkenColor(cat.color, 0.9)
-                : darkenColor(cat.color, 0.8);
-              return (
-                <svg
-                  width={width}
-                  height={height}
-                  style={{
-                    position: "absolute",
-                    left: 0,
-                    top: 0,
-                    pointerEvents: "none",
-                    zIndex: 20,
-                    overflow: "visible",
-                  }}
-                >
-                  <defs>
-                    {/* Arc paths for text */}
-                    <path id={pathId} d={arcPath} fill="none" />
-                    <path id={pathId2} d={arcPath2} fill="none" />
-                  </defs>
-                  {/* Subtle background arc for readability */}
-                  <path
-                    d={arcPath}
-                    stroke="rgba(255,255,255,0.4)"
-                    strokeWidth="3"
-                    fill="none"
-                    strokeLinecap="round"
-                    style={{ filter: "blur(1px)" }}
-                  />
-                  {/* First line of text */}
-                  <text
-                    fill={textColor}
-                    fontWeight={500}
-                    fontSize="0.85rem"
-                    fontFamily="'Inter', 'SF Pro Text', 'Helvetica Neue', sans-serif"
-                    letterSpacing="0.01em"
-                    style={{
-                      textShadow: "0 1px 1px rgba(0,0,0,0.05)",
-                      WebkitFontSmoothing: "antialiased",
-                      MozOsxFontSmoothing: "grayscale",
-                    }}
-                  >
-                    <textPath
-                      href={`#${pathId}`}
-                      startOffset="50%"
-                      textAnchor="middle"
-                      alignmentBaseline="middle"
-                    >
-                      {line1}
-                    </textPath>
-                  </text>
-                  {/* Second line of text if needed */}
-                  {line2 && (
-                    <text
-                      fill={textColor}
-                      fontWeight={500}
-                      fontSize="0.85rem"
-                      fontFamily="'Inter', 'SF Pro Text', 'Helvetica Neue', sans-serif"
-                      letterSpacing="0.01em"
-                      style={{
-                        textShadow: "0 1px 1px rgba(0,0,0,0.05)",
-                        WebkitFontSmoothing: "antialiased",
-                        MozOsxFontSmoothing: "grayscale",
-                      }}
-                    >
-                      <textPath
-                        href={`#${pathId2}`}
-                        startOffset="50%"
-                        textAnchor="middle"
-                        alignmentBaseline="middle"
-                      >
-                        {line2}
-                      </textPath>
-                    </text>
-                  )}
-                </svg>
-              );
-            })()}
-          <svg width={width} height={height}>
+    <section
+      id="skills"
+      className="min-h-screen flex flex-col justify-center section-padding relative overflow-hidden"
+    >
+      <div className="container-padding w-full max-w-full mx-auto flex-1 flex items-center justify-center relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-6xl"
+        >
+          <style>{transitionStyles}</style>
+          <svg
+            width={width}
+            height={height}
+            viewBox={`-50 -50 ${width + 100} ${height + 100}`}
+            className="mx-auto"
+          >
             {/* Filters */}
             <defs>
               <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
@@ -653,6 +517,115 @@ const Skills = () => {
                 })}
             </g>
 
+            {/* Category Labels */}
+            {!selectedCategory &&
+              debouncedHoveredCategory &&
+              (() => {
+                const cat = categories.find(
+                  (c) => c.name === debouncedHoveredCategory
+                );
+                if (!cat) return null;
+
+                // Position the label further out from the segment
+                const labelDistance = outerRadius + 60;
+
+                // Calculate the position for the center of our label
+                const labelRad = ((cat.midAngle - 90) * Math.PI) / 180;
+                const labelX = centerX + labelDistance * Math.cos(labelRad);
+                const labelY = centerY + labelDistance * Math.sin(labelRad);
+
+                // Determine if the label should be flipped based on angle
+                const isBottomHalf = cat.midAngle > 90 && cat.midAngle < 270;
+
+                // Calculate dimensions for our grid
+                const gridHeight = 60;
+                const gridWidth = 130;
+                const chipHeight = 22;
+                const nameHeight = 16;
+                const spacing = 15;
+
+                // Dynamically size the chip based on the level text length
+                const levelText = skillSegments.filter(
+                  (s) => s.category === cat.name
+                )[0].level;
+                const chipWidth = Math.max(60, levelText.length * 8 + 10); // 8px per char + 10px padding
+
+                // Translate and rotate to position the grid
+                let transform = `translate(${labelX},${labelY})`;
+
+                // Rotate to keep text horizontal
+                const rotationAngle = isBottomHalf
+                  ? cat.midAngle + 180
+                  : cat.midAngle;
+                transform += ` rotate(${rotationAngle})`;
+
+                // Translate to center the grid
+                transform += ` translate(${-gridWidth / 2},${-gridHeight / 2})`;
+
+                // Colors
+                const textColor = isBottomHalf
+                  ? darkenColor(cat.color, 0.9)
+                  : darkenColor(cat.color, 0.8);
+                const chipBgColor = cat.color;
+                const chipTextColor = "#fff";
+
+                const chipText = `${
+                  skillSegments.filter((s) => s.category === cat.name).length
+                } skills`;
+
+                return (
+                  <g transform={transform} style={{ pointerEvents: "none" }}>
+                    {/* Category name - top row */}
+                    <text
+                      x={gridWidth / 2}
+                      y={nameHeight}
+                      fontSize="14px"
+                      fontWeight="500"
+                      fill={textColor}
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                      style={{
+                        fontFamily:
+                          "'Inter', 'SF Pro Text', 'Helvetica Neue', sans-serif",
+                        letterSpacing: "0.01em",
+                        textShadow: "0 1px 1px rgba(0,0,0,0.1)",
+                      }}
+                    >
+                      {cat.name}
+                    </text>
+
+                    {/* Skills count chip - bottom row */}
+                    <rect
+                      x={(gridWidth - chipWidth) / 2}
+                      y={nameHeight + spacing}
+                      width={chipWidth}
+                      height={chipHeight}
+                      rx="11"
+                      ry="11"
+                      fill={chipBgColor}
+                      opacity="0.9"
+                    />
+
+                    <text
+                      x={gridWidth / 2}
+                      y={nameHeight + spacing + chipHeight / 2}
+                      fontSize="12px"
+                      fontWeight="600"
+                      fill={chipTextColor}
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                      style={{
+                        fontFamily:
+                          "'Inter', 'SF Pro Text', 'Helvetica Neue', sans-serif",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {chipText}
+                    </text>
+                  </g>
+                );
+              })()}
+
             {/* Skills - inner pie */}
             <g
               className="skills skills-animated"
@@ -776,131 +749,112 @@ const Skills = () => {
                     (c) => c.name === selectedCategory
                   );
                   if (!skill || !cat) return null;
-                  // Arc radius just outside the skill segment
-                  const labelRadius = skillsRadius + 40;
-                  const displayText = skill.name;
-                  // Text wrapping for long names
-                  let shouldWrap = displayText.length > 18;
-                  let line1 = displayText;
-                  let line2 = "";
-                  if (shouldWrap) {
-                    const words = displayText.split(" ");
-                    if (words.length > 1) {
-                      const midPoint = Math.floor(words.length / 2);
-                      line1 = words.slice(0, midPoint).join(" ");
-                      line2 = words.slice(midPoint).join(" ");
-                    } else if (displayText.length > 18) {
-                      const midPoint = Math.ceil(displayText.length / 2);
-                      line1 = displayText.substring(0, midPoint);
-                      line2 = displayText.substring(midPoint);
-                    }
-                  }
-                  // Arc sizing
-                  const arcSpan = Math.min(50 + skill.name.length * 1.5, 70);
-                  // Determine if we're in the bottom half of the circle (90° to 270°)
-                  const angle = skill.midAngle;
-                  const isBottomHalf = angle > 90 && angle < 270;
-                  let startAngle, endAngle, arcStart, arcEnd;
-                  if (isBottomHalf) {
-                    startAngle = angle + arcSpan / 2;
-                    endAngle = angle - arcSpan / 2;
-                    arcStart = startAngle;
-                    arcEnd = endAngle;
-                  } else {
-                    startAngle = angle - arcSpan / 2;
-                    endAngle = angle + arcSpan / 2;
-                    arcStart = startAngle;
-                    arcEnd = endAngle;
-                  }
-                  // Convert to radians
-                  const startRad = ((arcStart - 90) * Math.PI) / 180;
-                  const endRad = ((arcEnd - 90) * Math.PI) / 180;
-                  // SVG arc path for the label
-                  const x1 = centerX + labelRadius * Math.cos(startRad);
-                  const y1 = centerY + labelRadius * Math.sin(startRad);
-                  const x2 = centerX + labelRadius * Math.cos(endRad);
-                  const y2 = centerY + labelRadius * Math.sin(endRad);
-                  const largeArcFlag = arcSpan > 180 ? 1 : 0;
-                  const sweepFlag = isBottomHalf ? 0 : 1;
-                  const arcPath = `M ${x1} ${y1} A ${labelRadius} ${labelRadius} 0 ${largeArcFlag} ${sweepFlag} ${x2} ${y2}`;
-                  // For second line, use a slightly larger radius and smaller line spacing
-                  const labelRadius2 = labelRadius + 16;
-                  const x1b = centerX + labelRadius2 * Math.cos(startRad);
-                  const y1b = centerY + labelRadius2 * Math.sin(startRad);
-                  const x2b = centerX + labelRadius2 * Math.cos(endRad);
-                  const y2b = centerY + labelRadius2 * Math.sin(endRad);
-                  const arcPath2 = `M ${x1b} ${y1b} A ${labelRadius2} ${labelRadius2} 0 ${largeArcFlag} ${sweepFlag} ${x2b} ${y2b}`;
-                  // Unique path ids
-                  const safeId = `skill-label-arc-hovered`;
-                  const pathId = `${safeId}`;
-                  const pathId2 = `${safeId}-2`;
-                  // Color logic
+
+                  // Adjust angle to account for rotation
+                  const adjustedAngle =
+                    (skill.midAngle + skillGroupRotation) % 360;
+
+                  // Add hover offset for the selected skill
+                  const popDistance = 18;
+                  const midAngleRad = ((skill.midAngle - 90) * Math.PI) / 180;
+                  const hoverOffsetX = Math.cos(midAngleRad) * popDistance;
+                  const hoverOffsetY = Math.sin(midAngleRad) * popDistance;
+
+                  // Position the label further out from the segment
+                  const labelDistance = skillsRadius + 40;
+
+                  // Calculate the position for the center of our label
+                  const labelRad = ((skill.midAngle - 90) * Math.PI) / 180;
+                  const labelX =
+                    centerX + labelDistance * Math.cos(labelRad) + hoverOffsetX;
+                  const labelY =
+                    centerY + labelDistance * Math.sin(labelRad) + hoverOffsetY;
+
+                  // Determine if the label should be flipped based on adjusted angle
+                  const isBottomHalf =
+                    adjustedAngle > 90 && adjustedAngle < 270;
+
+                  // Calculate dimensions for our grid
+                  const gridHeight = 60;
+                  const gridWidth = 130;
+                  const chipHeight = 22;
+                  const nameHeight = 16;
+                  const spacing = 15;
+
+                  // Dynamically size the chip based on the level text length
+                  const levelText = skill.level;
+                  const chipWidth = Math.max(60, levelText.length * 8 + 10); // 8px per char + 10px padding
+
+                  // Translate and rotate to position the grid
+                  let transform = `translate(${labelX},${labelY})`;
+
+                  // Rotate to keep text horizontal
+                  const rotationAngle = isBottomHalf
+                    ? skill.midAngle + 180
+                    : skill.midAngle;
+                  transform += ` rotate(${rotationAngle})`;
+
+                  // Translate to center the grid
+                  transform += ` translate(${-gridWidth / 2},${
+                    -gridHeight / 2
+                  })`;
+
+                  // Colors
                   const textColor = isBottomHalf
                     ? darkenColor(skill.color, 0.9)
                     : darkenColor(skill.color, 0.8);
+                  const chipBgColor = skill.color;
+                  const chipTextColor = "#fff";
+
                   return (
-                    <g key={`skill-label-group-hovered`}>
-                      <defs>
-                        <path id={pathId} d={arcPath} fill="none" />
-                        <path id={pathId2} d={arcPath2} fill="none" />
-                      </defs>
-                      {/* Subtle background arc for readability */}
-                      <path
-                        d={arcPath}
-                        stroke="rgba(255,255,255,0.4)"
-                        strokeWidth="3"
-                        fill="none"
-                        strokeLinecap="round"
-                        style={{ filter: "blur(1px)" }}
-                      />
-                      {/* First line of text */}
+                    <g transform={transform} style={{ pointerEvents: "none" }}>
+                      {/* Skill name - top row */}
                       <text
+                        x={gridWidth / 2}
+                        y={nameHeight}
+                        fontSize="14px"
+                        fontWeight="500"
                         fill={textColor}
-                        fontWeight={500}
-                        fontSize="0.85rem"
-                        fontFamily="'Inter', 'SF Pro Text', 'Helvetica Neue', sans-serif"
-                        letterSpacing="0.01em"
+                        textAnchor="middle"
+                        dominantBaseline="middle"
                         style={{
-                          textShadow: "0 1px 1px rgba(0,0,0,0.05)",
-                          WebkitFontSmoothing: "antialiased",
-                          MozOsxFontSmoothing: "grayscale",
-                          pointerEvents: "none",
+                          fontFamily:
+                            "'Inter', 'SF Pro Text', 'Helvetica Neue', sans-serif",
+                          letterSpacing: "0.01em",
+                          textShadow: "0 1px 1px rgba(0,0,0,0.1)",
                         }}
                       >
-                        <textPath
-                          href={`#${pathId}`}
-                          startOffset="50%"
-                          textAnchor="middle"
-                          alignmentBaseline="middle"
-                        >
-                          {line1}
-                        </textPath>
+                        {skill.name}
                       </text>
-                      {/* Second line of text if needed */}
-                      {line2 && (
-                        <text
-                          fill={textColor}
-                          fontWeight={500}
-                          fontSize="0.85rem"
-                          fontFamily="'Inter', 'SF Pro Text', 'Helvetica Neue', sans-serif"
-                          letterSpacing="0.01em"
-                          style={{
-                            textShadow: "0 1px 1px rgba(0,0,0,0.05)",
-                            WebkitFontSmoothing: "antialiased",
-                            MozOsxFontSmoothing: "grayscale",
-                            pointerEvents: "none",
-                          }}
-                        >
-                          <textPath
-                            href={`#${pathId2}`}
-                            startOffset="50%"
-                            textAnchor="middle"
-                            alignmentBaseline="middle"
-                          >
-                            {line2}
-                          </textPath>
-                        </text>
-                      )}
+
+                      {/* Level chip - bottom row with wider width */}
+                      <rect
+                        x={(gridWidth - chipWidth) / 2}
+                        y={nameHeight + spacing}
+                        width={chipWidth}
+                        height={chipHeight}
+                        rx="11"
+                        ry="11"
+                        fill={chipBgColor}
+                        opacity="0.9"
+                      />
+
+                      <text
+                        x={gridWidth / 2}
+                        y={nameHeight + spacing + chipHeight / 2}
+                        fontSize="12px"
+                        fontWeight="600"
+                        fill={chipTextColor}
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        style={{
+                          fontFamily:
+                            "'Inter', 'SF Pro Text', 'Helvetica Neue', sans-serif",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {skill.level}
+                      </text>
                     </g>
                   );
                 })()}
@@ -956,9 +910,9 @@ const Skills = () => {
                 })}
             </g>
           </svg>
-        </div>
-      </section>
-    </>
+        </motion.div>
+      </div>
+    </section>
   );
 };
 

@@ -32,30 +32,24 @@ export function Portfolio() {
   return (
     <section
       id="portfolio"
-      className="relative min-h-screen section-padding overflow-hidden flex flex-col items-center justify-center"
+      className="min-h-screen flex flex-col justify-center section-padding relative overflow-hidden"
     >
-      <div className="cyber-grid" />
-      {/* Main Content - centered */}
-      <div
-        className="container-padding mx-auto relative z-10 flex items-center justify-center w-full max-w-7xl"
-        style={{ gridRow: 2 }}
-      >
+      <div className="cyber-grid pointer-events-none w-full h-full left-0 top-0 absolute overflow-x-hidden" />
+
+      <div className="container-padding w-full max-w-full mx-auto flex-1 flex items-center justify-center relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="w-full"
+          className="w-full max-w-7xl"
         >
-          {/* Removed My Portfolio header */}
           <div className="w-full flex justify-center items-center">
             <div className="grid grid-cols-1 sm:grid-cols-2 grid-rows-2 auto-rows-fr gap-x-8 gap-y-10 w-full max-w-3xl max-h-[80vh]">
               {projects.slice(0, 4).map((project, index) => (
                 <motion.div
                   key={project.title}
                   initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   className="cyber-card group h-full flex flex-col"
                 >

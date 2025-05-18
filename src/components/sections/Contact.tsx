@@ -38,13 +38,12 @@ export function Contact() {
   return (
     <section
       id="contact"
-      className="min-h-screen section-padding relative overflow-hidden flex items-center justify-center scroll-mt-24"
+      className="min-h-screen flex flex-col justify-center section-padding relative overflow-hidden"
     >
-      <div className="w-full max-w-6xl mx-auto z-10 px-8 sm:px-12 pl-64 flex items-center justify-center">
+      <div className="container-padding w-full max-w-full mx-auto flex-1 flex items-center justify-center relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="max-w-4xl mx-auto w-full"
         >
