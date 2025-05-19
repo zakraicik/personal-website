@@ -9,39 +9,7 @@ import {
 } from "react-icons/hi";
 import { useState } from "react";
 import { useScrollLock } from "@/hooks/useScrollLock";
-
-const experiences = [
-  {
-    title: "Senior Developer",
-    company: "Tech Company",
-    period: "2021 - Present",
-    description: [
-      "Led development of key features for enterprise applications",
-      "Mentored junior developers and conducted code reviews",
-      "Implemented CI/CD pipelines and improved deployment processes",
-    ],
-  },
-  {
-    title: "Full Stack Developer",
-    company: "Startup Inc",
-    period: "2019 - 2021",
-    description: [
-      "Developed and maintained multiple web applications",
-      "Collaborated with design team to implement UI/UX improvements",
-      "Optimized application performance and reduced load times",
-    ],
-  },
-  {
-    title: "Junior Developer",
-    company: "Digital Agency",
-    period: "2018 - 2019",
-    description: [
-      "Built responsive websites for various clients",
-      "Worked with modern frontend frameworks and libraries",
-      "Participated in agile development processes",
-    ],
-  },
-];
+import { experiences } from "@/data/experience";
 
 export function Experience() {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
@@ -61,7 +29,7 @@ export function Experience() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="w-full max-w-6xl"
+          className="w-full max-w-4xl"
         >
           <div className="space-y-8">
             {experiences.map((exp, index) => {
@@ -72,7 +40,7 @@ export function Experience() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="bg-cyber-dark/30 backdrop-blur-sm rounded-lg border border-cyber-blue/20 shadow-lg relative"
+                  className="bg-cyber-dark/5 backdrop-blur-md rounded-lg border border-cyber-dark/10 shadow-lg relative"
                 >
                   <button
                     onClick={() => toggleExperience(index)}
@@ -80,26 +48,33 @@ export function Experience() {
                     aria-expanded={isExpanded}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="p-2 bg-cyber-dark/50 rounded-lg border border-cyber-blue/20 group-hover:border-cyber-purple/40 transition-colors duration-300">
-                        <HiBriefcase className="text-cyber-blue group-hover:text-cyber-purple transition-colors duration-300 text-xl" />
-                      </div>
-                      <div className="text-left">
-                        <h3 className="text-xl font-semibold text-cyber-light">
-                          {exp.title}
-                        </h3>
-                        <p className="text-cyber-light/80">{exp.company}</p>
+                      <div className="flex flex-col w-full">
+                        <div className="flex items-center gap-3 flex-wrap">
+                          <h3
+                            className="text-[18px] font-medium text-cyber-blue tracking-[.01em]"
+                            style={{
+                              fontFamily:
+                                "Inter, 'SF Pro Text', 'Helvetica Neue', sans-serif",
+                              textShadow: "0 1px 1px rgba(0,0,0,0.1)",
+                            }}
+                          >
+                            {exp.title}
+                          </h3>
+                        </div>
+                        <p className="text-white/80 text-[14px] max-w-xl line-clamp-2 mt-1">
+                          {exp.company}
+                        </p>
                       </div>
                     </div>
-
                     <div className="flex items-center gap-3">
-                      <span className="text-sm text-cyber-blue">
+                      <span className="text-white/80 text-[14px]">
                         {exp.period}
                       </span>
                       <motion.div
                         animate={{ rotate: isExpanded ? 180 : 0 }}
                         transition={{ duration: 0.3 }}
                       >
-                        <HiChevronDown className="text-cyber-blue" />
+                        <HiChevronDown className="text-cyber-blue text-xl" />
                       </motion.div>
                     </div>
                   </button>
@@ -120,7 +95,7 @@ export function Experience() {
                               initial={{ opacity: 0, x: -10 }}
                               animate={{ opacity: 1, x: 0 }}
                               transition={{ duration: 0.3, delay: i * 0.1 }}
-                              className="flex items-center gap-2 text-cyber-light/80"
+                              className="flex items-center gap-2 text-white/80 text-[14px]"
                             >
                               <span className="w-1.5 h-1.5 bg-cyber-blue rounded-full" />
                               {item}

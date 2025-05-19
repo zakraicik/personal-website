@@ -16,12 +16,14 @@ export function About() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            I'm a passionate developer with a strong foundation in web
-            development and a keen eye for creating{" "}
+            I'm a{" "}
+            <span className="gradient-text font-semibold">data scientist</span>{" "}
+            with a passion for learning and practical experience across the{" "}
             <span className="gradient-text font-semibold">
-              intuitive, dynamic user experiences
-            </span>
-            .
+              full development stack
+            </span>{" "}
+            — yes, I actually built this website with Next.js (and only broke it
+            twice!).
           </motion.p>
           <motion.p
             className="text-base sm:text-lg md:text-xl text-white font-medium"
@@ -29,15 +31,29 @@ export function About() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            With expertise in{" "}
+            My approach:{" "}
             <span className="gradient-text font-semibold">
-              modern web technologies
+              understand the problem deeply
             </span>
-            , I specialize in building{" "}
+            , then build{" "}
             <span className="gradient-text font-semibold">
-              responsive, performant applications
+              data-driven solutions
             </span>{" "}
-            that solve real-world problems.
+            that address real-world challenges effectively. I excel at{" "}
+            <span className="gradient-text font-semibold">leading teams</span>{" "}
+            and inspiring others to develop thorough problem understanding
+            before selecting the optimal tools and architecture.
+          </motion.p>
+          <motion.p
+            className="text-base sm:text-lg md:text-xl text-white font-medium"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+          >
+            When I'm not coding, I'm enjoying life in{" "}
+            <span className="gradient-text font-semibold">San Diego</span> with
+            my wife and dog, secretly indulging in my guilty pleasure —{" "}
+            <span className="gradient-text font-semibold">Cheetos</span>.
           </motion.p>
         </motion.div>
       </div>

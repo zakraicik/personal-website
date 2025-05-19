@@ -43,12 +43,14 @@ export function Education() {
       id="education"
       className="min-h-screen flex flex-col justify-center section-padding relative overflow-hidden"
     >
+      <div className="cyber-grid pointer-events-none w-full h-full left-0 top-0 absolute overflow-x-hidden" />
+
       <div className="container-padding w-full max-w-full mx-auto flex-1 flex items-center justify-center relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="w-full max-w-6xl"
+          className="w-full max-w-4xl"
         >
           <div className="space-y-8">
             {education.map((edu, index) => {
@@ -59,7 +61,7 @@ export function Education() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="bg-cyber-dark/30 backdrop-blur-sm rounded-lg border border-cyber-blue/20 shadow-lg relative"
+                  className="bg-cyber-dark/5 backdrop-blur-md rounded-lg border border-cyber-dark/10 shadow-lg relative"
                 >
                   <button
                     onClick={() => toggleEducation(index)}
@@ -67,26 +69,35 @@ export function Education() {
                     aria-expanded={isExpanded}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="p-2 bg-cyber-dark/50 rounded-lg border border-cyber-blue/20 group-hover:border-cyber-purple/40 transition-colors duration-300">
-                        <HiAcademicCap className="text-cyber-blue group-hover:text-cyber-purple transition-colors duration-300 text-xl" />
-                      </div>
-                      <div className="text-left">
-                        <h3 className="text-xl font-semibold text-cyber-light">
-                          {edu.degree}
-                        </h3>
-                        <p className="text-cyber-light/80">{edu.school}</p>
+                      <div className="flex flex-col w-full">
+                        <div className="flex items-center gap-3 flex-wrap">
+                          <h3
+                            className="text-[18px] font-medium text-cyber-blue tracking-[.01em]"
+                            style={{
+                              fontFamily:
+                                "Inter, 'SF Pro Text', 'Helvetica Neue', sans-serif",
+                              textShadow: "0 1px 1px rgba(0,0,0,0.1)",
+                            }}
+                          >
+                            {edu.degree}
+                          </h3>
+                        </div>
+                        <p className="text-white/80 text-[14px] max-w-xl line-clamp-2 mt-1">
+                          {edu.school}
+                        </p>
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          <span className="px-1.5 py-0.5 bg-transparent text-white/70 rounded-lg text-xs border border-white/30 border-[1px]">
+                            {edu.period}
+                          </span>
+                        </div>
                       </div>
                     </div>
-
                     <div className="flex items-center gap-3">
-                      <span className="text-sm text-cyber-blue">
-                        {edu.period}
-                      </span>
                       <motion.div
                         animate={{ rotate: isExpanded ? 180 : 0 }}
                         transition={{ duration: 0.3 }}
                       >
-                        <HiChevronDown className="text-cyber-blue" />
+                        <HiChevronDown className="text-cyber-blue text-xl" />
                       </motion.div>
                     </div>
                   </button>
@@ -107,7 +118,7 @@ export function Education() {
                               initial={{ opacity: 0, x: -10 }}
                               animate={{ opacity: 1, x: 0 }}
                               transition={{ duration: 0.3, delay: i * 0.1 }}
-                              className="flex items-center gap-2 text-cyber-light/80"
+                              className="flex items-center gap-2 text-white/80 text-[14px]"
                             >
                               <span className="w-1.5 h-1.5 bg-cyber-blue rounded-full" />
                               {item}

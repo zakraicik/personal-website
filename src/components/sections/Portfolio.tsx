@@ -1,33 +1,18 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { HiExternalLink, HiArrowUp, HiArrowDown } from "react-icons/hi";
+import { motion, AnimatePresence } from "framer-motion";
+import { HiExternalLink, HiChevronDown } from "react-icons/hi";
 import { useScrollLock } from "@/hooks/useScrollLock";
-import { AnimatedDotsBackground } from "../AnimatedDotsBackground";
-
-const projects = [
-  {
-    title: "Project 1",
-    description: "A brief description of the project and its key features.",
-    tags: ["React", "Node.js", "MongoDB"],
-    link: "#",
-  },
-  {
-    title: "Project 2",
-    description: "A brief description of the project and its key features.",
-    tags: ["Next.js", "TypeScript", "Tailwind"],
-    link: "#",
-  },
-  {
-    title: "Project 3",
-    description: "A brief description of the project and its key features.",
-    tags: ["React", "GraphQL", "AWS"],
-    link: "#",
-  },
-];
+import { useState } from "react";
+import { projects } from "@/data/projects";
 
 export function Portfolio() {
+  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const { scrollToSection } = useScrollLock();
+
+  const toggleProject = (index: number) => {
+    setExpandedIndex((current) => (current === index ? null : index));
+  };
 
   return (
     <section
@@ -41,47 +26,102 @@ export function Portfolio() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="w-full max-w-7xl"
+          className="w-full max-w-4xl"
         >
-          <div className="w-full flex justify-center items-center">
-            <div className="grid grid-cols-1 sm:grid-cols-2 grid-rows-2 auto-rows-fr gap-x-8 gap-y-10 w-full max-w-3xl max-h-[80vh]">
-              {projects.slice(0, 4).map((project, index) => (
+          <div className="space-y-8">
+            {projects.map((project, index) => {
+              const isExpanded = expandedIndex === index;
+              return (
                 <motion.div
                   key={project.title}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="cyber-card group h-full flex flex-col"
+                  className="bg-cyber-dark/5 backdrop-blur-md rounded-lg border border-cyber-dark/10 shadow-lg relative"
                 >
-                  <div className="p-6 flex flex-col flex-1">
-                    <h3 className="text-xl font-semibold mb-2 text-cyber-light">
-                      {project.title}
-                    </h3>
-                    <p className="text-cyber-light/80 mb-4 flex-1">
-                      {project.description}
-                    </p>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {project.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-2 py-1 bg-cyber-dark/50 text-cyber-blue rounded-full text-xs border border-cyber-blue/20"
-                        >
-                          {tag}
-                        </span>
-                      ))}
+                  <button
+                    onClick={() => toggleProject(index)}
+                    className="w-full p-6 flex items-center justify-between focus:outline-none hover:bg-gradient-to-r hover:from-cyber-purple/10 hover:via-cyber-blue/10 hover:to-cyber-pink/10 transition-all duration-300 cursor-pointer group"
+                    aria-expanded={isExpanded}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="flex flex-col w-full">
+                        <div className="flex items-center gap-3 flex-wrap">
+                          <h3
+                            className="text-[18px] font-medium text-cyber-blue tracking-[.01em]"
+                            style={{
+                              fontFamily:
+                                "Inter, 'SF Pro Text', 'Helvetica Neue', sans-serif",
+                              textShadow: "0 1px 1px rgba(0,0,0,0.1)",
+                            }}
+                          >
+                            {project.title}
+                          </h3>
+                        </div>
+                        <p className="text-white/80 text-[14px] max-w-xl line-clamp-2 mt-1">
+                          {project.description}
+                        </p>
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          {project.tags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="px-1.5 py-0.5 bg-transparent text-white/70 rounded-lg text-xs border border-white/30 border-[1px]"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                    <a
-                      href={project.link}
-                      className="inline-flex items-center text-cyber-blue hover:text-cyber-pink transition-colors"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      View Project <HiExternalLink className="ml-1" />
-                    </a>
-                  </div>
+                    <div className="flex items-center gap-3">
+                      <a
+                        href={project.link}
+                        className="inline-flex items-center text-white hover:text-cyber-pink transition-colors text-base"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        View <HiExternalLink className="ml-1" />
+                      </a>
+                      <motion.div
+                        animate={{ rotate: isExpanded ? 180 : 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <HiChevronDown className="text-cyber-blue text-xl" />
+                      </motion.div>
+                    </div>
+                  </button>
+
+                  <AnimatePresence initial={false}>
+                    {isExpanded && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="overflow-hidden border-t border-cyber-blue/20"
+                      >
+                        <ul className="p-6 space-y-3">
+                          {project.details &&
+                            project.details.map((item, i) => (
+                              <motion.li
+                                key={i}
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.3, delay: i * 0.1 }}
+                                className="flex items-center gap-2 text-white/80 text-[14px]"
+                              >
+                                <span className="w-1.5 h-1.5 bg-cyber-blue rounded-full" />
+                                {item}
+                              </motion.li>
+                            ))}
+                        </ul>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </motion.div>
-              ))}
-            </div>
+              );
+            })}
           </div>
         </motion.div>
       </div>
