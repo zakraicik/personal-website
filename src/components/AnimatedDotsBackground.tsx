@@ -4,58 +4,51 @@ import React from "react";
 import { motion } from "framer-motion";
 import { useMemo, useEffect, useState } from "react";
 
-// Generate grid-based positions with some randomization
-const generateGridPositions = (count: number) => {
-  const gridSize = Math.ceil(Math.sqrt(count));
+// Generate fewer, more spaced out bubble positions
+const generateBubblePositions = (count: number) => {
   const positions = [];
 
-  // Color palette from cyber theme
+  // Only use your theme colors
   const colors = [
-    "cyber-purple", // #8A2BE2
-    "cyber-blue", // #00BFFF
-    "cyber-pink", // #FF1493
+    "#8A2BE2", // cyber-purple
+    "#00BFFF", // cyber-blue
+    "#FF1493", // cyber-pink
   ];
 
   for (let i = 0; i < count; i++) {
-    // Create a more ordered grid pattern
-    const gridX = i % gridSize;
-    const gridY = Math.floor(i / gridSize);
+    // More random, spread out positioning
+    const x = Math.random() * 100;
+    const y = Math.random() * 100;
 
-    // Add slight randomization to grid positions
-    const randomOffsetX = Math.sin(i * 0.5) * 5;
-    const randomOffsetY = Math.cos(i * 0.5) * 5;
+    // Vary sizes but keep them bubblier
+    const baseSize = 20 + Math.random() * 40; // 20-60px
 
-    const x = gridX * (100 / (gridSize - 1)) + randomOffsetX;
-    const y = gridY * (100 / (gridSize - 1)) + randomOffsetY;
+    // Gentle, slow movement
+    const moveX = (Math.random() - 0.5) * 30; // -15 to 15
+    const moveY = (Math.random() - 0.5) * 30; // -15 to 15
 
-    // All shapes are circles with varying sizes
-    const size = i % 7 === 0 ? "large" : i % 3 === 0 ? "medium" : "small";
+    // Much slower, more relaxed animations
+    const moveDuration = 15 + Math.random() * 20; // 15-35 seconds
+    const scaleDuration = 8 + Math.random() * 12; // 8-20 seconds
 
-    // Generate random movement distance and direction
-    const moveX = Math.sin(i) * 15 - 7.5; // Between -7.5 and 7.5
-    const moveY = Math.cos(i) * 15 - 7.5; // Between -7.5 and 7.5
+    // Random color from your theme
+    const color = colors[Math.floor(Math.random() * colors.length)];
 
-    // Random scale amount for pulsing
-    const scaleAmount = 0.9 + Math.random() * 0.8; // Between 0.9 and 1.7
-
-    // Randomize animation durations
-    const moveDuration = 7 + Math.random() * 8; // Between 7 and 15 seconds
-    const scaleDuration = 4 + Math.random() * 4; // Between 4 and 8 seconds
-
-    // Assign colors from the cyber theme
-    const colorIndex = i % colors.length;
-    const color = colors[colorIndex];
+    // Make some bubbles larger and more prominent
+    const isLarge = Math.random() > 0.7;
+    const size = isLarge ? baseSize * 1.5 : baseSize;
 
     positions.push({
-      x: Math.max(0, Math.min(100, x)),
-      y: Math.max(0, Math.min(100, y)),
+      x,
+      y,
+      size,
       moveX,
       moveY,
-      size,
-      scaleAmount,
       moveDuration,
       scaleDuration,
       color,
+      isLarge,
+      delay: Math.random() * 10, // Stagger animations
     });
   }
 
@@ -63,233 +56,179 @@ const generateGridPositions = (count: number) => {
 };
 
 export function AnimatedDotsBackground({
-  count = 150,
-  defaultColor = "cyber-blue",
+  count = 25, // Much fewer elements
   className = "",
 }: {
   count?: number;
-  defaultColor?: string;
   className?: string;
 }) {
-  // All hooks at the top
   const [isMounted, setIsMounted] = useState(false);
-  const [windowWidth, setWindowWidth] = useState(0);
+  const [activeSection, setActiveSection] = useState("home");
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
+  // Listen for section changes
   useEffect(() => {
-    if (!isMounted) return;
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace("#", "") || "home";
+      setActiveSection(hash);
     };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [isMounted]);
+
+    // Set initial section
+    handleHashChange();
+
+    // Listen for hash changes
+    window.addEventListener("hashchange", handleHashChange);
+
+    // Also listen for popstate for better browser support
+    window.addEventListener("popstate", handleHashChange);
+
+    return () => {
+      window.removeEventListener("hashchange", handleHashChange);
+      window.removeEventListener("popstate", handleHashChange);
+    };
+  }, []);
 
   const positions = useMemo(
-    () => (isMounted ? generateGridPositions(count) : []),
+    () => (isMounted ? generateBubblePositions(count) : []),
     [count, isMounted]
   );
 
-  // Move the connections useMemo before the early return
-  const connections = useMemo(() => {
-    if (!isMounted || !windowWidth) return [];
+  // Calculate darkness based on section progression
+  const sectionOrder = [
+    "home",
+    "about",
+    "portfolio",
+    "timeline",
+    "skills",
+    "contact",
+  ];
+  const sectionIndex = sectionOrder.indexOf(activeSection);
+  const progressRatio = sectionIndex / (sectionOrder.length - 1); // 0 to 1
 
-    const lines = [];
-    const proximityThreshold = 20;
+  // Calculate overlay darkness (0 = no overlay, 0.7 = very dark)
+  const overlayOpacity = progressRatio * 0.6; // Max 60% darkness
 
-    for (let i = 0; i < positions.length; i++) {
-      for (let j = i + 1; j < positions.length; j++) {
-        const dx = Math.abs(positions[i].x - positions[j].x);
-        const dy = Math.abs(positions[i].y - positions[j].y);
-        const distance = Math.sqrt(dx * dx + dy * dy);
-
-        if (distance < proximityThreshold) {
-          lines.push({
-            x1: positions[i].x,
-            y1: positions[i].y,
-            x2: positions[j].x,
-            y2: positions[j].y,
-            opacity: (1 - distance / proximityThreshold) * 0.25,
-            color1: positions[i].color,
-            color2: positions[j].color,
-          });
-        }
-      }
-    }
-
-    return lines;
-  }, [positions, windowWidth, isMounted]);
-
-  // Early return after all hooks
   if (!isMounted) return null;
-
-  const getShapeSize = (size: string) => {
-    switch (size) {
-      case "large":
-        return "w-4 h-4";
-      case "medium":
-        return "w-3 h-3";
-      default:
-        return "w-2 h-2";
-    }
-  };
-
-  const getShapeClass = (size: string, color: string) => {
-    const sizeClass = getShapeSize(size);
-    // All shapes are rounded (circles)
-    return `absolute ${sizeClass} rounded-full bg-${color}/20`;
-  };
-
-  // Helper to get color value from theme color name
-  const getColorValue = (colorName: string) => {
-    switch (colorName) {
-      case "cyber-purple":
-        return "#8A2BE2";
-      case "cyber-blue":
-        return "#00BFFF";
-      case "cyber-pink":
-        return "#FF1493";
-      default:
-        return "#00BFFF";
-    }
-  };
-
-  // Create SVG gradient definitions outside of the map
-  const gradientDefs = connections.map((line, i) => {
-    const gradientId = `line-gradient-${i}`;
-    const color1 = getColorValue(line.color1);
-    const color2 = getColorValue(line.color2);
-
-    return (
-      <linearGradient
-        key={gradientId}
-        id={gradientId}
-        x1="0%"
-        y1="0%"
-        x2="100%"
-        y2="0%"
-      >
-        <stop offset="0%" stopColor={color1} stopOpacity={line.opacity} />
-        <stop offset="100%" stopColor={color2} stopOpacity={line.opacity} />
-      </linearGradient>
-    );
-  });
 
   return (
     <div
       className={`fixed inset-0 z-0 overflow-hidden pointer-events-none ${className}`}
     >
-      {/* Connection lines */}
-      <svg className="absolute inset-0 w-full h-full">
-        <defs>{gradientDefs}</defs>
+      {/* Progressive darkness overlay */}
+      <motion.div
+        className="absolute inset-0 bg-black"
+        animate={{ opacity: overlayOpacity }}
+        transition={{ duration: 0.7, ease: "easeOut" }}
+        style={{ zIndex: 1 }}
+      />
 
-        {connections.map((line, i) => (
-          <motion.path
-            key={`line-${i}`}
-            d={`M ${line.x1}% ${line.y1}% L ${line.x2}% ${line.y2}%`}
-            stroke={`url(#line-gradient-${i})`}
-            strokeWidth="0.75"
-            initial={{ strokeOpacity: 0 }}
-            animate={{ strokeOpacity: 1 }}
-            transition={{
-              duration: 1.5,
-              repeat: Infinity,
-              repeatType: "reverse",
-            }}
-          />
-        ))}
-      </svg>
-
-      {/* Animated dots */}
-      {positions.map((pos, i) => (
-        <div
-          key={i}
-          style={{ position: "absolute", left: `${pos.x}%`, top: `${pos.y}%` }}
-        >
-          {/* Motion div for movement animation */}
-          <motion.div
-            animate={{
-              x: [0, pos.moveX, pos.moveX / 2, -pos.moveX, -pos.moveX / 3, 0],
-              y: [0, pos.moveY, -pos.moveY / 2, -pos.moveY, pos.moveY / 3, 0],
-            }}
-            transition={{
-              duration: pos.moveDuration,
-              repeat: Infinity,
-              repeatType: "reverse",
-              ease: "easeInOut",
-              delay: i * 0.02,
-            }}
-          >
-            {/* Nested motion div for scale/opacity animation */}
-            <motion.div
-              className={getShapeClass(pos.size, pos.color)}
-              animate={{
-                scale: [1, pos.scaleAmount, 1.05, pos.scaleAmount * 0.9, 1],
-                opacity: [0.15, 0.25, 0.15],
-              }}
-              transition={{
-                duration: pos.scaleDuration,
-                repeat: Infinity,
-                repeatType: "reverse",
-                ease: "easeInOut",
-                delay: i * 0.01,
-              }}
-            />
-          </motion.div>
-        </div>
+      {/* Main floating bubbles */}
+      {positions.map((bubble, i) => (
+        <motion.div
+          key={`bubble-${i}`}
+          style={{
+            position: "absolute",
+            left: `${bubble.x}%`,
+            top: `${bubble.y}%`,
+            width: `${bubble.size}px`,
+            height: `${bubble.size}px`,
+            borderRadius: "50%",
+            backgroundColor: bubble.color,
+            opacity: bubble.isLarge ? 0.02 : 0.015, // Much more subtle
+            filter: "blur(1px)", // More blur for softer edges
+            zIndex: 2, // Above the darkness overlay
+          }}
+          animate={{
+            x: [0, bubble.moveX, -bubble.moveX, 0],
+            y: [0, bubble.moveY, -bubble.moveY, 0],
+            scale: [1, 1.1, 0.9, 1],
+            opacity: bubble.isLarge
+              ? [0.02, 0.03, 0.015, 0.02]
+              : [0.015, 0.025, 0.01, 0.015],
+          }}
+          transition={{
+            duration: bubble.moveDuration,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: bubble.delay,
+          }}
+        />
       ))}
 
-      {/* Large floating dots in the background */}
-      {Array.from({ length: 20 }).map((_, i) => {
-        const colors = ["cyber-purple", "cyber-blue", "cyber-pink"];
+      {/* Extra subtle micro bubbles */}
+      {Array.from({ length: 15 }).map((_, i) => {
+        const colors = ["#8A2BE2", "#00BFFF", "#FF1493"];
         const color = colors[i % colors.length];
-        const colorValue = getColorValue(color);
-
-        // Completely random positioning across screen
-        const randomX = Math.random() * 100;
-        const randomY = Math.random() * 100;
-
-        // Randomized movement amounts in both directions
-        const moveXAmount = 20 + Math.random() * 40;
-        const moveYAmount = 20 + Math.random() * 40;
-
-        // Randomized sizes
-        const size = 25 + Math.floor(Math.random() * 35);
-
-        // Randomized animation durations
-        const animationDuration = 15 + Math.random() * 20;
-
-        // Random delay to stagger animations
-        const delay = Math.random() * 5;
+        const size = 5 + Math.random() * 8; // Even smaller micro bubbles
+        const x = Math.random() * 100;
+        const y = Math.random() * 100;
+        const duration = 20 + Math.random() * 30;
 
         return (
           <motion.div
-            key={`large-dot-${i}`}
-            className="absolute rounded-full"
+            key={`micro-${i}`}
             style={{
-              left: `${randomX}%`,
-              top: `${randomY}%`,
+              position: "absolute",
+              left: `${x}%`,
+              top: `${y}%`,
               width: `${size}px`,
               height: `${size}px`,
-              backgroundColor: colorValue,
-              opacity: 0.05,
+              borderRadius: "50%",
+              backgroundColor: color,
+              opacity: 0.01,
+              filter: "blur(1.5px)",
+              zIndex: 2, // Above the darkness overlay
             }}
             animate={{
-              x: [0, moveXAmount, -moveXAmount / 2, -moveXAmount, 0],
-              y: [0, -moveYAmount / 2, moveYAmount, -moveYAmount / 2, 0],
-              scale: [1, 1.15, 0.9, 1.05, 1],
-              opacity: [0.03, 0.06, 0.04, 0.05, 0.03],
+              x: [0, Math.random() * 20 - 10],
+              y: [0, Math.random() * 20 - 10],
+              scale: [1, 1.2, 1],
+              opacity: [0.01, 0.02, 0.01],
             }}
             transition={{
-              duration: animationDuration,
+              duration: duration,
               repeat: Infinity,
-              repeatType: "reverse",
               ease: "easeInOut",
-              delay: delay,
+              delay: i * 2,
+            }}
+          />
+        );
+      })}
+
+      {/* Occasional larger, very subtle accent bubbles */}
+      {Array.from({ length: 3 }).map((_, i) => {
+        const colors = ["#8A2BE2", "#00BFFF", "#FF1493"];
+        const color = colors[i % colors.length];
+        const size = 60 + Math.random() * 40; // Larger bubbles
+        const x = Math.random() * 100;
+        const y = Math.random() * 100;
+
+        return (
+          <motion.div
+            key={`accent-${i}`}
+            style={{
+              position: "absolute",
+              left: `${x}%`,
+              top: `${y}%`,
+              width: `${size}px`,
+              height: `${size}px`,
+              borderRadius: "50%",
+              background: `radial-gradient(circle, ${color}08 0%, ${color}02 70%, transparent 100%)`,
+              filter: "blur(3px)",
+              zIndex: 2, // Above the darkness overlay
+            }}
+            animate={{
+              scale: [1, 1.05, 1],
+              opacity: [0.1, 0.15, 0.1],
+            }}
+            transition={{
+              duration: 25 + Math.random() * 15,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: i * 5,
             }}
           />
         );

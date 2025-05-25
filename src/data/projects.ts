@@ -11,13 +11,14 @@ export interface Project {
 export const projects: Project[] = [
   {
     title: "Launchpad",
-    description: "A brief description of the project and its key features.",
-    tags: ["React", "Node.js", "MongoDB"],
-    link: "#",
+    description:
+      "Decentralized crowd funding platform that uses yield generation to offset platform fees.",
+    tags: ["Solidity", "Next.js", "Alchemy", "Firebase"],
+    link: "https://www.getlaunched.xyz",
     details: [
-      "Implemented a real-time chat feature using WebSockets",
-      "Deployed on AWS with CI/CD integration",
-      "Responsive design for mobile and desktop",
+      "Designed and implemented a full-stack DeFi crowdfunding platform on Base with a system of smart contracts that manage campaign funding, yield generation via Aave integration, and token-based transactions.",
+      "Engineered a comprehensive event system and data pipeline using Google Cloud Functions and Alchemy webhooks to index on-chain activity, enabling real-time analytics for campaign performance metrics.",
+      "Built an intuitive Next.js front-end with Firebase wallet authentication that visualizes campaign progress and yield statistics, deployed with reliable performance on Base network.",
     ],
   },
   {

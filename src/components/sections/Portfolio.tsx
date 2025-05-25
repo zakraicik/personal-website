@@ -2,13 +2,20 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { HiExternalLink, HiChevronDown } from "react-icons/hi";
-import { useScrollLock } from "@/hooks/useScrollLock";
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
+import { useSectionVisibility } from "@/context/SectionVisibilityContext";
 import { projects } from "@/data/projects";
 
 export function Portfolio() {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
-  const { scrollToSection } = useScrollLock();
+  const { visibleSection } = useSectionVisibility();
+
+  useEffect(() => {
+    if (visibleSection === "portfolio") {
+      setExpandedIndex(null);
+    }
+  }, [visibleSection]);
 
   const toggleProject = (index: number) => {
     setExpandedIndex((current) => (current === index ? null : index));
@@ -21,7 +28,7 @@ export function Portfolio() {
     >
       <div className="cyber-grid pointer-events-none w-full h-full left-0 top-0 absolute overflow-x-hidden" />
 
-      <div className="container-padding w-full max-w-full mx-auto flex-1 flex items-center justify-center relative z-10">
+      <div className="px-4 md:px-6 w-full max-w-full mx-auto flex-1 flex items-center justify-center relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -58,7 +65,7 @@ export function Portfolio() {
                             {project.title}
                           </h3>
                         </div>
-                        <p className="text-white/80 text-[14px] max-w-xl line-clamp-2 mt-1">
+                        <p className="text-white/80 text-[14px] mt-1">
                           {project.description}
                         </p>
                         <div className="flex flex-wrap gap-2 mt-3">
@@ -101,21 +108,24 @@ export function Portfolio() {
                         transition={{ duration: 0.3 }}
                         className="overflow-hidden border-t border-cyber-blue/20"
                       >
-                        <ul className="p-6 space-y-3">
+                        <div className="p-6 space-y-2">
                           {project.details &&
                             project.details.map((item, i) => (
-                              <motion.li
-                                key={i}
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.3, delay: i * 0.1 }}
-                                className="flex items-center gap-2 text-white/80 text-[14px]"
-                              >
-                                <span className="w-1.5 h-1.5 bg-cyber-blue rounded-full" />
-                                {item}
-                              </motion.li>
+                              <div key={i}>
+                                <motion.div
+                                  initial={{ opacity: 0, x: -10 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ duration: 0.3, delay: i * 0.1 }}
+                                  className="text-white/80 text-[14px] py-1"
+                                >
+                                  {item}
+                                </motion.div>
+                                {i < project.details.length - 1 && (
+                                  <div className="w-full h-px bg-white/20 my-1" />
+                                )}
+                              </div>
                             ))}
-                        </ul>
+                        </div>
                       </motion.div>
                     )}
                   </AnimatePresence>

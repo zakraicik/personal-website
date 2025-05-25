@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Navigation } from "@/components/Navigation";
 import { AnimatedDotsBackground } from "@/components/AnimatedDotsBackground";
-import { ScrollToHashOnResize } from "@/components/ScrollToHashOnResize";
 import { SectionVisibilityProvider } from "@/context/SectionVisibilityContext";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -26,7 +25,7 @@ export default function RootLayout({
       <body className={`${inter.className} antialiased overflow-x-hidden`}>
         <SectionVisibilityProvider>
           <AnimatedDotsBackground />
-          <ScrollToHashOnResize />
+
           <Navigation />
           <div className="grid grid-cols-1 md:grid-cols-[140px_1fr] min-h-screen">
             <aside className="hidden md:block"></aside>

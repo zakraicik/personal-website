@@ -8,7 +8,7 @@ export function About() {
       id="about"
       className="min-h-screen flex flex-col justify-center section-padding relative overflow-hidden"
     >
-      <div className="container-padding w-full max-w-full mx-auto flex-1 flex items-center justify-center relative z-10">
+      <div className="px-4 md:px-6 w-full max-w-full mx-auto flex-1 flex items-center justify-center relative z-10">
         <motion.div className="w-full max-w-4xl space-y-8 text-center sm:text-left">
           <motion.p
             className="text-base sm:text-lg md:text-xl text-white font-medium"

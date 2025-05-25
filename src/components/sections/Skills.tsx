@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { skills } from "@/data/skills";
 import { motion } from "framer-motion";
+import { useSectionVisibility } from "@/context/SectionVisibilityContext";
 
 interface Category {
   name: string;
@@ -171,6 +172,16 @@ const Skills = () => {
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const debouncedHoveredCategory = useDebounce(hoveredCategory, 50);
   const [hoveredSkill, setHoveredSkill] = useState<string | null>(null);
+
+  const { visibleSection } = useSectionVisibility();
+
+  useEffect(() => {
+    if (visibleSection === "skills") {
+      setSelectedCategory(null);
+      setHoveredSkill(null);
+      setHoveredCategory(null);
+    }
+  }, [visibleSection]);
 
   // Calculate rotation for centering selected category's visible arc on horizontal axis
   let skillGroupRotation = 0;
@@ -375,7 +386,7 @@ const Skills = () => {
       id="skills"
       className="min-h-screen flex flex-col justify-center section-padding relative overflow-hidden"
     >
-      <div className="container-padding w-full max-w-full mx-auto flex-1 flex items-center justify-center relative z-10">
+      <div className="px-4 md:px-6 w-full max-w-full mx-auto flex-1 flex items-center justify-center relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

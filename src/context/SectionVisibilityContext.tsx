@@ -16,7 +16,7 @@ export function SectionVisibilityProvider({
 }: {
   children: ReactNode;
 }) {
-  const [visibleSection, setVisibleSection] = useState<string | null>(null);
+  const [visibleSection, setVisibleSection] = useState<string | null>("home");
 
   return (
     <SectionVisibilityContext.Provider

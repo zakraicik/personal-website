@@ -1,10 +1,15 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useScrollLock } from "@/hooks/useScrollLock";
+import { useSectionVisibility } from "@/context/SectionVisibilityContext";
 
 export function Hero() {
-  const { scrollToSection } = useScrollLock();
+  const { setVisibleSection } = useSectionVisibility();
+
+  const handleNavigate = (section: string) => {
+    setVisibleSection(section);
+    window.history.replaceState(null, "", `#${section}`);
+  };
 
   return (
     <section
@@ -13,7 +18,7 @@ export function Hero() {
     >
       <div className="cyber-grid pointer-events-none w-full h-full left-0 top-0 absolute overflow-x-hidden" />
 
-      <div className="container-padding w-full max-w-full sm:max-w-2xl mx-auto flex-1 flex items-center justify-center text-center relative z-10">
+      <div className="px-4 md:px-6 w-full max-w-full mx-auto flex-1 flex items-center justify-center text-center relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -46,18 +51,18 @@ export function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.6 }}
           >
-            <a
-              href="#portfolio"
-              className="glass-button w-auto text-center bg-transparent border border-cyber-purple/50 hover:border-cyber-purple hover:bg-transparent text-sm sm:text-lg py-2 px-4"
+            <button
+              onClick={() => handleNavigate("portfolio")}
+              className="glass-button w-auto text-center bg-transparent border border-cyber-purple/50 hover:border-cyber-purple hover:bg-transparent text-sm sm:text-lg py-2 px-4 cursor-pointer transition-all duration-300"
             >
               <span>View My Work</span>
-            </a>
-            <a
-              href="#contact"
-              className="glass-button w-auto text-center bg-transparent border border-cyber-purple/50 hover:border-cyber-purple hover:bg-transparent text-sm sm:text-lg py-2 px-4"
+            </button>
+            <button
+              onClick={() => handleNavigate("contact")}
+              className="glass-button w-auto text-center bg-transparent border border-cyber-purple/50 hover:border-cyber-purple hover:bg-transparent text-sm sm:text-lg py-2 px-4 cursor-pointer transition-all duration-300"
             >
               <span>Contact Me</span>
-            </a>
+            </button>
           </motion.div>
         </motion.div>
       </div>
