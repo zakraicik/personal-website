@@ -14,6 +14,28 @@ import { useState, useRef, useEffect } from "react";
 import { timelineData } from "@/data/timelineData";
 import { useSectionVisibility } from "@/context/SectionVisibilityContext";
 
+// Custom hook for window size
+function useWindowSize() {
+  const [windowSize, setWindowSize] = useState({
+    width: typeof window !== "undefined" ? window.innerWidth : 0,
+  });
+
+  useEffect(() => {
+    function handleResize() {
+      setWindowSize({
+        width: window.innerWidth,
+      });
+    }
+
+    window.addEventListener("resize", handleResize);
+    handleResize(); // Call once to set initial size
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return windowSize;
+}
+
 // Sort by end year (most recent first)
 const sortedTimelineData = [...timelineData].sort((a, b) => {
   const parseYear = (year: string) =>
@@ -27,6 +49,8 @@ export function TimelineSection() {
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const timelineContainerRef = useRef<HTMLDivElement | null>(null);
   const sectionRef = useRef<HTMLDivElement | null>(null);
+  const expandedItemRef = useRef<HTMLDivElement | null>(null);
+  const { width } = useWindowSize();
 
   useEffect(() => {
     if (visibleSection === "timeline") {
@@ -38,51 +62,74 @@ export function TimelineSection() {
     setExpandedIndex((current) => (current === index ? null : index));
   };
 
-  useEffect(() => {
-    if (expandedIndex !== null && itemRefs.current[expandedIndex]) {
-      // For expansion, wait a bit for the animation to start, then center
-      const timer = setTimeout(() => {
-        const expandedItem = itemRefs.current[expandedIndex];
-        if (expandedItem) {
-          const itemRect = expandedItem.getBoundingClientRect();
-          const viewportCenter = window.innerHeight / 2;
-          const itemCenter = itemRect.top + itemRect.height / 2;
-          const scrollOffset = itemCenter - viewportCenter;
+  // Function to center an expanded card
+  const centerExpandedCard = (index: number) => {
+    const expandedItem = expandedItemRef.current;
+    if (!expandedItem) return;
 
-          window.scrollBy({
-            top: scrollOffset,
-            behavior: "smooth",
-          });
-        }
-      }, 200); // Reduced delay to start centering sooner
+    const itemRect = expandedItem.getBoundingClientRect();
+    const viewportCenter = window.innerHeight / 2;
+    const itemCenter = itemRect.top + itemRect.height / 2;
+    const scrollOffset = itemCenter - viewportCenter;
 
-      return () => clearTimeout(timer);
-    } else if (expandedIndex === null) {
-      // Handle collapse - center the timeline
-      const timer = setTimeout(() => {
-        if (sectionRef.current) {
-          const section = sectionRef.current;
-          const sectionRect = section.getBoundingClientRect();
-          const viewportHeight = window.innerHeight;
+    window.scrollBy({
+      top: scrollOffset,
+      behavior: "smooth",
+    });
+  };
 
-          // Calculate where the section should be positioned to be centered
-          const idealSectionTop = (viewportHeight - sectionRect.height) / 2;
-          const currentSectionTop = sectionRect.top;
-          const scrollAdjustment = currentSectionTop - idealSectionTop;
+  // Function to re-center the timeline section
+  const centerTimelineSection = () => {
+    if (!sectionRef.current) return;
 
-          // Only adjust if significantly off-center
-          if (Math.abs(scrollAdjustment) > 15) {
-            window.scrollBy({
-              top: scrollAdjustment,
-              behavior: "smooth",
-            });
-          }
-        }
-      }, 200); // Faster response for collapse too
+    const section = sectionRef.current;
+    const sectionRect = section.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
 
-      return () => clearTimeout(timer);
+    // Calculate the ideal position to center the section
+    const sectionCenter = sectionRect.top + sectionRect.height / 2;
+    const viewportCenter = viewportHeight / 2;
+    const scrollAdjustment = sectionCenter - viewportCenter;
+
+    // Only adjust if significantly off-center (threshold to avoid unnecessary micro-adjustments)
+    if (Math.abs(scrollAdjustment) > 20) {
+      window.scrollBy({
+        top: scrollAdjustment,
+        behavior: "smooth",
+      });
     }
-  }, [expandedIndex]);
+  };
+
+  useEffect(() => {
+    // Only apply centering on small screens
+    if (width >= 768) {
+      // Desktop behavior - original centering logic
+      if (expandedIndex !== null) {
+        const timer = setTimeout(() => {
+          centerExpandedCard(expandedIndex);
+        }, 450);
+        return () => clearTimeout(timer);
+      } else {
+        const timer = setTimeout(() => {
+          centerTimelineSection();
+        }, 450);
+        return () => clearTimeout(timer);
+      }
+    } else {
+      // Mobile behavior - same as portfolio
+      if (expandedIndex !== null) {
+        const timer = setTimeout(() => {
+          centerExpandedCard(expandedIndex);
+        }, 350);
+        return () => clearTimeout(timer);
+      } else {
+        const timer = setTimeout(() => {
+          centerTimelineSection();
+        }, 350);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [expandedIndex, width]);
 
   return (
     <section
@@ -93,16 +140,124 @@ export function TimelineSection() {
       <div className="cyber-grid pointer-events-none w-full h-full left-0 top-0 absolute overflow-x-hidden" />
 
       <div className="px-4 md:px-6 w-full max-w-full mx-auto flex-1 flex items-center justify-center relative z-10">
+        {/* Mobile expanded card overlay */}
+        {width < 768 && expandedIndex !== null && (
+          <motion.div
+            ref={expandedItemRef}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 flex items-center justify-center z-50 p-4"
+            style={{ backgroundColor: "rgba(0, 0, 0, 0.3)" }}
+          >
+            <motion.div
+              className="bg-cyber-dark/5 backdrop-blur-md rounded-lg border border-cyber-dark/10 p-4 cursor-pointer hover:bg-gradient-to-r hover:from-cyber-purple/10 hover:via-cyber-blue/10 hover:to-cyber-pink/10 transition-all duration-300 w-[90vw] max-w-[400px]"
+              onClick={() => toggleExpand(expandedIndex)}
+              aria-expanded={true}
+            >
+              {/* Mobile layout - optimized font sizes */}
+              <div className="flex items-start justify-between mb-2">
+                <Typography
+                  variant="subtitle1"
+                  component="span"
+                  className={`${
+                    sortedTimelineData[expandedIndex].type === "education"
+                      ? "text-cyber-blue"
+                      : "text-cyber-purple"
+                  } font-medium font-bold !text-[14px] flex-1 leading-tight`}
+                >
+                  {sortedTimelineData[expandedIndex].title}
+                </Typography>
+                <Typography className="text-white/70 !text-[11px] ml-3 flex-shrink-0">
+                  {`${sortedTimelineData[expandedIndex].startYear} - ${sortedTimelineData[expandedIndex].endYear}`}
+                </Typography>
+              </div>
+              <Typography className="text-white/80 !text-[11px] mb-3 leading-relaxed">
+                {sortedTimelineData[expandedIndex].subtitle}
+              </Typography>
+
+              <motion.div
+                key={`expand-${expandedIndex}`}
+                initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                animate={{
+                  opacity: 1,
+                  height: "auto",
+                  marginTop: 12,
+                }}
+                exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                transition={{
+                  duration: 0.4,
+                  ease: [0.25, 0.46, 0.45, 0.94],
+                }}
+                style={{ overflow: "hidden" }}
+              >
+                {Array.isArray(
+                  sortedTimelineData[expandedIndex].description
+                ) ? (
+                  <div className="mt-3 space-y-2">
+                    {sortedTimelineData[expandedIndex].description.map(
+                      (desc, i) => (
+                        <div key={i}>
+                          <div className="text-white/70 text-[11px] py-1 text-left">
+                            {desc}
+                          </div>
+                          {i <
+                            sortedTimelineData[expandedIndex].description
+                              .length -
+                              1 && (
+                            <div className="w-full h-px bg-white/20 my-1" />
+                          )}
+                        </div>
+                      )
+                    )}
+                  </div>
+                ) : (
+                  <Typography className="mt-3 text-white/70 !text-[11px] w-full text-left">
+                    {sortedTimelineData[expandedIndex].description}
+                  </Typography>
+                )}
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        )}
+
         <motion.div
           ref={timelineContainerRef}
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          animate={{
+            opacity: width < 768 && expandedIndex !== null ? 0 : 1,
+            y: 0,
+          }}
           transition={{ duration: 0.5 }}
           className="w-full max-w-4xl"
         >
-          <Timeline position="alternate" className="p-4">
+          <Timeline
+            position={width < 768 ? "right" : "alternate"}
+            className="p-4"
+            sx={{
+              ...(width < 768 && {
+                "& .MuiTimelineItem-root": {
+                  "&:before": {
+                    flex: 0,
+                    padding: 0,
+                  },
+                },
+                "& .MuiTimelineItem-root .MuiTimelineItem-content": {
+                  paddingLeft: "32px",
+                },
+                "& .MuiTimelineSeparator-root": {
+                  marginRight: "16px",
+                },
+                paddingLeft: "0px",
+                display: "flex",
+                justifyContent: "center",
+              }),
+            }}
+          >
             {sortedTimelineData.map((item, index) => {
               const isExpanded = expandedIndex === index;
+
               return (
                 <TimelineItem key={index}>
                   <TimelineSeparator>
@@ -121,7 +276,12 @@ export function TimelineSection() {
                     </TimelineDot>
                     <TimelineConnector className="bg-cyber-blue/30" />
                   </TimelineSeparator>
-                  <TimelineContent sx={{ py: "12px", px: 2 }}>
+                  <TimelineContent
+                    sx={{
+                      py: "12px",
+                      px: width < 768 ? 0 : 2,
+                    }}
+                  >
                     <motion.div
                       ref={(el) => {
                         itemRefs.current[index] = el;
@@ -129,35 +289,65 @@ export function TimelineSection() {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.5, delay: index * 0.1 }}
-                      className="bg-cyber-dark/5 backdrop-blur-md rounded-lg border border-cyber-dark/10 p-4 cursor-pointer hover:bg-gradient-to-r hover:from-cyber-purple/10 hover:via-cyber-blue/10 hover:to-cyber-pink/10 transition-all duration-300"
+                      className={`bg-cyber-dark/5 backdrop-blur-md rounded-lg border border-cyber-dark/10 p-4 cursor-pointer hover:bg-gradient-to-r hover:from-cyber-purple/10 hover:via-cyber-blue/10 hover:to-cyber-pink/10 transition-all duration-300 ${
+                        width < 768 ? "w-[calc(100vw-120px)] max-w-[300px]" : ""
+                      }`}
                       onClick={() => toggleExpand(index)}
                       aria-expanded={isExpanded}
                     >
-                      <div
-                        className={`flex items-center justify-between ${
-                          index % 2 === 0 ? "" : "flex-row-reverse"
-                        }`}
-                      >
-                        <Typography
-                          variant="subtitle1"
-                          component="span"
-                          className={`${
-                            item.type === "education"
-                              ? "text-cyber-blue"
-                              : "text-cyber-purple"
-                          } font-medium font-bold !text-[16px]`}
-                        >
-                          {item.title}
-                        </Typography>
-                        <Typography className="text-white/70 !text-[12px] ml-4 mr-4">
-                          {`${item.startYear} - ${item.endYear}`}
-                        </Typography>
-                      </div>
-                      <Typography className="text-white/80 !text-[12px] mt-1 mb-3">
-                        {item.subtitle}
-                      </Typography>
+                      {width < 768 ? (
+                        // Mobile layout - optimized font sizes
+                        <>
+                          <div className="flex items-start justify-between mb-2">
+                            <Typography
+                              variant="subtitle1"
+                              component="span"
+                              className={`${
+                                item.type === "education"
+                                  ? "text-cyber-blue"
+                                  : "text-cyber-purple"
+                              } font-medium font-bold !text-[14px] flex-1 leading-tight`}
+                            >
+                              {item.title}
+                            </Typography>
+                            <Typography className="text-white/70 !text-[11px] ml-3 flex-shrink-0">
+                              {`${item.startYear} - ${item.endYear}`}
+                            </Typography>
+                          </div>
+                          <Typography className="text-white/80 !text-[11px] mb-3 leading-relaxed">
+                            {item.subtitle}
+                          </Typography>
+                        </>
+                      ) : (
+                        // Desktop layout - original
+                        <>
+                          <div
+                            className={`flex items-center justify-between ${
+                              index % 2 === 0 ? "" : "flex-row-reverse"
+                            }`}
+                          >
+                            <Typography
+                              variant="subtitle1"
+                              component="span"
+                              className={`${
+                                item.type === "education"
+                                  ? "text-cyber-blue"
+                                  : "text-cyber-purple"
+                              } font-medium font-bold !text-[16px]`}
+                            >
+                              {item.title}
+                            </Typography>
+                            <Typography className="text-white/70 !text-[12px] ml-4 mr-4">
+                              {`${item.startYear} - ${item.endYear}`}
+                            </Typography>
+                          </div>
+                          <Typography className="text-white/80 !text-[12px] mt-1 mb-3">
+                            {item.subtitle}
+                          </Typography>
+                        </>
+                      )}
                       <AnimatePresence mode="wait">
-                        {isExpanded && (
+                        {isExpanded && width >= 768 && (
                           <motion.div
                             key={`expand-${index}`}
                             initial={{ opacity: 0, height: 0, marginTop: 0 }}
@@ -169,7 +359,7 @@ export function TimelineSection() {
                             exit={{ opacity: 0, height: 0, marginTop: 0 }}
                             transition={{
                               duration: 0.4,
-                              ease: [0.25, 0.46, 0.45, 0.94], // More natural easing
+                              ease: [0.25, 0.46, 0.45, 0.94],
                             }}
                             style={{ overflow: "hidden" }}
                           >
@@ -178,10 +368,10 @@ export function TimelineSection() {
                                 {item.description.map((desc, i) => (
                                   <div key={i}>
                                     <div
-                                      className={`text-white/70 text-[12px] py-1 ${
+                                      className={`text-white/70 py-1 ${
                                         index % 2 === 0
-                                          ? "text-left"
-                                          : "text-right"
+                                          ? "text-[12px] text-left"
+                                          : "text-[12px] text-right"
                                       }`}
                                     >
                                       {desc}
@@ -194,8 +384,10 @@ export function TimelineSection() {
                               </div>
                             ) : (
                               <Typography
-                                className={`mt-3 text-white/70 !text-[12px] w-full ${
-                                  index % 2 === 0 ? "text-left" : "text-right"
+                                className={`mt-3 text-white/70 w-full ${
+                                  index % 2 === 0
+                                    ? "!text-[12px] text-left"
+                                    : "!text-[12px] text-right"
                                 }`}
                               >
                                 {item.description}

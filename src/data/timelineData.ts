@@ -60,16 +60,4 @@ export const timelineData: TimelineItem[] = [
       "Established metrics visualization dashboards that improved product development decisions",
     ],
   },
-  {
-    type: "work",
-    title: "Junior Developer",
-    subtitle: "Digital Agency",
-    startYear: "2018",
-    endYear: "2019",
-    description: [
-      "Built responsive websites for various clients",
-      "Worked with modern frontend frameworks and libraries",
-      "Participated in agile development processes",
-    ],
-  },
 ];

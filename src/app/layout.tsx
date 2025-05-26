@@ -10,6 +10,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Zak Raicik",
   description: "A resume website for Zak Raicik",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
