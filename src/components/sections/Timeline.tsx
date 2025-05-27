@@ -36,6 +36,17 @@ function useWindowSize() {
   return windowSize;
 }
 
+// Custom hook to prevent hydration mismatch
+function useIsClient() {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  return isClient;
+}
+
 // Sort by end year (most recent first)
 const sortedTimelineData = [...timelineData].sort((a, b) => {
   const parseYear = (year: string) =>
@@ -51,6 +62,10 @@ export function TimelineSection() {
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const expandedItemRef = useRef<HTMLDivElement | null>(null);
   const { width } = useWindowSize();
+  const isClient = useIsClient();
+
+  // Don't render responsive content until client-side hydration is complete
+  const isMobile = isClient && width < 768;
 
   useEffect(() => {
     if (visibleSection === "timeline") {
@@ -101,7 +116,9 @@ export function TimelineSection() {
   };
 
   useEffect(() => {
-    // Only apply centering on small screens
+    // Only apply centering effects after client hydration
+    if (!isClient) return;
+
     if (width >= 768) {
       // Desktop behavior - original centering logic
       if (expandedIndex !== null) {
@@ -116,7 +133,7 @@ export function TimelineSection() {
         return () => clearTimeout(timer);
       }
     } else {
-      // Mobile behavior - same as portfolio
+      // Mobile behavior
       if (expandedIndex !== null) {
         const timer = setTimeout(() => {
           centerExpandedCard(expandedIndex);
@@ -129,7 +146,30 @@ export function TimelineSection() {
         return () => clearTimeout(timer);
       }
     }
-  }, [expandedIndex, width]);
+  }, [expandedIndex, width, isClient]);
+
+  // Show loading state during hydration to prevent layout shift
+  if (!isClient) {
+    return (
+      <section
+        ref={sectionRef}
+        id="timeline"
+        className="min-h-screen flex flex-col justify-center section-padding relative overflow-hidden"
+      >
+        <div className="cyber-grid pointer-events-none w-full h-full left-0 top-0 absolute overflow-x-hidden" />
+        <div className="px-4 md:px-6 w-full max-w-full mx-auto flex-1 flex items-center justify-center relative z-10">
+          <div className="w-full max-w-4xl">
+            {/* Loading placeholder */}
+            <div className="animate-pulse">
+              <div className="h-8 bg-gray-300/20 rounded mb-4"></div>
+              <div className="h-6 bg-gray-300/20 rounded mb-4"></div>
+              <div className="h-6 bg-gray-300/20 rounded mb-4"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section
@@ -141,7 +181,7 @@ export function TimelineSection() {
 
       <div className="px-4 md:px-6 w-full max-w-full mx-auto flex-1 flex items-center justify-center relative z-10">
         {/* Mobile expanded card overlay */}
-        {width < 768 && expandedIndex !== null && (
+        {isMobile && expandedIndex !== null && (
           <motion.div
             ref={expandedItemRef}
             initial={{ opacity: 0, scale: 0.9 }}
@@ -226,17 +266,17 @@ export function TimelineSection() {
           ref={timelineContainerRef}
           initial={{ opacity: 0, y: 20 }}
           animate={{
-            opacity: width < 768 && expandedIndex !== null ? 0 : 1,
+            opacity: isMobile && expandedIndex !== null ? 0 : 1,
             y: 0,
           }}
           transition={{ duration: 0.5 }}
           className="w-full max-w-4xl"
         >
           <Timeline
-            position={width < 768 ? "right" : "alternate"}
+            position={isMobile ? "right" : "alternate"}
             className="p-4"
             sx={{
-              ...(width < 768 && {
+              ...(isMobile && {
                 "& .MuiTimelineItem-root": {
                   "&:before": {
                     flex: 0,
@@ -279,7 +319,7 @@ export function TimelineSection() {
                   <TimelineContent
                     sx={{
                       py: "12px",
-                      px: width < 768 ? 0 : 2,
+                      px: isMobile ? 0 : 2,
                     }}
                   >
                     <motion.div
@@ -290,12 +330,12 @@ export function TimelineSection() {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.5, delay: index * 0.1 }}
                       className={`bg-cyber-dark/5 backdrop-blur-md rounded-lg border border-cyber-dark/10 p-4 cursor-pointer hover:bg-gradient-to-r hover:from-cyber-purple/10 hover:via-cyber-blue/10 hover:to-cyber-pink/10 transition-all duration-300 ${
-                        width < 768 ? "w-[calc(100vw-120px)] max-w-[300px]" : ""
+                        isMobile ? "w-[calc(100vw-120px)] max-w-[300px]" : ""
                       }`}
                       onClick={() => toggleExpand(index)}
                       aria-expanded={isExpanded}
                     >
-                      {width < 768 ? (
+                      {isMobile ? (
                         // Mobile layout - optimized font sizes
                         <>
                           <div className="flex items-start justify-between mb-2">
@@ -347,7 +387,7 @@ export function TimelineSection() {
                         </>
                       )}
                       <AnimatePresence mode="wait">
-                        {isExpanded && width >= 768 && (
+                        {isExpanded && !isMobile && (
                           <motion.div
                             key={`expand-${index}`}
                             initial={{ opacity: 0, height: 0, marginTop: 0 }}

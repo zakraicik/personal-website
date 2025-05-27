@@ -54,6 +54,28 @@ const BRAND_GRADIENT = [
   "#FF1493", // pink
 ];
 
+// Custom hook for window size
+function useWindowSize() {
+  const [windowSize, setWindowSize] = useState({
+    width: typeof window !== "undefined" ? window.innerWidth : 0,
+  });
+
+  useEffect(() => {
+    function handleResize() {
+      setWindowSize({
+        width: window.innerWidth,
+      });
+    }
+
+    window.addEventListener("resize", handleResize);
+    handleResize(); // Call once to set initial size
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return windowSize;
+}
+
 // Helper: interpolate between two hex colors
 function interpolateColor(
   color1: string,
@@ -135,6 +157,17 @@ function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue;
 }
 
+// Custom hook to prevent hydration mismatch
+function useIsClient() {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  return isClient;
+}
+
 // Add transition styles for SVG groups
 const transitionStyles = `
 .skills-animated {
@@ -146,18 +179,25 @@ const transitionStyles = `
 `;
 
 const Skills = () => {
-  // Chart dimensions
-  const width = 500;
-  const height = 500;
-  const centerX = width / 2;
-  const centerY = height / 2;
+  const { width } = useWindowSize();
+  const isMobile = width < 768;
+  const isClient = useIsClient();
+  const width_chart = isMobile ? Math.min(width * 0.9, 400) : 500;
+  const height_chart = width_chart;
+  const centerX = width_chart / 2;
+  const centerY = height_chart / 2;
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  // Zoom effect: if a category is selected, make the inner ring much larger
-  const ZOOMED_SKILLS_RADIUS = 180;
-  const ZOOMED_OUTER_RADIUS = 250;
-  const skillsRadius = selectedCategory ? ZOOMED_SKILLS_RADIUS : 100;
-  const outerRadius = selectedCategory ? ZOOMED_OUTER_RADIUS : 150;
+  // Responsive radii
+  const baseSkillsRadius = isMobile ? 70 : 100;
+  const baseOuterRadius = isMobile ? 120 : 150;
+  const ZOOMED_SKILLS_RADIUS = isMobile ? 140 : 180;
+  const ZOOMED_OUTER_RADIUS = isMobile ? 200 : 250;
+
+  const skillsRadius = selectedCategory
+    ? ZOOMED_SKILLS_RADIUS
+    : baseSkillsRadius;
+  const outerRadius = selectedCategory ? ZOOMED_OUTER_RADIUS : baseOuterRadius;
   const innerRadius = skillsRadius;
 
   // Gap between categories in degrees
@@ -189,7 +229,6 @@ const Skills = () => {
     const selectedCat = categories.find((cat) => cat.name === selectedCategory);
     if (selectedCat) {
       const catMidAngle = (selectedCat.startAngle + selectedCat.endAngle) / 2;
-
       skillGroupRotation = 0 - catMidAngle;
     }
   }
@@ -352,7 +391,35 @@ const Skills = () => {
     });
 
     setSkillSegments(skillData);
-  }, [selectedCategory]);
+  }, [
+    selectedCategory,
+    width_chart,
+    height_chart,
+    centerX,
+    centerY,
+    skillsRadius,
+    outerRadius,
+    innerRadius,
+  ]);
+
+  // Show loading state during hydration to prevent layout shift
+  if (!isClient) {
+    return (
+      <section
+        id="skills"
+        className="min-h-screen flex flex-col justify-center section-padding relative overflow-hidden"
+      >
+        <div className="px-4 md:px-6 w-full max-w-full mx-auto flex-1 flex items-center justify-center relative z-10">
+          <div className="w-full max-w-6xl flex justify-center">
+            {/* Loading placeholder */}
+            <div className="animate-pulse">
+              <div className="w-80 h-80 bg-gray-300/20 rounded-full"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   // Create arc path for categories
   const createCategoryPath = (cat: Category) => {
@@ -391,14 +458,17 @@ const Skills = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="w-full max-w-6xl"
+          className="w-full max-w-6xl flex justify-center"
         >
           <style>{transitionStyles}</style>
           <svg
-            width={width}
-            height={height}
-            viewBox={`-50 -50 ${width + 100} ${height + 100}`}
-            className="mx-auto"
+            width={width_chart}
+            height={height_chart}
+            viewBox={`0 0 ${width_chart} ${height_chart}`}
+            className={`${
+              isMobile ? "w-full h-auto max-w-sm mx-auto" : "mx-auto"
+            }`}
+            style={{ maxWidth: "100%", height: "auto", display: "block" }}
           >
             {/* Filters */}
             <defs>
@@ -488,7 +558,7 @@ const Skills = () => {
                   const darkColor = darkenColor(cat.color, 0.7);
                   // Pop out effect on hover
                   const isHovered = debouncedHoveredCategory === cat.name;
-                  const popDistance = isHovered ? 18 : 0;
+                  const popDistance = isHovered ? (isMobile ? 12 : 18) : 0;
                   const midAngleRad =
                     (((cat.startAngle + cat.endAngle) / 2 - 90) * Math.PI) /
                     180;
@@ -538,7 +608,7 @@ const Skills = () => {
                 if (!cat) return null;
 
                 // Position the label further out from the segment
-                const labelDistance = outerRadius + 60;
+                const labelDistance = outerRadius + (isMobile ? 40 : 60);
 
                 // Calculate the position for the center of our label
                 const labelRad = ((cat.midAngle - 90) * Math.PI) / 180;
@@ -548,18 +618,21 @@ const Skills = () => {
                 // Determine if the label should be flipped based on angle
                 const isBottomHalf = cat.midAngle > 90 && cat.midAngle < 270;
 
-                // Calculate dimensions for our grid
-                const gridHeight = 60;
-                const gridWidth = 130;
-                const chipHeight = 22;
-                const nameHeight = 16;
-                const spacing = 15;
+                // Calculate dimensions for our grid - responsive
+                const gridHeight = isMobile ? 50 : 60;
+                const gridWidth = isMobile ? 110 : 130;
+                const chipHeight = isMobile ? 18 : 22;
+                const nameHeight = isMobile ? 14 : 16;
+                const spacing = isMobile ? 12 : 15;
 
                 // Dynamically size the chip based on the level text length
-                const levelText = skillSegments.filter(
-                  (s) => s.category === cat.name
-                )[0].level;
-                const chipWidth = Math.max(60, levelText.length * 8 + 10); // 8px per char + 10px padding
+                const levelText =
+                  skillSegments.filter((s) => s.category === cat.name)[0]
+                    ?.level || "";
+                const chipWidth = Math.max(
+                  isMobile ? 50 : 60,
+                  levelText.length * (isMobile ? 6 : 8) + (isMobile ? 8 : 10)
+                );
 
                 // Translate and rotate to position the grid
                 let transform = `translate(${labelX},${labelY})`;
@@ -590,7 +663,7 @@ const Skills = () => {
                     <text
                       x={gridWidth / 2}
                       y={nameHeight}
-                      fontSize="14px"
+                      fontSize={isMobile ? "12px" : "14px"}
                       fontWeight="500"
                       fill={textColor}
                       textAnchor="middle"
@@ -611,8 +684,8 @@ const Skills = () => {
                       y={nameHeight + spacing}
                       width={chipWidth}
                       height={chipHeight}
-                      rx="11"
-                      ry="11"
+                      rx={chipHeight / 2}
+                      ry={chipHeight / 2}
                       fill={chipBgColor}
                       opacity="0.9"
                     />
@@ -620,7 +693,7 @@ const Skills = () => {
                     <text
                       x={gridWidth / 2}
                       y={nameHeight + spacing + chipHeight / 2}
-                      fontSize="12px"
+                      fontSize={isMobile ? "10px" : "12px"}
                       fontWeight="600"
                       fill={chipTextColor}
                       textAnchor="middle"
@@ -678,7 +751,7 @@ const Skills = () => {
                     );
                   }
                   if (isPop && popCategory) {
-                    const popDistance = 18;
+                    const popDistance = isMobile ? 12 : 18;
                     // For selected state, use the skill's midAngle; for unselected, use category's midAngle
                     const angle = selectedCategory
                       ? skill.midAngle
@@ -709,13 +782,6 @@ const Skills = () => {
                       fillColor = interpolateColor(light, dark, t) + "ee"; // subtle alpha
                     }
                   }
-                  // Add hover handlers for inner segments
-                  const handleEnter = () => {
-                    if (!selectedCategory) setHoveredCategory(skill.category);
-                  };
-                  const handleLeave = () => {
-                    if (!selectedCategory) setHoveredCategory(null);
-                  };
                   return (
                     <path
                       key={`skill-${i}`}
@@ -766,13 +832,13 @@ const Skills = () => {
                     (skill.midAngle + skillGroupRotation) % 360;
 
                   // Add hover offset for the selected skill
-                  const popDistance = 18;
+                  const popDistance = isMobile ? 12 : 18;
                   const midAngleRad = ((skill.midAngle - 90) * Math.PI) / 180;
                   const hoverOffsetX = Math.cos(midAngleRad) * popDistance;
                   const hoverOffsetY = Math.sin(midAngleRad) * popDistance;
 
                   // Position the label further out from the segment
-                  const labelDistance = skillsRadius + 40;
+                  const labelDistance = skillsRadius + (isMobile ? 30 : 40);
 
                   // Calculate the position for the center of our label
                   const labelRad = ((skill.midAngle - 90) * Math.PI) / 180;
@@ -785,16 +851,19 @@ const Skills = () => {
                   const isBottomHalf =
                     adjustedAngle > 90 && adjustedAngle < 270;
 
-                  // Calculate dimensions for our grid
-                  const gridHeight = 60;
-                  const gridWidth = 130;
-                  const chipHeight = 22;
-                  const nameHeight = 16;
-                  const spacing = 15;
+                  // Calculate dimensions for our grid - responsive
+                  const gridHeight = isMobile ? 50 : 60;
+                  const gridWidth = isMobile ? 110 : 130;
+                  const chipHeight = isMobile ? 18 : 22;
+                  const nameHeight = isMobile ? 14 : 16;
+                  const spacing = isMobile ? 12 : 15;
 
                   // Dynamically size the chip based on the level text length
                   const levelText = skill.level;
-                  const chipWidth = Math.max(60, levelText.length * 8 + 10); // 8px per char + 10px padding
+                  const chipWidth = Math.max(
+                    isMobile ? 50 : 60,
+                    levelText.length * (isMobile ? 6 : 8) + (isMobile ? 8 : 10)
+                  );
 
                   // Translate and rotate to position the grid
                   let transform = `translate(${labelX},${labelY})`;
@@ -823,7 +892,7 @@ const Skills = () => {
                       <text
                         x={gridWidth / 2}
                         y={nameHeight}
-                        fontSize="14px"
+                        fontSize={isMobile ? "12px" : "14px"}
                         fontWeight="500"
                         fill={textColor}
                         textAnchor="middle"
@@ -844,8 +913,8 @@ const Skills = () => {
                         y={nameHeight + spacing}
                         width={chipWidth}
                         height={chipHeight}
-                        rx="11"
-                        ry="11"
+                        rx={chipHeight / 2}
+                        ry={chipHeight / 2}
                         fill={chipBgColor}
                         opacity="0.9"
                       />
@@ -853,7 +922,7 @@ const Skills = () => {
                       <text
                         x={gridWidth / 2}
                         y={nameHeight + spacing + chipHeight / 2}
-                        fontSize="12px"
+                        fontSize={isMobile ? "10px" : "12px"}
                         fontWeight="600"
                         fill={chipTextColor}
                         textAnchor="middle"
@@ -882,7 +951,7 @@ const Skills = () => {
               {!selectedCategory &&
                 categories.map((cat, i) => {
                   const isHovered = debouncedHoveredCategory === cat.name;
-                  const popDistance = isHovered ? 18 : 0;
+                  const popDistance = isHovered ? (isMobile ? 12 : 18) : 0;
                   const midAngleRad =
                     (((cat.startAngle + cat.endAngle) / 2 - 90) * Math.PI) /
                     180;
