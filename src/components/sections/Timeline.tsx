@@ -56,6 +56,7 @@ const sortedTimelineData = [...timelineData].sort((a, b) => {
 
 export function TimelineSection() {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const { visibleSection } = useSectionVisibility();
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const timelineContainerRef = useRef<HTMLDivElement | null>(null);
@@ -70,8 +71,16 @@ export function TimelineSection() {
   useEffect(() => {
     if (visibleSection === "timeline") {
       setExpandedIndex(null);
+      setHoveredIndex(null);
     }
   }, [visibleSection]);
+
+  // Reset hover state when expanded index changes (especially important for mobile)
+  useEffect(() => {
+    if (expandedIndex === null) {
+      setHoveredIndex(null);
+    }
+  }, [expandedIndex]);
 
   const toggleExpand = (index: number) => {
     setExpandedIndex((current) => (current === index ? null : index));
@@ -201,11 +210,7 @@ export function TimelineSection() {
                 <Typography
                   variant="subtitle1"
                   component="span"
-                  className={`${
-                    sortedTimelineData[expandedIndex].type === "education"
-                      ? "text-cyber-blue"
-                      : "text-cyber-purple"
-                  } font-medium font-bold !text-[14px] flex-1 leading-tight`}
+                  className="gradient-text font-medium font-bold !text-[14px] flex-1 leading-tight"
                 >
                   {sortedTimelineData[expandedIndex].title}
                 </Typography>
@@ -297,6 +302,7 @@ export function TimelineSection() {
           >
             {sortedTimelineData.map((item, index) => {
               const isExpanded = expandedIndex === index;
+              const isHovered = hoveredIndex === index;
 
               return (
                 <TimelineItem key={index}>
@@ -333,6 +339,8 @@ export function TimelineSection() {
                         isMobile ? "w-[calc(100vw-120px)] max-w-[300px]" : ""
                       }`}
                       onClick={() => toggleExpand(index)}
+                      onMouseEnter={() => setHoveredIndex(index)}
+                      onMouseLeave={() => setHoveredIndex(null)}
                       aria-expanded={isExpanded}
                     >
                       {isMobile ? (
@@ -342,11 +350,13 @@ export function TimelineSection() {
                             <Typography
                               variant="subtitle1"
                               component="span"
-                              className={`${
-                                item.type === "education"
+                              className={`font-medium font-bold !text-[14px] flex-1 leading-tight transition-all duration-300 ${
+                                isHovered
+                                  ? "gradient-text"
+                                  : item.type === "education"
                                   ? "text-cyber-blue"
                                   : "text-cyber-purple"
-                              } font-medium font-bold !text-[14px] flex-1 leading-tight`}
+                              }`}
                             >
                               {item.title}
                             </Typography>
@@ -369,11 +379,13 @@ export function TimelineSection() {
                             <Typography
                               variant="subtitle1"
                               component="span"
-                              className={`${
-                                item.type === "education"
+                              className={`font-medium font-bold !text-[16px] transition-all duration-300 ${
+                                isHovered
+                                  ? "gradient-text"
+                                  : item.type === "education"
                                   ? "text-cyber-blue"
                                   : "text-cyber-purple"
-                              } font-medium font-bold !text-[16px]`}
+                              }`}
                             >
                               {item.title}
                             </Typography>

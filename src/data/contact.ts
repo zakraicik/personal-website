@@ -14,8 +14,8 @@ export const contactMethods: ContactMethod[] = [
   {
     icon: "HiMail",
     label: "Email",
-    value: "raicik.zak@gmail.com",
-    link: "mailto:raicik.zak@gmail.com",
+    value: "raicik.zach@gmail.com",
+    link: "mailto:raicik.zach@gmail.com",
     colorClass: "bg-cyber-blue/20 border-cyber-blue/30 text-cyber-blue",
   },
   {
@@ -26,16 +26,10 @@ export const contactMethods: ContactMethod[] = [
     colorClass: "bg-cyber-purple/20 border-cyber-purple/30 text-cyber-purple",
   },
   {
-    icon: "HiLocationMarker",
-    label: "Location",
-    value: "San Diego, CA",
-    colorClass: "bg-cyber-pink/20 border-cyber-pink/30 text-cyber-pink",
-  },
-  {
     icon: "GitHub",
     label: "GitHub",
     value: "https://github.com/zakraicik",
     link: "https://github.com/zakraicik",
-    colorClass: "bg-cyber-blue/20 border-cyber-blue/30 text-cyber-blue",
+    colorClass: "bg-cyber-pink/20 border-cyber-pink/30 text-cyber-pink",
   },
 ];

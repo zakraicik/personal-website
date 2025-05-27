@@ -9,6 +9,7 @@ import { projects } from "@/data/projects";
 
 export function Portfolio() {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const { visibleSection } = useSectionVisibility();
   const expandedCardRef = useRef<HTMLDivElement | null>(null);
   const sectionRef = useRef<HTMLDivElement | null>(null);
@@ -16,6 +17,7 @@ export function Portfolio() {
   useEffect(() => {
     if (visibleSection === "portfolio") {
       setExpandedIndex(null);
+      setHoveredIndex(null);
     }
   }, [visibleSection]);
 
@@ -98,6 +100,7 @@ export function Portfolio() {
           <div className="space-y-6 sm:space-y-8">
             {projects.map((project, index) => {
               const isExpanded = expandedIndex === index;
+              const isHovered = hoveredIndex === index;
               const isHidden =
                 expandedIndex !== null && expandedIndex !== index;
 
@@ -127,6 +130,8 @@ export function Portfolio() {
                 >
                   <button
                     onClick={() => toggleProject(index)}
+                    onMouseEnter={() => setHoveredIndex(index)}
+                    onMouseLeave={() => setHoveredIndex(null)}
                     className="w-full p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between focus:outline-none hover:bg-gradient-to-r hover:from-cyber-purple/10 hover:via-cyber-blue/10 hover:to-cyber-pink/10 transition-all duration-300 cursor-pointer group gap-3 sm:gap-0"
                     aria-expanded={isExpanded}
                   >
@@ -134,7 +139,9 @@ export function Portfolio() {
                       {/* Title row */}
                       <div className="flex items-center justify-between w-full gap-3 sm:gap-4 mb-1">
                         <h3
-                          className="text-[16px] sm:text-[18px] font-medium text-cyber-blue tracking-[.01em] flex-shrink-0"
+                          className={`text-[16px] sm:text-[18px] font-medium tracking-[.01em] flex-shrink-0 transition-all duration-300 ${
+                            isHovered ? "gradient-text" : "text-cyber-blue"
+                          }`}
                           style={{
                             fontFamily:
                               "Inter, 'SF Pro Text', 'Helvetica Neue', sans-serif",
