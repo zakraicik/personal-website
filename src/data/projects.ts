@@ -1,5 +1,3 @@
-// Project data for Portfolio section
-
 export interface Project {
   title: string;
   description: string;

@@ -1,7 +1,7 @@
 export interface TimelineItem {
   type: "education" | "work";
-  title: string; // Degree or Job Title
-  subtitle: string; // School or Company
+  title: string;
+  subtitle: string;
   startYear: string;
   endYear: string;
   description: string | string[];

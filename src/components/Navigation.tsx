@@ -19,10 +19,23 @@ export function Navigation() {
   const { setVisibleSection, visibleSection } = useSectionVisibility();
   const lastWheelTime = useRef(0);
 
-  // Use visibleSection as the single source of truth for active section
   const activeSection = visibleSection || "home";
 
-  // Handle keyboard navigation
+  const navigateToSection = useCallback(
+    (section: string) => {
+      if (section === activeSection || isTransitioning) return;
+
+      setIsTransitioning(true);
+      setVisibleSection(section);
+      window.history.replaceState(null, "", `#${section}`);
+
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 700);
+    },
+    [activeSection, isTransitioning, setVisibleSection]
+  );
+
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (event.target && (event.target as HTMLElement).tagName === "INPUT")
@@ -41,35 +54,31 @@ export function Navigation() {
         event.preventDefault();
         if (currentIndex < navItems.length - 1) {
           const nextSection = navItems[currentIndex + 1].href.substring(1);
-          navigateToSection(nextSection, "down");
+          navigateToSection(nextSection);
         }
       } else if (event.key === "ArrowUp" || event.key === "PageUp") {
         event.preventDefault();
         if (currentIndex > 0) {
           const prevSection = navItems[currentIndex - 1].href.substring(1);
-          navigateToSection(prevSection, "up");
+          navigateToSection(prevSection);
         }
       } else if (event.key === "Home") {
         event.preventDefault();
-        navigateToSection("home", "up");
+        navigateToSection("home");
       } else if (event.key === "End") {
         event.preventDefault();
-        navigateToSection(
-          navItems[navItems.length - 1].href.substring(1),
-          "down"
-        );
+        navigateToSection(navItems[navItems.length - 1].href.substring(1));
       } else if (event.key === "Escape" && isMobileMenuOpen) {
         setIsMobileMenuOpen(false);
       }
     },
-    [activeSection, isTransitioning, isMobileMenuOpen]
+    [activeSection, isTransitioning, isMobileMenuOpen, navigateToSection]
   );
 
-  // Handle wheel/scroll navigation with smooth scroll illusion
   const handleWheel = useCallback(
     (event: WheelEvent) => {
       const now = Date.now();
-      const minDelta = 10; // Lower for Mac touchpads
+      const minDelta = 10;
       if (
         Math.abs(event.deltaY) >= minDelta &&
         now - lastWheelTime.current > 400 &&
@@ -84,47 +93,22 @@ export function Navigation() {
 
         if (event.deltaY > 0 && currentIndex < navItems.length - 1) {
           const nextSection = navItems[currentIndex + 1].href.substring(1);
-          navigateToSection(nextSection, "down");
+          navigateToSection(nextSection);
         } else if (event.deltaY < 0 && currentIndex > 0) {
           const prevSection = navItems[currentIndex - 1].href.substring(1);
-          navigateToSection(prevSection, "up");
+          navigateToSection(prevSection);
         }
       }
     },
-    [activeSection, isTransitioning]
+    [activeSection, isTransitioning, navigateToSection]
   );
-
-  const navigateToSection = (
-    section: string,
-    direction: "up" | "down" = "down"
-  ) => {
-    if (section === activeSection || isTransitioning) return;
-
-    setIsTransitioning(true);
-    setVisibleSection(section);
-    window.history.replaceState(null, "", `#${section}`);
-
-    // Add a slight delay to simulate scroll momentum
-    setTimeout(() => {
-      setIsTransitioning(false);
-    }, 700); // Match the transition duration
-  };
 
   const handleNavClick = (href: string) => {
     const section = href.substring(1);
-    const currentIndex = navItems.findIndex(
-      (item) => item.href.substring(1) === activeSection
-    );
-    const targetIndex = navItems.findIndex(
-      (item) => item.href.substring(1) === section
-    );
-    const direction = targetIndex > currentIndex ? "down" : "up";
-
-    navigateToSection(section, direction);
+    navigateToSection(section);
     setIsMobileMenuOpen(false);
   };
 
-  // Touch handling for mobile swipe
   useEffect(() => {
     let touchStartY = 0;
     let touchStartX = 0;
@@ -142,20 +126,17 @@ export function Navigation() {
       const diffY = touchStartY - touchEndY;
       const diffX = Math.abs(touchStartX - touchEndX);
 
-      // Only trigger if it's a primarily vertical swipe
       if (Math.abs(diffY) > 50 && diffX < 100) {
         const currentIndex = navItems.findIndex(
           (item) => item.href.substring(1) === activeSection
         );
 
         if (diffY > 0 && currentIndex < navItems.length - 1) {
-          // Swipe up (scroll down)
           const nextSection = navItems[currentIndex + 1].href.substring(1);
-          navigateToSection(nextSection, "down");
+          navigateToSection(nextSection);
         } else if (diffY < 0 && currentIndex > 0) {
-          // Swipe down (scroll up)
           const prevSection = navItems[currentIndex - 1].href.substring(1);
-          navigateToSection(prevSection, "up");
+          navigateToSection(prevSection);
         }
       }
     };
@@ -167,9 +148,8 @@ export function Navigation() {
       document.removeEventListener("touchstart", handleTouchStart);
       document.removeEventListener("touchend", handleTouchEnd);
     };
-  }, [activeSection, isTransitioning]);
+  }, [activeSection, isTransitioning, navigateToSection]);
 
-  // Close mobile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -190,7 +170,6 @@ export function Navigation() {
   }, [isMobileMenuOpen]);
 
   useEffect(() => {
-    // Set initial section from URL hash
     const hash = window.location.hash.replace("#", "");
     const sections = navItems.map((item) => item.href.substring(1));
 
@@ -201,7 +180,6 @@ export function Navigation() {
       window.history.replaceState(null, "", "#home");
     }
 
-    // Add event listeners
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("wheel", handleWheel, { passive: false });
 
@@ -213,10 +191,9 @@ export function Navigation() {
 
   return (
     <>
-      {/* Desktop Navigation */}
       <nav className="fixed left-8 top-1/2 -translate-y-1/2 z-50 hidden md:block">
         <div className="flex flex-col items-start space-y-4">
-          {navItems.map((item, index) => {
+          {navItems.map((item) => {
             const section = item.href.substring(1);
             const isActive = activeSection === section;
 
@@ -257,9 +234,7 @@ export function Navigation() {
         </div>
       </nav>
 
-      {/* Mobile Navigation */}
       <div className="md:hidden mobile-nav-container">
-        {/* Hamburger Button */}
         <div className="fixed top-4 left-4 z-[60]">
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -282,7 +257,6 @@ export function Navigation() {
           </button>
         </div>
 
-        {/* Backdrop Overlay */}
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div
@@ -296,7 +270,6 @@ export function Navigation() {
           )}
         </AnimatePresence>
 
-        {/* Slide-out Menu */}
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div
@@ -305,11 +278,10 @@ export function Navigation() {
               exit={{ x: "-100%" }}
               transition={{
                 duration: 0.4,
-                ease: [0.25, 0.1, 0.25, 1], // Custom easing for smooth slide
+                ease: [0.25, 0.1, 0.25, 1],
               }}
               className="fixed left-0 top-0 h-full w-72 bg-black/90 backdrop-blur-xl border-r border-white/10 shadow-2xl z-[52]"
             >
-              {/* Navigation Items */}
               <div className="pt-20 pb-6">
                 {navItems.map((item, index) => {
                   const section = item.href.substring(1);
@@ -322,7 +294,7 @@ export function Navigation() {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{
                         duration: 0.3,
-                        delay: index * 0.1, // Stagger animation
+                        delay: index * 0.1,
                       }}
                       onClick={() => handleNavClick(item.href)}
                       disabled={isTransitioning}

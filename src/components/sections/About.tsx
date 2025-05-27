@@ -16,7 +16,7 @@ export function About() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            I'm a{" "}
+            I&apos;m a{" "}
             <span className="gradient-text font-semibold">data scientist</span>{" "}
             with a passion for learning and practical experience across the{" "}
             <span className="gradient-text font-semibold">
@@ -50,7 +50,7 @@ export function About() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.6 }}
           >
-            When I'm not coding, I'm enjoying life in{" "}
+            When I&apos;m not coding, I&apos;m enjoying life in{" "}
             <span className="gradient-text font-semibold">San Diego</span> with
             my wife and dog, secretly indulging in my guilty pleasure —{" "}
             <span className="gradient-text font-semibold">Cheetos</span>.

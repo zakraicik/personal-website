@@ -33,7 +33,7 @@ export function Hero() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                <span>Hi, I'm </span>
+                <span>Hi, I&apos;m </span>
                 <span className="gradient-text">Zak Raicik</span>
               </motion.h1>
               <motion.p

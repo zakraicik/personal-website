@@ -12,7 +12,6 @@ export function SectionWrapper({ id, children }: SectionWrapperProps) {
   const { visibleSection } = useSectionVisibility();
   const [isClient, setIsClient] = useState(false);
 
-  // Only run on client to avoid hydration mismatch
   useEffect(() => {
     setIsClient(true);
   }, []);
@@ -36,11 +35,9 @@ export function SectionWrapper({ id, children }: SectionWrapperProps) {
     );
   }
 
-  // Client-side logic after hydration
   const currentVisibleSection = visibleSection || "home";
   const isVisible = currentVisibleSection === id;
 
-  // Calculate vertical position based on section order
   const sectionOrder = [
     "home",
     "about",
@@ -53,7 +50,6 @@ export function SectionWrapper({ id, children }: SectionWrapperProps) {
   const sectionIndex = sectionOrder.indexOf(id);
   const visibleIndex = sectionOrder.indexOf(currentVisibleSection);
 
-  // Calculate transform based on current vs visible section
   const translateY = (sectionIndex - visibleIndex) * 100;
 
   return (
@@ -63,7 +59,7 @@ export function SectionWrapper({ id, children }: SectionWrapperProps) {
         isVisible
           ? "opacity-100 z-10"
           : Math.abs(sectionIndex - visibleIndex) === 1
-          ? "opacity-60 z-[5]" // Adjacent sections are slightly visible
+          ? "opacity-60 z-[5]"
           : "opacity-0 z-0"
       }`}
       style={{

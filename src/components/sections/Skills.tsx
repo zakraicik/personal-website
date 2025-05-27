@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { skills } from "@/data/skills";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useSectionVisibility } from "@/context/SectionVisibilityContext";
 
 interface Category {
@@ -15,46 +15,25 @@ interface Category {
   height: number;
 }
 
-interface SkillItem {
-  name: string;
-  level: string;
-  category: string;
-  color: string;
-}
-
-// Brand gradient stops
 const BRAND_GRADIENT = [
   "#8A2BE2", // purple
   "#00BFFF", // blue
   "#FF1493", // pink
 ];
 
-// Debounce utility
-function debounce<T extends (...args: any[]) => any>(
-  func: T,
-  wait: number
-): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout;
-  return (...args: Parameters<T>) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), wait);
-  };
-}
-
-// Custom hook for window size with debouncing
 function useWindowSize() {
   const [windowSize, setWindowSize] = useState({
     width: typeof window !== "undefined" ? window.innerWidth : 0,
   });
 
-  const debouncedSetSize = useCallback(
-    debounce(() => {
+  const debouncedSetSize = useCallback(() => {
+    const timeout = setTimeout(() => {
       setWindowSize({
         width: window.innerWidth,
       });
-    }, 100),
-    []
-  );
+    }, 100);
+    return () => clearTimeout(timeout);
+  }, []);
 
   useEffect(() => {
     function handleResize() {
@@ -70,12 +49,10 @@ function useWindowSize() {
   return windowSize;
 }
 
-// Simple color assignment - just cycle through brand colors
 const getCategoryColor = (index: number): string => {
   return BRAND_GRADIENT[index % BRAND_GRADIENT.length];
 };
 
-// Custom hook to prevent hydration mismatch
 function useIsClient() {
   const [isClient, setIsClient] = useState(false);
 
@@ -86,7 +63,6 @@ function useIsClient() {
   return isClient;
 }
 
-// Grid layout calculation
 const calculateGridLayout = (
   categories: Array<{ name: string; skillCount: number; color: string }>,
   width: number,
@@ -95,11 +71,9 @@ const calculateGridLayout = (
 ): Category[] => {
   const numCategories = categories.length;
 
-  // Calculate optimal grid dimensions - force 2 columns on mobile
   const cols = isMobile ? 2 : Math.ceil(Math.sqrt(numCategories));
   const rows = Math.ceil(numCategories / cols);
 
-  // Calculate box dimensions with more spacing between boxes
   const gapSize = 8;
   const boxWidth = (width - (cols - 1) * gapSize) / cols;
   const boxHeight = (height - (rows - 1) * gapSize) / rows;
@@ -136,11 +110,9 @@ const Skills = () => {
 
   const { visibleSection } = useSectionVisibility();
 
-  // Container dimensions - made smaller and more compact, taller on mobile for 2-column layout
   const containerWidth = isMobile ? Math.min(width * 0.9, 350) : 600;
   const containerHeight = isMobile ? 400 : 400;
 
-  // Memoized category data
   const categoryData = useMemo(() => {
     const categoryList = Array.from(new Set(skills.map((s) => s.category)));
     return categoryList.map((catName) => ({
@@ -150,7 +122,6 @@ const Skills = () => {
     }));
   }, []);
 
-  // Memoized categories with colors
   const categoriesWithColors = useMemo(() => {
     return categoryData.map((cat, i) => ({
       ...cat,
@@ -158,7 +129,6 @@ const Skills = () => {
     }));
   }, [categoryData]);
 
-  // Memoized grid layout
   const categories = useMemo(
     () =>
       calculateGridLayout(
@@ -170,7 +140,6 @@ const Skills = () => {
     [categoriesWithColors, containerWidth, containerHeight, isMobile]
   );
 
-  // Memoized skill items with colors
   const skillItems = useMemo(() => {
     return skills.map((skill) => ({
       ...skill,
@@ -180,7 +149,6 @@ const Skills = () => {
     }));
   }, [categoriesWithColors]);
 
-  // Memoized filtered skills for selected category
   const selectedCategorySkills = useMemo(() => {
     if (!selectedCategory) return [];
     return skillItems.filter((skill) => skill.category === selectedCategory);
@@ -193,14 +161,12 @@ const Skills = () => {
     }
   }, [visibleSection]);
 
-  // Reset hover state when selectedCategory changes
   useEffect(() => {
     if (selectedCategory === null) {
       setHoveredCategory(null);
     }
   }, [selectedCategory]);
 
-  // Show loading state during hydration
   if (!isClient) {
     return (
       <section
@@ -232,14 +198,12 @@ const Skills = () => {
           transition={{ duration: 0.5 }}
           className="w-full max-w-6xl flex justify-center relative"
         >
-          {/* Skills Table View - Show when category is selected */}
           {selectedCategory && (
             <div
               className={`w-full h-full flex flex-col overflow-hidden ${
                 !isMobile ? "max-w-2xl mx-auto" : ""
               }`}
             >
-              {/* Header with back button */}
               <div className="flex items-center justify-between mb-6 flex-shrink-0">
                 <button
                   onClick={() => setSelectedCategory(null)}
@@ -259,10 +223,8 @@ const Skills = () => {
                 </button>
               </div>
 
-              {/* Scrollable Skills container - 2 column layout */}
               <div className="flex-1 overflow-y-auto overflow-x-hidden">
                 <div className="grid grid-cols-2 gap-6 pb-8 w-full">
-                  {/* Left Column */}
                   <div className="space-y-1">
                     {selectedCategorySkills
                       .slice(0, Math.ceil(selectedCategorySkills.length / 2))
@@ -286,7 +248,6 @@ const Skills = () => {
                       ))}
                   </div>
 
-                  {/* Right Column */}
                   <div className="space-y-1">
                     {selectedCategorySkills
                       .slice(Math.ceil(selectedCategorySkills.length / 2))
@@ -320,10 +281,8 @@ const Skills = () => {
             </div>
           )}
 
-          {/* Treemap View - Show when no category is selected */}
           {!selectedCategory && (
             <div className="flex flex-col items-center">
-              {/* Grid Container */}
               <div
                 className="relative"
                 style={{

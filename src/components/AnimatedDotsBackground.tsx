@@ -4,11 +4,9 @@ import React from "react";
 import { motion } from "framer-motion";
 import { useMemo, useEffect, useState } from "react";
 
-// Generate fewer, more spaced out bubble positions
 const generateBubblePositions = (count: number) => {
   const positions = [];
 
-  // Only use your theme colors
   const colors = [
     "#8A2BE2", // cyber-purple
     "#00BFFF", // cyber-blue
@@ -16,25 +14,19 @@ const generateBubblePositions = (count: number) => {
   ];
 
   for (let i = 0; i < count; i++) {
-    // More random, spread out positioning
     const x = Math.random() * 100;
     const y = Math.random() * 100;
 
-    // Vary sizes but keep them bubblier
     const baseSize = 20 + Math.random() * 40; // 20-60px
 
-    // Gentle, slow movement
     const moveX = (Math.random() - 0.5) * 30; // -15 to 15
     const moveY = (Math.random() - 0.5) * 30; // -15 to 15
 
-    // Much slower, more relaxed animations
     const moveDuration = 15 + Math.random() * 20; // 15-35 seconds
     const scaleDuration = 8 + Math.random() * 12; // 8-20 seconds
 
-    // Random color from your theme
     const color = colors[Math.floor(Math.random() * colors.length)];
 
-    // Make some bubbles larger and more prominent
     const isLarge = Math.random() > 0.7;
     const size = isLarge ? baseSize * 1.5 : baseSize;
 
@@ -48,7 +40,7 @@ const generateBubblePositions = (count: number) => {
       scaleDuration,
       color,
       isLarge,
-      delay: Math.random() * 10, // Stagger animations
+      delay: Math.random() * 10,
     });
   }
 
@@ -56,7 +48,7 @@ const generateBubblePositions = (count: number) => {
 };
 
 export function AnimatedDotsBackground({
-  count = 25, // Much fewer elements
+  count = 25,
   className = "",
 }: {
   count?: number;
@@ -69,20 +61,16 @@ export function AnimatedDotsBackground({
     setIsMounted(true);
   }, []);
 
-  // Listen for section changes
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace("#", "") || "home";
       setActiveSection(hash);
     };
 
-    // Set initial section
     handleHashChange();
 
-    // Listen for hash changes
     window.addEventListener("hashchange", handleHashChange);
 
-    // Also listen for popstate for better browser support
     window.addEventListener("popstate", handleHashChange);
 
     return () => {
@@ -96,7 +84,6 @@ export function AnimatedDotsBackground({
     [count, isMounted]
   );
 
-  // Calculate darkness based on section progression
   const sectionOrder = [
     "home",
     "about",
@@ -108,8 +95,7 @@ export function AnimatedDotsBackground({
   const sectionIndex = sectionOrder.indexOf(activeSection);
   const progressRatio = sectionIndex / (sectionOrder.length - 1); // 0 to 1
 
-  // Calculate overlay darkness (0 = no overlay, 0.7 = very dark)
-  const overlayOpacity = progressRatio * 0.6; // Max 60% darkness
+  const overlayOpacity = progressRatio * 0.6;
 
   if (!isMounted) return null;
 
@@ -117,7 +103,6 @@ export function AnimatedDotsBackground({
     <div
       className={`fixed inset-0 z-0 overflow-hidden pointer-events-none ${className}`}
     >
-      {/* Progressive darkness overlay */}
       <motion.div
         className="absolute inset-0 bg-black"
         animate={{ opacity: overlayOpacity }}
@@ -125,7 +110,6 @@ export function AnimatedDotsBackground({
         style={{ zIndex: 1 }}
       />
 
-      {/* Main floating bubbles */}
       {positions.map((bubble, i) => (
         <motion.div
           key={`bubble-${i}`}
@@ -137,9 +121,9 @@ export function AnimatedDotsBackground({
             height: `${bubble.size}px`,
             borderRadius: "50%",
             backgroundColor: bubble.color,
-            opacity: bubble.isLarge ? 0.02 : 0.015, // Much more subtle
-            filter: "blur(1px)", // More blur for softer edges
-            zIndex: 2, // Above the darkness overlay
+            opacity: bubble.isLarge ? 0.02 : 0.015,
+            filter: "blur(1px)",
+            zIndex: 2,
           }}
           animate={{
             x: [0, bubble.moveX, -bubble.moveX, 0],
@@ -158,11 +142,10 @@ export function AnimatedDotsBackground({
         />
       ))}
 
-      {/* Extra subtle micro bubbles */}
       {Array.from({ length: 15 }).map((_, i) => {
         const colors = ["#8A2BE2", "#00BFFF", "#FF1493"];
         const color = colors[i % colors.length];
-        const size = 5 + Math.random() * 8; // Even smaller micro bubbles
+        const size = 5 + Math.random() * 8;
         const x = Math.random() * 100;
         const y = Math.random() * 100;
         const duration = 20 + Math.random() * 30;
@@ -180,7 +163,7 @@ export function AnimatedDotsBackground({
               backgroundColor: color,
               opacity: 0.01,
               filter: "blur(1.5px)",
-              zIndex: 2, // Above the darkness overlay
+              zIndex: 2,
             }}
             animate={{
               x: [0, Math.random() * 20 - 10],
@@ -198,11 +181,10 @@ export function AnimatedDotsBackground({
         );
       })}
 
-      {/* Occasional larger, very subtle accent bubbles */}
       {Array.from({ length: 3 }).map((_, i) => {
         const colors = ["#8A2BE2", "#00BFFF", "#FF1493"];
         const color = colors[i % colors.length];
-        const size = 60 + Math.random() * 40; // Larger bubbles
+        const size = 60 + Math.random() * 40;
         const x = Math.random() * 100;
         const y = Math.random() * 100;
 
@@ -218,7 +200,7 @@ export function AnimatedDotsBackground({
               borderRadius: "50%",
               background: `radial-gradient(circle, ${color}08 0%, ${color}02 70%, transparent 100%)`,
               filter: "blur(3px)",
-              zIndex: 2, // Above the darkness overlay
+              zIndex: 2,
             }}
             animate={{
               scale: [1, 1.05, 1],

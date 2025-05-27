@@ -14,7 +14,6 @@ import { useState, useRef, useEffect } from "react";
 import { timelineData } from "@/data/timelineData";
 import { useSectionVisibility } from "@/context/SectionVisibilityContext";
 
-// Custom hook for window size
 function useWindowSize() {
   const [windowSize, setWindowSize] = useState({
     width: typeof window !== "undefined" ? window.innerWidth : 0,
@@ -28,7 +27,7 @@ function useWindowSize() {
     }
 
     window.addEventListener("resize", handleResize);
-    handleResize(); // Call once to set initial size
+    handleResize();
 
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -36,7 +35,6 @@ function useWindowSize() {
   return windowSize;
 }
 
-// Custom hook to prevent hydration mismatch
 function useIsClient() {
   const [isClient, setIsClient] = useState(false);
 
@@ -47,7 +45,6 @@ function useIsClient() {
   return isClient;
 }
 
-// Sort by end year (most recent first)
 const sortedTimelineData = [...timelineData].sort((a, b) => {
   const parseYear = (year: string) =>
     year.toLowerCase() === "present" ? 9999 : parseInt(year);
@@ -65,7 +62,6 @@ export function TimelineSection() {
   const { width } = useWindowSize();
   const isClient = useIsClient();
 
-  // Don't render responsive content until client-side hydration is complete
   const isMobile = isClient && width < 768;
 
   useEffect(() => {
@@ -75,7 +71,6 @@ export function TimelineSection() {
     }
   }, [visibleSection]);
 
-  // Reset hover state when expanded index changes (especially important for mobile)
   useEffect(() => {
     if (expandedIndex === null) {
       setHoveredIndex(null);
@@ -86,8 +81,7 @@ export function TimelineSection() {
     setExpandedIndex((current) => (current === index ? null : index));
   };
 
-  // Function to center an expanded card
-  const centerExpandedCard = (index: number) => {
+  const centerExpandedCard = () => {
     const expandedItem = expandedItemRef.current;
     if (!expandedItem) return;
 
@@ -102,7 +96,6 @@ export function TimelineSection() {
     });
   };
 
-  // Function to re-center the timeline section
   const centerTimelineSection = () => {
     if (!sectionRef.current) return;
 
@@ -110,12 +103,10 @@ export function TimelineSection() {
     const sectionRect = section.getBoundingClientRect();
     const viewportHeight = window.innerHeight;
 
-    // Calculate the ideal position to center the section
     const sectionCenter = sectionRect.top + sectionRect.height / 2;
     const viewportCenter = viewportHeight / 2;
     const scrollAdjustment = sectionCenter - viewportCenter;
 
-    // Only adjust if significantly off-center (threshold to avoid unnecessary micro-adjustments)
     if (Math.abs(scrollAdjustment) > 20) {
       window.scrollBy({
         top: scrollAdjustment,
@@ -125,14 +116,12 @@ export function TimelineSection() {
   };
 
   useEffect(() => {
-    // Only apply centering effects after client hydration
     if (!isClient) return;
 
     if (width >= 768) {
-      // Desktop behavior - original centering logic
       if (expandedIndex !== null) {
         const timer = setTimeout(() => {
-          centerExpandedCard(expandedIndex);
+          centerExpandedCard();
         }, 450);
         return () => clearTimeout(timer);
       } else {
@@ -142,10 +131,9 @@ export function TimelineSection() {
         return () => clearTimeout(timer);
       }
     } else {
-      // Mobile behavior
       if (expandedIndex !== null) {
         const timer = setTimeout(() => {
-          centerExpandedCard(expandedIndex);
+          centerExpandedCard();
         }, 350);
         return () => clearTimeout(timer);
       } else {
@@ -157,7 +145,6 @@ export function TimelineSection() {
     }
   }, [expandedIndex, width, isClient]);
 
-  // Show loading state during hydration to prevent layout shift
   if (!isClient) {
     return (
       <section
@@ -168,7 +155,6 @@ export function TimelineSection() {
         <div className="cyber-grid pointer-events-none w-full h-full left-0 top-0 absolute overflow-x-hidden" />
         <div className="px-4 md:px-6 w-full max-w-full mx-auto flex-1 flex items-center justify-center relative z-10">
           <div className="w-full max-w-4xl">
-            {/* Loading placeholder */}
             <div className="animate-pulse">
               <div className="h-8 bg-gray-300/20 rounded mb-4"></div>
               <div className="h-6 bg-gray-300/20 rounded mb-4"></div>
@@ -189,7 +175,6 @@ export function TimelineSection() {
       <div className="cyber-grid pointer-events-none w-full h-full left-0 top-0 absolute overflow-x-hidden" />
 
       <div className="px-4 md:px-6 w-full max-w-full mx-auto flex-1 flex items-center justify-center relative z-10">
-        {/* Mobile expanded card overlay */}
         {isMobile && expandedIndex !== null && (
           <motion.div
             ref={expandedItemRef}
@@ -205,7 +190,6 @@ export function TimelineSection() {
               onClick={() => toggleExpand(expandedIndex)}
               aria-expanded={true}
             >
-              {/* Mobile layout - optimized font sizes */}
               <div className="flex items-start justify-between mb-2">
                 <Typography
                   variant="subtitle1"
@@ -344,7 +328,6 @@ export function TimelineSection() {
                       aria-expanded={isExpanded}
                     >
                       {isMobile ? (
-                        // Mobile layout - optimized font sizes
                         <>
                           <div className="flex items-start justify-between mb-2">
                             <Typography
@@ -369,7 +352,6 @@ export function TimelineSection() {
                           </Typography>
                         </>
                       ) : (
-                        // Desktop layout - original
                         <>
                           <div
                             className={`flex items-center justify-between ${

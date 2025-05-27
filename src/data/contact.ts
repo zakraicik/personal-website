@@ -1,13 +1,9 @@
-// Contact data for Contact section
-
-import { HiMail, HiPhone, HiLocationMarker } from "react-icons/hi";
-
 export interface ContactMethod {
-  icon: string; // Icon name as string, to be mapped in the component
+  icon: string;
   label: string;
   value: string;
   link?: string;
-  colorClass: string; // Tailwind color class for icon background
+  colorClass: string;
 }
 
 export const contactMethods: ContactMethod[] = [

@@ -25,7 +25,6 @@ export function Portfolio() {
     setExpandedIndex((current) => (current === index ? null : index));
   };
 
-  // Function to center the expanded card on mobile
   const centerExpandedCard = () => {
     if (!expandedCardRef.current) return;
 
@@ -41,7 +40,6 @@ export function Portfolio() {
     });
   };
 
-  // Function to re-center the portfolio section
   const centerPortfolioSection = () => {
     if (!sectionRef.current) return;
 
@@ -60,20 +58,16 @@ export function Portfolio() {
     }
   };
 
-  // Handle centering logic for mobile
   useEffect(() => {
-    // Only apply centering on small screens
-    if (window.innerWidth >= 640) return; // sm breakpoint
+    if (window.innerWidth >= 640) return;
 
     if (expandedIndex !== null) {
-      // Wait for expansion animation to complete, then center the card
       const timer = setTimeout(() => {
         centerExpandedCard();
-      }, 350); // Wait for animation duration
+      }, 350);
 
       return () => clearTimeout(timer);
     } else {
-      // Handle collapse - re-center the portfolio section
       const timer = setTimeout(() => {
         centerPortfolioSection();
       }, 350);
@@ -136,7 +130,6 @@ export function Portfolio() {
                     aria-expanded={isExpanded}
                   >
                     <div className="flex flex-col w-full min-w-0">
-                      {/* Title row */}
                       <div className="flex items-center justify-between w-full gap-3 sm:gap-4 mb-1">
                         <h3
                           className={`text-[16px] sm:text-[18px] font-medium tracking-[.01em] flex-shrink-0 transition-all duration-300 ${
@@ -151,7 +144,6 @@ export function Portfolio() {
                           {project.title}
                         </h3>
 
-                        {/* Right side controls - view button and chevron */}
                         <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
                           <a
                             href={project.link}
@@ -174,12 +166,10 @@ export function Portfolio() {
                         </div>
                       </div>
 
-                      {/* Description row */}
                       <p className="text-white/80 text-[13px] sm:text-[14px] text-left break-words pr-24 sm:pr-28">
                         {project.description}
                       </p>
 
-                      {/* Tags row */}
                       <div className="flex flex-wrap gap-2 mt-2 sm:mt-3">
                         {project.tags.map((tag) => (
                           <span

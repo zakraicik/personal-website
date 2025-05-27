@@ -24,7 +24,6 @@ export function SectionVisibilityProvider({
 }) {
   const [visibleSection, setVisibleSection] = useState<string | null>(null);
 
-  // Handle initial URL hash and hash changes
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace("#", "");
@@ -36,10 +35,8 @@ export function SectionVisibilityProvider({
       }
     };
 
-    // Set initial section
     handleHashChange();
 
-    // Listen for hash changes
     window.addEventListener("hashchange", handleHashChange);
 
     return () => {
