@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 
 interface SectionVisibilityContextType {
   visibleSection: string | null;
@@ -16,7 +22,30 @@ export function SectionVisibilityProvider({
 }: {
   children: ReactNode;
 }) {
-  const [visibleSection, setVisibleSection] = useState<string | null>("home");
+  const [visibleSection, setVisibleSection] = useState<string | null>(null);
+
+  // Handle initial URL hash and hash changes
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace("#", "");
+      if (hash) {
+        setVisibleSection(hash);
+      } else {
+        setVisibleSection("home");
+        window.history.replaceState(null, "", "#home");
+      }
+    };
+
+    // Set initial section
+    handleHashChange();
+
+    // Listen for hash changes
+    window.addEventListener("hashchange", handleHashChange);
+
+    return () => {
+      window.removeEventListener("hashchange", handleHashChange);
+    };
+  }, []);
 
   return (
     <SectionVisibilityContext.Provider
