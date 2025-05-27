@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { skills } from "@/data/skills";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSectionVisibility } from "@/context/SectionVisibilityContext";
@@ -29,64 +29,51 @@ const BRAND_GRADIENT = [
   "#FF1493", // pink
 ];
 
-// Custom hook for window size
+// Debounce utility
+function debounce<T extends (...args: any[]) => any>(
+  func: T,
+  wait: number
+): (...args: Parameters<T>) => void {
+  let timeout: NodeJS.Timeout;
+  return (...args: Parameters<T>) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+}
+
+// Custom hook for window size with debouncing
 function useWindowSize() {
   const [windowSize, setWindowSize] = useState({
     width: typeof window !== "undefined" ? window.innerWidth : 0,
   });
 
-  useEffect(() => {
-    function handleResize() {
+  const debouncedSetSize = useCallback(
+    debounce(() => {
       setWindowSize({
         width: window.innerWidth,
       });
+    }, 100),
+    []
+  );
+
+  useEffect(() => {
+    function handleResize() {
+      debouncedSetSize();
     }
 
     window.addEventListener("resize", handleResize);
     handleResize();
 
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [debouncedSetSize]);
 
   return windowSize;
 }
 
-// Helper: interpolate between two hex colors
-function interpolateColor(
-  color1: string,
-  color2: string,
-  factor: number
-): string {
-  const c1 = color1.startsWith("#") ? color1.substring(1) : color1;
-  const c2 = color2.startsWith("#") ? color2.substring(1) : color2;
-  const r1 = parseInt(c1.substring(0, 2), 16);
-  const g1 = parseInt(c1.substring(2, 4), 16);
-  const b1 = parseInt(c1.substring(4, 6), 16);
-  const r2 = parseInt(c2.substring(0, 2), 16);
-  const g2 = parseInt(c2.substring(2, 4), 16);
-  const b2 = parseInt(c2.substring(4, 6), 16);
-  const r = Math.round(r1 + (r2 - r1) * factor);
-  const g = Math.round(g1 + (g2 - g1) * factor);
-  const b = Math.round(b1 + (b2 - b1) * factor);
-  return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
-}
-
-// Generate a sequential gradient palette for N categories
-function generateCategoryColors(n: number): string[] {
-  if (n === 1) return [BRAND_GRADIENT[1]];
-  const stops = BRAND_GRADIENT.length - 1;
-  const colors: string[] = [];
-  for (let i = 0; i < n; i++) {
-    const t = i / (n - 1);
-    let stop = Math.floor(t * stops);
-    if (stop >= stops) stop = stops - 1;
-    const localT = stop === stops - 1 ? 1 : (t - stop / stops) * stops;
-    colors.push(
-      interpolateColor(BRAND_GRADIENT[stop], BRAND_GRADIENT[stop + 1], localT)
-    );
-  }
-  return colors;
-}
+// Simple color assignment - just cycle through brand colors
+const getCategoryColor = (index: number): string => {
+  return BRAND_GRADIENT[index % BRAND_GRADIENT.length];
+};
 
 // Custom hook to prevent hydration mismatch
 function useIsClient() {
@@ -99,13 +86,13 @@ function useIsClient() {
   return isClient;
 }
 
-// Simple equal-sized grid layout with mobile optimization
-function calculateGridLayout(
+// Grid layout calculation
+const calculateGridLayout = (
   categories: Array<{ name: string; skillCount: number; color: string }>,
   width: number,
   height: number,
   isMobile: boolean
-): Category[] {
+): Category[] => {
   const numCategories = categories.length;
 
   // Calculate optimal grid dimensions - force 2 columns on mobile
@@ -138,7 +125,7 @@ function calculateGridLayout(
   });
 
   return result;
-}
+};
 
 const Skills = () => {
   const { width } = useWindowSize();
@@ -146,14 +133,58 @@ const Skills = () => {
   const isClient = useIsClient();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [skillItems, setSkillItems] = useState<SkillItem[]>([]);
 
   const { visibleSection } = useSectionVisibility();
 
   // Container dimensions - made smaller and more compact, taller on mobile for 2-column layout
   const containerWidth = isMobile ? Math.min(width * 0.9, 350) : 600;
   const containerHeight = isMobile ? 400 : 400;
+
+  // Memoized category data
+  const categoryData = useMemo(() => {
+    const categoryList = Array.from(new Set(skills.map((s) => s.category)));
+    return categoryList.map((catName) => ({
+      name: catName,
+      skillCount: skills.filter((s) => s.category === catName).length,
+      color: "",
+    }));
+  }, []);
+
+  // Memoized categories with colors
+  const categoriesWithColors = useMemo(() => {
+    return categoryData.map((cat, i) => ({
+      ...cat,
+      color: getCategoryColor(i),
+    }));
+  }, [categoryData]);
+
+  // Memoized grid layout
+  const categories = useMemo(
+    () =>
+      calculateGridLayout(
+        categoriesWithColors,
+        containerWidth,
+        containerHeight,
+        isMobile
+      ),
+    [categoriesWithColors, containerWidth, containerHeight, isMobile]
+  );
+
+  // Memoized skill items with colors
+  const skillItems = useMemo(() => {
+    return skills.map((skill) => ({
+      ...skill,
+      color:
+        categoriesWithColors.find((cat) => cat.name === skill.category)
+          ?.color || BRAND_GRADIENT[0],
+    }));
+  }, [categoriesWithColors]);
+
+  // Memoized filtered skills for selected category
+  const selectedCategorySkills = useMemo(() => {
+    if (!selectedCategory) return [];
+    return skillItems.filter((skill) => skill.category === selectedCategory);
+  }, [skillItems, selectedCategory]);
 
   useEffect(() => {
     if (visibleSection === "skills") {
@@ -162,47 +193,12 @@ const Skills = () => {
     }
   }, [visibleSection]);
 
-  // Reset hover state when selectedCategory changes (especially important for mobile)
+  // Reset hover state when selectedCategory changes
   useEffect(() => {
     if (selectedCategory === null) {
       setHoveredCategory(null);
     }
   }, [selectedCategory]);
-
-  // Initialize data
-  useEffect(() => {
-    // Get unique categories and their skill counts
-    const categoryList = Array.from(new Set(skills.map((s) => s.category)));
-    const categoryData = categoryList.map((catName) => ({
-      name: catName,
-      skillCount: skills.filter((s) => s.category === catName).length,
-      color: "",
-    }));
-
-    // Generate colors
-    const gradientColors = generateCategoryColors(categoryList.length);
-    categoryData.forEach((cat, i) => {
-      cat.color = gradientColors[i];
-    });
-
-    // Calculate treemap layout
-    const gridCategories = calculateGridLayout(
-      categoryData,
-      containerWidth,
-      containerHeight,
-      isMobile
-    );
-    setCategories(gridCategories);
-
-    // Prepare skill items with colors
-    const skillsWithColors = skills.map((skill) => ({
-      ...skill,
-      color:
-        categoryData.find((cat) => cat.name === skill.category)?.color ||
-        BRAND_GRADIENT[0],
-    }));
-    setSkillItems(skillsWithColors);
-  }, [containerWidth, containerHeight]);
 
   // Show loading state during hydration
   if (!isClient) {
@@ -227,44 +223,6 @@ const Skills = () => {
       id="skills"
       className="min-h-screen flex flex-col justify-center section-padding relative overflow-hidden"
     >
-      <style jsx>{`
-        @keyframes breathe {
-          0%,
-          100% {
-            transform: scale(1);
-            box-shadow: 0 0 0 rgba(138, 43, 226, 0);
-          }
-          50% {
-            transform: scale(1.015);
-            box-shadow: 0 0 12px rgba(138, 43, 226, 0.15),
-              0 0 24px rgba(0, 191, 255, 0.1);
-          }
-        }
-        @keyframes breatheBlue {
-          0%,
-          100% {
-            transform: scale(1);
-            box-shadow: 0 0 0 rgba(0, 191, 255, 0);
-          }
-          50% {
-            transform: scale(1.015);
-            box-shadow: 0 0 12px rgba(0, 191, 255, 0.15),
-              0 0 24px rgba(255, 20, 147, 0.1);
-          }
-        }
-        @keyframes breathePink {
-          0%,
-          100% {
-            transform: scale(1);
-            box-shadow: 0 0 0 rgba(255, 20, 147, 0);
-          }
-          50% {
-            transform: scale(1.015);
-            box-shadow: 0 0 12px rgba(255, 20, 147, 0.15),
-              0 0 24px rgba(138, 43, 226, 0.1);
-          }
-        }
-      `}</style>
       <div className="cyber-grid pointer-events-none w-full h-full left-0 top-0 absolute overflow-x-hidden" />
 
       <div className="px-4 md:px-6 w-full max-w-full mx-auto flex-1 flex items-center justify-center relative z-10">
@@ -274,7 +232,7 @@ const Skills = () => {
           transition={{ duration: 0.5 }}
           className="w-full max-w-6xl flex justify-center relative"
         >
-          {/* Skills Table View - Show when category is selected (both mobile and desktop) */}
+          {/* Skills Table View - Show when category is selected */}
           {selectedCategory && (
             <div
               className={`w-full h-full flex flex-col overflow-hidden ${
@@ -301,29 +259,62 @@ const Skills = () => {
                 </button>
               </div>
 
-              {/* Scrollable Skills container - single column table style */}
+              {/* Scrollable Skills container - 2 column layout */}
               <div className="flex-1 overflow-y-auto overflow-x-hidden">
-                <div className="space-y-1 pb-8 w-full">
-                  {skillItems
-                    .filter((skill) => skill.category === selectedCategory)
-                    .map((skill, index) => (
-                      <motion.div
-                        key={skill.name}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3, delay: index * 0.05 }}
-                        className="flex items-center justify-between py-2 px-3 border-b border-white/10"
-                      >
-                        <div className="flex-1 min-w-0">
-                          <div className="text-white font-medium text-sm truncate">
-                            {skill.name}
+                <div className="grid grid-cols-2 gap-6 pb-8 w-full">
+                  {/* Left Column */}
+                  <div className="space-y-1">
+                    {selectedCategorySkills
+                      .slice(0, Math.ceil(selectedCategorySkills.length / 2))
+                      .map((skill, index) => (
+                        <motion.div
+                          key={skill.name}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: index * 0.05 }}
+                          className="flex items-center justify-between py-2 px-3 border-b border-white/10"
+                        >
+                          <div className="flex-1 min-w-0">
+                            <div className="text-white font-medium text-sm truncate">
+                              {skill.name}
+                            </div>
                           </div>
-                        </div>
-                        <div className="text-xs text-white/70 ml-3 flex-shrink-0">
-                          {skill.level}
-                        </div>
-                      </motion.div>
-                    ))}
+                          <div className="text-xs text-white/70 ml-3 flex-shrink-0">
+                            {skill.level}
+                          </div>
+                        </motion.div>
+                      ))}
+                  </div>
+
+                  {/* Right Column */}
+                  <div className="space-y-1">
+                    {selectedCategorySkills
+                      .slice(Math.ceil(selectedCategorySkills.length / 2))
+                      .map((skill, index) => (
+                        <motion.div
+                          key={skill.name}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{
+                            duration: 0.3,
+                            delay:
+                              (Math.ceil(selectedCategorySkills.length / 2) +
+                                index) *
+                              0.05,
+                          }}
+                          className="flex items-center justify-between py-2 px-3 border-b border-white/10"
+                        >
+                          <div className="flex-1 min-w-0">
+                            <div className="text-white font-medium text-sm truncate">
+                              {skill.name}
+                            </div>
+                          </div>
+                          <div className="text-xs text-white/70 ml-3 flex-shrink-0">
+                            {skill.level}
+                          </div>
+                        </motion.div>
+                      ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -332,7 +323,7 @@ const Skills = () => {
           {/* Treemap View - Show when no category is selected */}
           {!selectedCategory && (
             <div className="flex flex-col items-center">
-              {/* Grid Container - using portfolio styling */}
+              {/* Grid Container */}
               <div
                 className="relative"
                 style={{
@@ -340,29 +331,18 @@ const Skills = () => {
                   height: containerHeight,
                 }}
               >
-                {categories.map((cat, i) => {
+                {categories.map((cat) => {
                   const isHovered = hoveredCategory === cat.name;
 
                   return (
                     <div
                       key={cat.name}
-                      className="absolute bg-cyber-dark/5 backdrop-blur-md border border-cyber-dark/10 shadow-lg rounded-lg cursor-pointer transition-all duration-300 hover:bg-gradient-to-r hover:from-cyber-purple/10 hover:via-cyber-blue/10 hover:to-cyber-pink/10"
+                      className="absolute bg-cyber-dark/5 backdrop-blur-md border border-cyber-dark/10 shadow-lg rounded-lg cursor-pointer transition-all duration-300 hover:scale-105 hover:bg-gradient-to-r hover:from-cyber-purple/10 hover:via-cyber-blue/10 hover:to-cyber-pink/10 hover:shadow-xl"
                       style={{
                         left: cat.x,
                         top: cat.y,
                         width: cat.width,
                         height: cat.height,
-                        transform: isHovered ? "scale(1.02)" : "scale(1)",
-                        // Only apply breathing animation on desktop
-                        animation: !isMobile
-                          ? `${
-                              i % 3 === 0
-                                ? "breathe"
-                                : i % 3 === 1
-                                ? "breatheBlue"
-                                : "breathePink"
-                            } ${5 + i * 0.3}s ease-in-out infinite`
-                          : "none",
                       }}
                       onMouseEnter={() => setHoveredCategory(cat.name)}
                       onMouseLeave={() => setHoveredCategory(null)}
@@ -372,15 +352,15 @@ const Skills = () => {
                         {/* Category Name */}
                         <div
                           className={`font-medium leading-tight transition-all duration-300 ${
-                            isHovered ? "gradient-text" : "text-white/90"
+                            isHovered ? "gradient-text" : "text-cyber-blue"
                           }`}
                           style={{
                             fontSize: isMobile ? "10px" : "12px",
                             lineHeight: "1.2",
-                            textShadow: !isHovered
-                              ? "0 1px 2px rgba(0,0,0,0.2)"
-                              : "none",
+                            textShadow: "0 1px 1px rgba(0,0,0,0.1)",
                             letterSpacing: "0.01em",
+                            fontFamily:
+                              "Inter, 'SF Pro Text', 'Helvetica Neue', sans-serif",
                           }}
                         >
                           {cat.name}

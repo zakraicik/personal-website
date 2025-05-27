@@ -29,13 +29,6 @@ body {
     rgb(var(--background-end-rgb))
   );
   min-height: 100vh;
-  background-image: url("/noise.png"),
-    linear-gradient(
-      to bottom,
-      rgb(var(--background-start-rgb)),
-      rgb(var(--background-end-rgb))
-    );
-  background-blend-mode: overlay;
 }
 
 body.resizing {

@@ -22,7 +22,6 @@ module.exports = {
           "linear-gradient(135deg, #8A2BE2 0%, #00BFFF 50%, #FF1493 100%)",
         "cyber-grid":
           "linear-gradient(rgba(138, 43, 226, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(138, 43, 226, 0.1) 1px, transparent 1px)",
-        "cyber-noise": 'url("/noise.png")',
       },
       animation: {
         float: "float 6s ease-in-out infinite",

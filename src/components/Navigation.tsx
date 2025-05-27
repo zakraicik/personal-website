@@ -11,7 +11,6 @@ const navItems = [
   { name: "Portfolio", href: "#portfolio" },
   { name: "Timeline", href: "#timeline" },
   { name: "Skills", href: "#skills" },
-  { name: "Contact", href: "#contact" },
 ];
 
 export function Navigation() {
@@ -55,7 +54,10 @@ export function Navigation() {
         navigateToSection("home", "up");
       } else if (event.key === "End") {
         event.preventDefault();
-        navigateToSection("contact", "down");
+        navigateToSection(
+          navItems[navItems.length - 1].href.substring(1),
+          "down"
+        );
       } else if (event.key === "Escape" && isMobileMenuOpen) {
         setIsMobileMenuOpen(false);
       }

@@ -4,6 +4,7 @@ import "./globals.css";
 import { Navigation } from "@/components/Navigation";
 import { AnimatedDotsBackground } from "@/components/AnimatedDotsBackground";
 import { SectionVisibilityProvider } from "@/context/SectionVisibilityContext";
+import { Footer } from "@/components/sections/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -35,6 +36,7 @@ export default function RootLayout({
             <main className="md:pl-16">{children}</main>
           </div>
         </SectionVisibilityProvider>
+        <Footer />
       </body>
     </html>
   );
