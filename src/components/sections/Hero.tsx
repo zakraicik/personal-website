@@ -41,7 +41,8 @@ export function Hero() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
               >
-                Data Scientist, Builder, Storyteller, Creator
+                Data Scientist, Builder,{" "}
+                <span className="whitespace-nowrap">Storyteller, Creator</span>
               </motion.p>
             </div>
             <motion.div
