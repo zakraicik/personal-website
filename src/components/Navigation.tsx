@@ -235,7 +235,7 @@ export function Navigation() {
       </nav>
 
       <div className="md:hidden mobile-nav-container">
-        <div className="fixed top-4 left-4 z-[60]">
+        <div className="fixed top-4 left-4 z-[100]">
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             disabled={isTransitioning}
@@ -264,7 +264,7 @@ export function Navigation() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[51]"
+              className="fixed inset-0 bg-black/60 backdrop-blur-md z-[90]"
               onClick={() => setIsMobileMenuOpen(false)}
             />
           )}
@@ -280,7 +280,7 @@ export function Navigation() {
                 duration: 0.4,
                 ease: [0.25, 0.1, 0.25, 1],
               }}
-              className="fixed left-0 top-0 h-full w-72 bg-black/90 backdrop-blur-xl border-r border-white/10 shadow-2xl z-[52]"
+              className="fixed left-0 top-0 h-full w-72 bg-black/90 backdrop-blur-xl border-r border-white/10 shadow-2xl z-[95]"
             >
               <div className="pt-20 pb-6">
                 {navItems.map((item, index) => {

@@ -78,27 +78,27 @@ export function Portfolio() {
         onClick={() => setExpandedIndex(null)}
       >
         {/* Match the SectionWrapper padding + Portfolio component padding */}
-        <div className="px-6 md:px-14 lg:px-22 w-full max-w-4xl mx-auto">
+        <div className="px-3 xs:px-4 sm:px-6 md:px-14 lg:px-22 w-full max-w-4xl mx-auto">
           <motion.div
             key={`expanded-${project.title}`}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ duration: 0.3 }}
-            className="glass-border bg-cyber-dark/5 backdrop-blur-md rounded-lg border border-cyber-dark/10 shadow-lg relative w-full"
+            className="glass-border bg-cyber-dark/5 backdrop-blur-md rounded-lg border border-cyber-dark/10 shadow-lg relative w-full max-w-[320px] xs:max-w-full sm:max-w-none mx-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => setExpandedIndex(null)}
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
-              className="w-full p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between focus:outline-none hover:bg-gradient-to-r hover:from-cyber-purple/10 hover:via-cyber-blue/10 hover:to-cyber-pink/10 transition-all duration-300 cursor-pointer group gap-3 sm:gap-0"
+              className="w-full p-3 xs:p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between focus:outline-none hover:bg-gradient-to-r hover:from-cyber-purple/10 hover:via-cyber-blue/10 hover:to-cyber-pink/10 transition-all duration-300 cursor-pointer group gap-2 xs:gap-3 sm:gap-0"
               aria-expanded={true}
             >
               <div className="flex flex-col w-full min-w-0">
-                <div className="flex items-center justify-between w-full gap-3 sm:gap-4 mb-1">
+                <div className="flex items-center justify-between w-full gap-2 xs:gap-3 sm:gap-4 mb-1">
                   <h3
-                    className={`text-[13px] sm:text-[16px] font-medium tracking-[.01em] flex-shrink-0 transition-all duration-300 ${
+                    className={`text-xs xs:text-[13px] sm:text-[16px] font-medium tracking-[.01em] flex-shrink-0 transition-all duration-300 leading-tight ${
                       isHovered ? "gradient-text" : "text-white"
                     }`}
                     style={{
@@ -110,35 +110,37 @@ export function Portfolio() {
                     {project.title}
                   </h3>
 
-                  <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                  <div className="flex items-center gap-1 xs:gap-2 sm:gap-3 flex-shrink-0">
                     <a
                       href={project.link}
-                      className="inline-flex items-center text-white hover:text-cyber-pink transition-colors text-[11px] sm:text-[15px] whitespace-nowrap"
+                      className="inline-flex items-center text-white hover:text-cyber-pink transition-colors text-[10px] xs:text-[11px] sm:text-[15px] whitespace-nowrap"
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <span className="text-[11px] sm:text-base">View</span>{" "}
-                      <HiExternalLink className="ml-1" />
+                      <span className="text-[10px] xs:text-[11px] sm:text-base">
+                        View
+                      </span>{" "}
+                      <HiExternalLink className="ml-0.5 xs:ml-1 w-3 h-3 xs:w-4 xs:h-4" />
                     </a>
                     <motion.div
                       animate={{ rotate: 180 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <HiChevronDown className="text-cyber-blue text-xl" />
+                      <HiChevronDown className="text-cyber-blue text-base xs:text-lg sm:text-xl" />
                     </motion.div>
                   </div>
                 </div>
 
-                <p className="text-white/80 text-[11px] sm:text-[13px] text-left break-words pr-24 sm:pr-28">
+                <p className="text-white/80 text-[10px] xs:text-[11px] sm:text-[13px] text-left break-words pr-16 xs:pr-20 sm:pr-28 leading-relaxed">
                   {project.description}
                 </p>
 
-                <div className="flex flex-wrap gap-2 mt-2 sm:mt-3">
+                <div className="flex flex-wrap gap-1 xs:gap-2 mt-1.5 xs:mt-2 sm:mt-3">
                   {project.tags.map((tag: string) => (
                     <span
                       key={tag}
-                      className="px-1.5 py-0.5 bg-transparent text-white/70 rounded-lg text-[11px] sm:text-xs border border-white/30 border-[1px]"
+                      className="px-1 xs:px-1.5 py-0.5 bg-transparent text-white/70 rounded-lg text-[9px] xs:text-[11px] sm:text-xs border border-white/30 border-[1px]"
                     >
                       {tag}
                     </span>
@@ -153,7 +155,7 @@ export function Portfolio() {
               transition={{ duration: 0.3, delay: 0.1 }}
               className="overflow-hidden border-t border-cyber-blue/20"
             >
-              <div className="p-6 space-y-2">
+              <div className="p-3 xs:p-4 sm:p-4 space-y-0.5 xs:space-y-1">
                 {project.details &&
                   Array.isArray(project.details) &&
                   project.details.map((item: string, i: number) => (
@@ -165,12 +167,12 @@ export function Portfolio() {
                           duration: 0.3,
                           delay: 0.2 + i * 0.1,
                         }}
-                        className="text-white/80 text-[11px] sm:text-[14px] py-1"
+                        className="text-white/80 text-[10px] xs:text-[11px] sm:text-[14px] py-0.5 leading-relaxed"
                       >
                         {item}
                       </motion.div>
                       {i < (project.details?.length ?? 0) - 1 && (
-                        <div className="w-full h-px bg-white/20 my-1" />
+                        <div className="w-full h-px bg-white/20 my-0.5 xs:my-1" />
                       )}
                     </div>
                   ))}
@@ -194,19 +196,19 @@ export function Portfolio() {
           duration: 0.3,
           delay: index * 0.1,
         }}
-        className="glass-border bg-cyber-dark/5 backdrop-blur-md rounded-lg border border-cyber-dark/10 shadow-lg relative"
+        className="glass-border bg-cyber-dark/5 backdrop-blur-md rounded-lg border border-cyber-dark/10 shadow-lg relative w-full max-w-[320px] xs:max-w-full sm:max-w-none mx-auto"
       >
         <button
           onClick={() => toggleProject(index)}
           onMouseEnter={() => setHoveredIndex(index)}
           onMouseLeave={() => setHoveredIndex(null)}
-          className="w-full p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between focus:outline-none hover:bg-gradient-to-r hover:from-cyber-purple/10 hover:via-cyber-blue/10 hover:to-cyber-pink/10 transition-all duration-300 cursor-pointer group gap-3 sm:gap-0"
+          className="w-full p-3 xs:p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between focus:outline-none hover:bg-gradient-to-r hover:from-cyber-purple/10 hover:via-cyber-blue/10 hover:to-cyber-pink/10 transition-all duration-300 cursor-pointer group gap-2 xs:gap-3 sm:gap-0 min-h-[80px] xs:min-h-[90px]"
           aria-expanded={false}
         >
           <div className="flex flex-col w-full min-w-0">
-            <div className="flex items-center justify-between w-full gap-3 sm:gap-4 mb-1">
+            <div className="flex items-center justify-between w-full gap-2 xs:gap-3 sm:gap-4 mb-1">
               <h3
-                className={`text-[13px] sm:text-[16px] font-medium tracking-[.01em] flex-shrink-0 transition-all duration-300 ${
+                className={`text-xs xs:text-[13px] sm:text-[16px] font-medium tracking-[.01em] flex-shrink-0 transition-all duration-300 leading-tight ${
                   !isMobile && isHovered ? "gradient-text" : "text-white"
                 }`}
                 style={{
@@ -218,35 +220,37 @@ export function Portfolio() {
                 {project.title}
               </h3>
 
-              <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+              <div className="flex items-center gap-1 xs:gap-2 sm:gap-3 flex-shrink-0">
                 <a
                   href={project.link}
-                  className="inline-flex items-center text-white hover:text-cyber-pink transition-colors text-[11px] sm:text-[15px] whitespace-nowrap"
+                  className="inline-flex items-center text-white hover:text-cyber-pink transition-colors text-[10px] xs:text-[11px] sm:text-[15px] whitespace-nowrap"
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <span className="text-[11px] sm:text-base">View</span>{" "}
-                  <HiExternalLink className="ml-1" />
+                  <span className="text-[10px] xs:text-[11px] sm:text-base">
+                    View
+                  </span>{" "}
+                  <HiExternalLink className="ml-0.5 xs:ml-1 w-3 h-3 xs:w-4 xs:h-4" />
                 </a>
                 <motion.div
                   animate={{ rotate: 0 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <HiChevronDown className="text-cyber-blue text-xl" />
+                  <HiChevronDown className="text-cyber-blue text-base xs:text-lg sm:text-xl" />
                 </motion.div>
               </div>
             </div>
 
-            <p className="text-white/80 text-[11px] sm:text-[13px] text-left break-words pr-24 sm:pr-28">
+            <p className="text-white/80 text-[10px] xs:text-[11px] sm:text-[13px] text-left break-words pr-16 xs:pr-20 sm:pr-28 leading-relaxed">
               {project.description}
             </p>
 
-            <div className="flex flex-wrap gap-2 mt-2 sm:mt-3">
+            <div className="flex flex-wrap gap-1 xs:gap-2 mt-1.5 xs:mt-2 sm:mt-3">
               {project.tags.map((tag: string) => (
                 <span
                   key={tag}
-                  className="px-1.5 py-0.5 bg-transparent text-white/70 rounded-lg text-[11px] sm:text-xs border border-white/30 border-[1px]"
+                  className="px-1 xs:px-1.5 py-0.5 bg-transparent text-white/70 rounded-lg text-[9px] xs:text-[11px] sm:text-xs border border-white/30 border-[1px]"
                 >
                   {tag}
                 </span>
@@ -276,12 +280,12 @@ export function Portfolio() {
     <section
       ref={sectionRef}
       id="portfolio"
-      className="relative overflow-hidden"
+      className="relative overflow-hidden min-h-screen flex items-center"
     >
       <div className="cyber-grid pointer-events-none w-full h-full left-0 top-0 absolute overflow-x-hidden" />
 
-      <div className="flex-1 flex items-center justify-center py-4">
-        <div className="px-2 sm:px-4 md:px-6 w-full max-w-full mx-auto relative z-10">
+      <div className="flex-1 flex items-center justify-center py-4 xs:py-6 sm:py-4">
+        <div className="px-1 xs:px-2 sm:px-4 md:px-6 w-full max-w-full mx-auto relative z-10">
           <motion.div
             ref={containerRef}
             initial={{ opacity: 0, y: 20 }}
@@ -301,7 +305,7 @@ export function Portfolio() {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="space-y-6 sm:space-y-8"
+                  className="space-y-3 xs:space-y-4 sm:space-y-6 md:space-y-8"
                 >
                   {projects.map((project, index) =>
                     renderCollapsedCard(project, index)

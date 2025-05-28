@@ -68,7 +68,7 @@ export default function RootLayout({
             <main className="flex-1 overflow-y-auto relative">{children}</main>
 
             {/* Footer area - smaller allocated space */}
-            <div className="flex-shrink-0 h-16 flex items-center justify-center relative z-50">
+            <div className="flex-shrink-0 h-16 flex items-center justify-center relative z-40">
               <Footer />
             </div>
           </div>

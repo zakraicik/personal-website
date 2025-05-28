@@ -4,11 +4,14 @@ import { motion } from "framer-motion";
 
 export function About() {
   return (
-    <section id="about" className="relative overflow-hidden">
-      <div className="px-4 md:px-6 w-full max-w-full mx-auto flex-1 flex items-center justify-center relative z-10">
-        <motion.div className="w-full max-w-4xl space-y-8 text-center sm:text-left">
+    <section
+      id="about"
+      className="relative overflow-hidden min-h-screen flex items-center"
+    >
+      <div className="px-6 sm:px-8 md:px-6 w-full max-w-full mx-auto flex-1 flex items-center justify-center relative z-10 py-8">
+        <motion.div className="w-full max-w-4xl space-y-6 sm:space-y-8 text-center sm:text-left">
           <motion.p
-            className="text-base sm:text-lg md:text-xl text-white font-medium"
+            className="text-sm sm:text-base md:text-lg lg:text-xl text-white font-medium leading-relaxed"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
@@ -23,7 +26,7 @@ export function About() {
             twice!).
           </motion.p>
           <motion.p
-            className="text-base sm:text-lg md:text-xl text-white font-medium"
+            className="text-sm sm:text-base md:text-lg lg:text-xl text-white font-medium leading-relaxed"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
@@ -42,7 +45,7 @@ export function About() {
             before selecting the optimal tools and architecture.
           </motion.p>
           <motion.p
-            className="text-base sm:text-lg md:text-xl text-white font-medium"
+            className="text-sm sm:text-base md:text-lg lg:text-xl text-white font-medium leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.6 }}

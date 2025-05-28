@@ -46,13 +46,18 @@ const calculateGridLayout = (
   categories: Array<{ name: string; skillCount: number; color: string }>,
   width: number,
   height: number,
-  isMobile: boolean
+  isMobile: boolean,
+  isVerySmall: boolean
 ): Category[] => {
   const numCategories = categories.length;
-  const cols = isMobile ? 2 : Math.ceil(Math.sqrt(numCategories));
+  const cols = isVerySmall
+    ? 2
+    : isMobile
+    ? 2
+    : Math.ceil(Math.sqrt(numCategories));
   const rows = Math.ceil(numCategories / cols);
 
-  const gapSize = 8;
+  const gapSize = isVerySmall ? 6 : isMobile ? 8 : 8;
   const boxWidth = Math.floor((width - (cols - 1) * gapSize) / cols);
   const boxHeight = Math.floor((height - (rows - 1) * gapSize) / rows);
 
@@ -114,14 +119,19 @@ function useIsClient() {
 const Skills = () => {
   const { width } = useWindowSize();
   const isMobile = width < 768;
+  const isVerySmall = width < 375;
   const isClient = useIsClient();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
 
   const { visibleSection } = useSectionVisibility();
 
-  const containerWidth = isMobile ? Math.min(width * 0.9, 350) : 600;
-  const containerHeight = isMobile ? 400 : 400;
+  const containerWidth = isVerySmall
+    ? Math.min(width * 0.85, 300)
+    : isMobile
+    ? Math.min(width * 0.9, 350)
+    : 600;
+  const containerHeight = isVerySmall ? 350 : isMobile ? 400 : 400;
 
   // Only calculate grid layout when dimensions change
   const categories = useMemo(
@@ -130,9 +140,10 @@ const Skills = () => {
         categoryData,
         containerWidth,
         containerHeight,
-        isMobile
+        isMobile,
+        isVerySmall
       ),
-    [containerWidth, containerHeight, isMobile]
+    [containerWidth, containerHeight, isMobile, isVerySmall]
   );
 
   const selectedCategorySkills = useMemo(() => {
@@ -155,11 +166,14 @@ const Skills = () => {
 
   if (!isClient) {
     return (
-      <section id="skills" className="relative overflow-hidden">
-        <div className="px-4 md:px-6 w-full max-w-full mx-auto flex-1 flex items-center justify-center relative z-10">
+      <section
+        id="skills"
+        className="relative overflow-hidden min-h-screen flex items-center"
+      >
+        <div className="px-3 xs:px-4 sm:px-6 md:px-6 w-full max-w-full mx-auto flex-1 flex items-center justify-center relative z-10">
           <div className="w-full max-w-6xl flex justify-center">
             <div className="animate-pulse">
-              <div className="w-80 h-80 bg-gray-300/20 rounded-lg"></div>
+              <div className="w-60 xs:w-80 h-60 xs:h-80 bg-gray-300/20 rounded-lg"></div>
             </div>
           </div>
         </div>
@@ -168,10 +182,13 @@ const Skills = () => {
   }
 
   return (
-    <section id="skills" className="relative overflow-hidden">
+    <section
+      id="skills"
+      className="relative overflow-hidden min-h-screen flex items-center"
+    >
       <div className="cyber-grid pointer-events-none w-full h-full left-0 top-0 absolute overflow-x-hidden" />
 
-      <div className="px-4 md:px-6 w-full max-w-full mx-auto flex-1 flex items-center justify-center relative z-10">
+      <div className="px-3 xs:px-4 sm:px-6 md:px-6 w-full max-w-full mx-auto flex-1 flex items-center justify-center relative z-10 py-6 xs:py-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -180,18 +197,18 @@ const Skills = () => {
         >
           {selectedCategory && (
             <div
-              className={`w-full h-full flex flex-col overflow-hidden ${
+              className={`w-full h-full flex flex-col overflow-hidden max-w-[320px] xs:max-w-full ${
                 !isMobile ? "max-w-2xl mx-auto" : ""
               }`}
             >
-              <div className="flex items-center justify-between mb-6 flex-shrink-0">
+              <div className="flex items-center justify-between mb-4 xs:mb-6 flex-shrink-0">
                 <button
                   onClick={() => setSelectedCategory(null)}
-                  className="flex items-center gap-2 text-white/70 hover:text-white transition-colors"
+                  className="flex items-center gap-1 xs:gap-2 text-white/70 hover:text-white transition-colors text-xs xs:text-sm min-h-[44px] px-2"
                 >
                   <svg
-                    width="20"
-                    height="20"
+                    width={isVerySmall ? "16" : "20"}
+                    height={isVerySmall ? "16" : "20"}
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -204,58 +221,97 @@ const Skills = () => {
               </div>
 
               <div className="flex-1 overflow-y-auto overflow-x-hidden">
-                <div className="grid grid-cols-2 gap-6 pb-8 w-full">
-                  <div className="space-y-1">
-                    {selectedCategorySkills
-                      .slice(0, Math.ceil(selectedCategorySkills.length / 2))
-                      .map((skill, index) => (
+                <div
+                  className={`grid ${
+                    isVerySmall ? "grid-cols-1" : "grid-cols-2"
+                  } gap-3 xs:gap-4 sm:gap-6 pb-6 xs:pb-8 w-full`}
+                >
+                  {isVerySmall ? (
+                    // Single column for very small screens
+                    <div className="space-y-1">
+                      {selectedCategorySkills.map((skill, index) => (
                         <motion.div
                           key={skill.name}
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.3, delay: index * 0.05 }}
-                          className="flex items-center justify-between py-2 px-3 border-b border-white/10"
+                          className="flex items-center justify-between py-2 px-2 xs:px-3 border-b border-white/10"
                         >
                           <div className="flex-1 min-w-0">
-                            <div className="text-white font-medium text-sm truncate">
+                            <div className="text-white font-medium text-xs xs:text-sm truncate">
                               {skill.name}
                             </div>
                           </div>
-                          <div className="text-xs text-white/70 ml-3 flex-shrink-0">
+                          <div className="text-[10px] xs:text-xs text-white/70 ml-2 xs:ml-3 flex-shrink-0">
                             {skill.level}
                           </div>
                         </motion.div>
                       ))}
-                  </div>
+                    </div>
+                  ) : (
+                    // Two columns for larger screens
+                    <>
+                      <div className="space-y-1">
+                        {selectedCategorySkills
+                          .slice(
+                            0,
+                            Math.ceil(selectedCategorySkills.length / 2)
+                          )
+                          .map((skill, index) => (
+                            <motion.div
+                              key={skill.name}
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{
+                                duration: 0.3,
+                                delay: index * 0.05,
+                              }}
+                              className="flex items-center justify-between py-2 px-2 xs:px-3 border-b border-white/10"
+                            >
+                              <div className="flex-1 min-w-0">
+                                <div className="text-white font-medium text-xs xs:text-sm truncate">
+                                  {skill.name}
+                                </div>
+                              </div>
+                              <div className="text-[10px] xs:text-xs text-white/70 ml-2 xs:ml-3 flex-shrink-0">
+                                {skill.level}
+                              </div>
+                            </motion.div>
+                          ))}
+                      </div>
 
-                  <div className="space-y-1">
-                    {selectedCategorySkills
-                      .slice(Math.ceil(selectedCategorySkills.length / 2))
-                      .map((skill, index) => (
-                        <motion.div
-                          key={skill.name}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{
-                            duration: 0.3,
-                            delay:
-                              (Math.ceil(selectedCategorySkills.length / 2) +
-                                index) *
-                              0.05,
-                          }}
-                          className="flex items-center justify-between py-2 px-3 border-b border-white/10"
-                        >
-                          <div className="flex-1 min-w-0">
-                            <div className="text-white font-medium text-sm truncate">
-                              {skill.name}
-                            </div>
-                          </div>
-                          <div className="text-xs text-white/70 ml-3 flex-shrink-0">
-                            {skill.level}
-                          </div>
-                        </motion.div>
-                      ))}
-                  </div>
+                      <div className="space-y-1">
+                        {selectedCategorySkills
+                          .slice(Math.ceil(selectedCategorySkills.length / 2))
+                          .map((skill, index) => (
+                            <motion.div
+                              key={skill.name}
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{
+                                duration: 0.3,
+                                delay:
+                                  (Math.ceil(
+                                    selectedCategorySkills.length / 2
+                                  ) +
+                                    index) *
+                                  0.05,
+                              }}
+                              className="flex items-center justify-between py-2 px-2 xs:px-3 border-b border-white/10"
+                            >
+                              <div className="flex-1 min-w-0">
+                                <div className="text-white font-medium text-xs xs:text-sm truncate">
+                                  {skill.name}
+                                </div>
+                              </div>
+                              <div className="text-[10px] xs:text-xs text-white/70 ml-2 xs:ml-3 flex-shrink-0">
+                                {skill.level}
+                              </div>
+                            </motion.div>
+                          ))}
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -287,14 +343,18 @@ const Skills = () => {
                       onMouseLeave={() => setHoveredCategory(null)}
                       onClick={() => setSelectedCategory(cat.name)}
                     >
-                      <div className="h-full flex flex-col items-center justify-center p-2 text-center">
+                      <div className="h-full flex flex-col items-center justify-center p-1 xs:p-2 text-center">
                         {/* Category Name */}
                         <div
                           className={`font-medium leading-tight transition-all duration-300 ${
                             isHovered ? "gradient-text" : "text-white"
                           }`}
                           style={{
-                            fontSize: isMobile ? "10px" : "12px",
+                            fontSize: isVerySmall
+                              ? "8px"
+                              : isMobile
+                              ? "10px"
+                              : "12px",
                             lineHeight: "1.2",
                             textShadow: "0 1px 1px rgba(0,0,0,0.1)",
                             letterSpacing: "0.01em",

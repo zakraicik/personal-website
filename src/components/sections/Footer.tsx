@@ -16,7 +16,7 @@ GitHubIcon.displayName = "GitHubIcon";
 
 export function Footer() {
   return (
-    <footer className="w-full fixed bottom-0 left-0 z-50 bg-transparent py-2 px-4 mb-4">
+    <footer className="w-full fixed bottom-0 left-0 z-40 bg-transparent py-2 px-4 mb-4">
       {/* Desktop: exactly match Hero structure */}
       <div className="hidden md:block">
         <div className="grid grid-cols-[140px_1fr] w-full">
