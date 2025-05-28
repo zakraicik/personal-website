@@ -97,7 +97,7 @@ export function TimelineSection() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ duration: 0.3 }}
-            className="glass-border bg-cyber-dark/5 backdrop-blur-md rounded-lg border border-cyber-dark/10 shadow-lg relative w-full max-w-[320px] xs:max-w-full mx-auto"
+            className="glass-border bg-cyber-dark/5 backdrop-blur-md rounded-lg border border-cyber-dark/10 shadow-lg relative w-full max-w-[320px] xs:max-w-full sm:max-w-none mx-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -175,9 +175,9 @@ export function TimelineSection() {
     return (
       <motion.div
         key={`${item.title}-${index}`}
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.5, delay: index * 0.1 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
         className={`glass-border bg-cyber-dark/5 backdrop-blur-md rounded-lg border border-cyber-dark/10 cursor-pointer hover:bg-gradient-to-r hover:from-cyber-purple/10 hover:via-cyber-blue/10 hover:to-cyber-pink/10 transition-all duration-300 p-3 xs:p-4 flex items-center ${
           isMobile
             ? "w-[calc(100vw-100px)] xs:w-[calc(100vw-120px)] max-w-[280px] xs:max-w-[320px]"
