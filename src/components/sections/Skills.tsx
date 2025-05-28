@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { skills } from "@/data/skills";
 import { motion } from "framer-motion";
 import { useSectionVisibility } from "@/context/SectionVisibilityContext";

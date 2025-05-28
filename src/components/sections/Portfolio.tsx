@@ -7,6 +7,15 @@ import { useState, useEffect, useRef } from "react";
 import { useSectionVisibility } from "@/context/SectionVisibilityContext";
 import { projects } from "@/data/projects";
 
+// Define the Project interface
+interface Project {
+  title: string;
+  description: string;
+  link: string;
+  tags: string[];
+  details?: string[];
+}
+
 function useWindowSize() {
   const [windowSize, setWindowSize] = useState({
     width: typeof window !== "undefined" ? window.innerWidth : 0,
@@ -60,7 +69,7 @@ export function Portfolio() {
     setExpandedIndex((current) => (current === index ? null : index));
   };
 
-  const renderExpandedCard = (project: any, index: number) => {
+  const renderExpandedCard = (project: Project, index: number) => {
     const isHovered = hoveredIndex === index;
 
     return (
@@ -144,8 +153,9 @@ export function Portfolio() {
               transition={{ duration: 0.3, delay: 0.1 }}
               className="overflow-hidden border-t border-cyber-blue/20"
             >
-              <div className="p-4 space-y-1">
+              <div className="p-6 space-y-2">
                 {project.details &&
+                  Array.isArray(project.details) &&
                   project.details.map((item: string, i: number) => (
                     <div key={i}>
                       <motion.div
@@ -155,11 +165,11 @@ export function Portfolio() {
                           duration: 0.3,
                           delay: 0.2 + i * 0.1,
                         }}
-                        className="text-white/80 text-[11px] sm:text-[14px] py-0.5"
+                        className="text-white/80 text-[11px] sm:text-[14px] py-1"
                       >
                         {item}
                       </motion.div>
-                      {i < project.details.length - 1 && (
+                      {i < (project.details?.length ?? 0) - 1 && (
                         <div className="w-full h-px bg-white/20 my-1" />
                       )}
                     </div>
@@ -172,7 +182,7 @@ export function Portfolio() {
     );
   };
 
-  const renderCollapsedCard = (project: any, index: number) => {
+  const renderCollapsedCard = (project: Project, index: number) => {
     const isHovered = hoveredIndex === index;
 
     return (

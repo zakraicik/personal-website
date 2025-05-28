@@ -9,7 +9,6 @@ import TimelineContent from "@mui/lab/TimelineContent";
 import TimelineDot from "@mui/lab/TimelineDot";
 import SchoolIcon from "@mui/icons-material/School";
 import WorkIcon from "@mui/icons-material/Work";
-import Typography from "@mui/material/Typography";
 import { useState, useRef, useEffect } from "react";
 import { timelineData } from "@/data/timelineData";
 import { useSectionVisibility } from "@/context/SectionVisibilityContext";
@@ -51,6 +50,16 @@ const sortedTimelineData = [...timelineData].sort((a, b) => {
   return parseYear(b.endYear) - parseYear(a.endYear);
 });
 
+// Define the TimelineItemData interface
+interface TimelineItemData {
+  title: string;
+  subtitle: string;
+  startYear: string;
+  endYear: string;
+  type: string;
+  description: string | string[];
+}
+
 export function TimelineSection() {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -72,7 +81,7 @@ export function TimelineSection() {
     setExpandedIndex((current) => (current === index ? null : index));
   };
 
-  const renderExpandedCard = (item: any, index: number) => {
+  const renderExpandedCard = (item: TimelineItemData, index: number) => {
     const isHovered = hoveredIndex === index;
 
     return (
@@ -160,7 +169,7 @@ export function TimelineSection() {
     );
   };
 
-  const renderCollapsedCard = (item: any, index: number) => {
+  const renderCollapsedCard = (item: TimelineItemData, index: number) => {
     const isHovered = hoveredIndex === index;
 
     return (
@@ -254,7 +263,7 @@ export function TimelineSection() {
               {expandedIndex !== null ? (
                 // Expanded state: show only the expanded card, perfectly centered
                 renderExpandedCard(
-                  sortedTimelineData[expandedIndex],
+                  sortedTimelineData[expandedIndex] as TimelineItemData,
                   expandedIndex
                 )
               ) : (
@@ -340,7 +349,7 @@ export function TimelineSection() {
                             px: isMobile ? 0 : 2,
                           }}
                         >
-                          {renderCollapsedCard(item, index)}
+                          {renderCollapsedCard(item as TimelineItemData, index)}
                         </TimelineContent>
                       </TimelineItem>
                     ))}
