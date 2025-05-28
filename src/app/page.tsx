@@ -7,7 +7,7 @@ import { TimelineSection } from "@/components/sections/Timeline";
 
 export default function Home() {
   return (
-    <div className="relative w-full h-screen overflow-hidden">
+    <div className="relative w-full h-full overflow-hidden">
       <div className="absolute inset-0 z-0">
         <SectionWrapper id="home">
           <Hero />

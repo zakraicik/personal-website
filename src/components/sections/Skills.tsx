@@ -21,37 +21,85 @@ const BRAND_GRADIENT = [
   "#FF1493", // pink
 ];
 
+// Static data processing moved outside component
+const getCategoryColor = (index: number): string => {
+  return BRAND_GRADIENT[index % BRAND_GRADIENT.length];
+};
+
+// Pre-process categories and their colors
+const categoryList = Array.from(new Set(skills.map((s) => s.category)));
+const categoryData = categoryList.map((catName, i) => ({
+  name: catName,
+  skillCount: skills.filter((s) => s.category === catName).length,
+  color: getCategoryColor(i),
+}));
+
+// Pre-process skills with their colors
+const skillItems = skills.map((skill) => ({
+  ...skill,
+  color:
+    categoryData.find((cat) => cat.name === skill.category)?.color ||
+    BRAND_GRADIENT[0],
+}));
+
+const calculateGridLayout = (
+  categories: Array<{ name: string; skillCount: number; color: string }>,
+  width: number,
+  height: number,
+  isMobile: boolean
+): Category[] => {
+  const numCategories = categories.length;
+  const cols = isMobile ? 2 : Math.ceil(Math.sqrt(numCategories));
+  const rows = Math.ceil(numCategories / cols);
+
+  const gapSize = 8;
+  const boxWidth = Math.floor((width - (cols - 1) * gapSize) / cols);
+  const boxHeight = Math.floor((height - (rows - 1) * gapSize) / rows);
+
+  return categories.map((cat, index) => {
+    const row = Math.floor(index / cols);
+    const col = index % cols;
+
+    return {
+      name: cat.name,
+      color: cat.color,
+      skillCount: cat.skillCount,
+      x: col * (boxWidth + gapSize),
+      y: row * (boxHeight + gapSize),
+      width: boxWidth,
+      height: boxHeight,
+    };
+  });
+};
+
 function useWindowSize() {
   const [windowSize, setWindowSize] = useState({
     width: typeof window !== "undefined" ? window.innerWidth : 0,
   });
 
-  const debouncedSetSize = useCallback(() => {
-    const timeout = setTimeout(() => {
-      setWindowSize({
-        width: window.innerWidth,
-      });
-    }, 100);
-    return () => clearTimeout(timeout);
-  }, []);
-
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
     function handleResize() {
-      debouncedSetSize();
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        setWindowSize({
+          width: window.innerWidth,
+        });
+      }, 150);
     }
 
     window.addEventListener("resize", handleResize);
     handleResize();
 
-    return () => window.removeEventListener("resize", handleResize);
-  }, [debouncedSetSize]);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      clearTimeout(timeoutId);
+    };
+  }, []);
 
   return windowSize;
 }
-
-const getCategoryColor = (index: number): string => {
-  return BRAND_GRADIENT[index % BRAND_GRADIENT.length];
-};
 
 function useIsClient() {
   const [isClient, setIsClient] = useState(false);
@@ -62,44 +110,6 @@ function useIsClient() {
 
   return isClient;
 }
-
-const calculateGridLayout = (
-  categories: Array<{ name: string; skillCount: number; color: string }>,
-  width: number,
-  height: number,
-  isMobile: boolean
-): Category[] => {
-  const numCategories = categories.length;
-
-  const cols = isMobile ? 2 : Math.ceil(Math.sqrt(numCategories));
-  const rows = Math.ceil(numCategories / cols);
-
-  const gapSize = 8;
-  const boxWidth = (width - (cols - 1) * gapSize) / cols;
-  const boxHeight = (height - (rows - 1) * gapSize) / rows;
-
-  const result: Category[] = [];
-
-  categories.forEach((cat, index) => {
-    const row = Math.floor(index / cols);
-    const col = index % cols;
-
-    const x = col * (boxWidth + gapSize);
-    const y = row * (boxHeight + gapSize);
-
-    result.push({
-      name: cat.name,
-      color: cat.color,
-      skillCount: cat.skillCount,
-      x: x,
-      y: y,
-      width: boxWidth,
-      height: boxHeight,
-    });
-  });
-
-  return result;
-};
 
 const Skills = () => {
   const { width } = useWindowSize();
@@ -113,46 +123,22 @@ const Skills = () => {
   const containerWidth = isMobile ? Math.min(width * 0.9, 350) : 600;
   const containerHeight = isMobile ? 400 : 400;
 
-  const categoryData = useMemo(() => {
-    const categoryList = Array.from(new Set(skills.map((s) => s.category)));
-    return categoryList.map((catName) => ({
-      name: catName,
-      skillCount: skills.filter((s) => s.category === catName).length,
-      color: "",
-    }));
-  }, []);
-
-  const categoriesWithColors = useMemo(() => {
-    return categoryData.map((cat, i) => ({
-      ...cat,
-      color: getCategoryColor(i),
-    }));
-  }, [categoryData]);
-
+  // Only calculate grid layout when dimensions change
   const categories = useMemo(
     () =>
       calculateGridLayout(
-        categoriesWithColors,
+        categoryData,
         containerWidth,
         containerHeight,
         isMobile
       ),
-    [categoriesWithColors, containerWidth, containerHeight, isMobile]
+    [containerWidth, containerHeight, isMobile]
   );
-
-  const skillItems = useMemo(() => {
-    return skills.map((skill) => ({
-      ...skill,
-      color:
-        categoriesWithColors.find((cat) => cat.name === skill.category)
-          ?.color || BRAND_GRADIENT[0],
-    }));
-  }, [categoriesWithColors]);
 
   const selectedCategorySkills = useMemo(() => {
     if (!selectedCategory) return [];
     return skillItems.filter((skill) => skill.category === selectedCategory);
-  }, [skillItems, selectedCategory]);
+  }, [selectedCategory]);
 
   useEffect(() => {
     if (visibleSection === "skills") {
@@ -169,10 +155,7 @@ const Skills = () => {
 
   if (!isClient) {
     return (
-      <section
-        id="skills"
-        className="min-h-screen flex flex-col justify-center section-padding relative overflow-hidden"
-      >
+      <section id="skills" className="relative overflow-hidden">
         <div className="px-4 md:px-6 w-full max-w-full mx-auto flex-1 flex items-center justify-center relative z-10">
           <div className="w-full max-w-6xl flex justify-center">
             <div className="animate-pulse">
@@ -185,10 +168,7 @@ const Skills = () => {
   }
 
   return (
-    <section
-      id="skills"
-      className="min-h-screen flex flex-col justify-center section-padding relative overflow-hidden"
-    >
+    <section id="skills" className="relative overflow-hidden">
       <div className="cyber-grid pointer-events-none w-full h-full left-0 top-0 absolute overflow-x-hidden" />
 
       <div className="px-4 md:px-6 w-full max-w-full mx-auto flex-1 flex items-center justify-center relative z-10">
@@ -296,7 +276,7 @@ const Skills = () => {
                   return (
                     <div
                       key={cat.name}
-                      className="absolute bg-cyber-dark/5 backdrop-blur-md border border-cyber-dark/10 shadow-lg rounded-lg cursor-pointer transition-all duration-300 hover:scale-105 hover:bg-gradient-to-r hover:from-cyber-purple/10 hover:via-cyber-blue/10 hover:to-cyber-pink/10 hover:shadow-xl"
+                      className="glass-border cyber-glow absolute bg-cyber-dark/5 backdrop-blur-md border border-cyber-dark/10 shadow-lg rounded-lg cursor-pointer transition-all duration-300 hover:scale-105 hover:bg-gradient-to-r hover:from-cyber-purple/10 hover:via-cyber-blue/10 hover:to-cyber-pink/10 hover:shadow-xl"
                       style={{
                         left: cat.x,
                         top: cat.y,
@@ -311,7 +291,7 @@ const Skills = () => {
                         {/* Category Name */}
                         <div
                           className={`font-medium leading-tight transition-all duration-300 ${
-                            isHovered ? "gradient-text" : "text-cyber-blue"
+                            isHovered ? "gradient-text" : "text-white"
                           }`}
                           style={{
                             fontSize: isMobile ? "10px" : "12px",

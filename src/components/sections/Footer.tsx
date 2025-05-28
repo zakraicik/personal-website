@@ -35,6 +35,12 @@ export function Footer() {
                       : method.label === "Phone"
                       ? "text-cyber-purple"
                       : "text-cyber-blue";
+                  const glowColor =
+                    method.label === "GitHub"
+                      ? "#FF1493"
+                      : method.label === "Phone"
+                      ? "#8A2BE2"
+                      : "#00BFFF";
                   return (
                     <span key={method.label}>
                       {method.link ? (
@@ -53,18 +59,34 @@ export function Footer() {
                             method.label === "GitHub" ? "GitHub" : method.value
                           }
                         >
-                          {IconComponent && (
-                            <IconComponent className="w-5 h-5" />
-                          )}
+                          <span
+                            style={
+                              {
+                                "--glow-color": glowColor,
+                              } as React.CSSProperties
+                            }
+                          >
+                            {IconComponent && (
+                              <IconComponent className="w-5 h-5 techy-glow" />
+                            )}
+                          </span>
                         </a>
                       ) : (
                         <span
                           className={`text-xl ${colorClass}`}
                           title={method.value}
                         >
-                          {IconComponent && (
-                            <IconComponent className="w-5 h-5" />
-                          )}
+                          <span
+                            style={
+                              {
+                                "--glow-color": glowColor,
+                              } as React.CSSProperties
+                            }
+                          >
+                            {IconComponent && (
+                              <IconComponent className="w-5 h-5 techy-glow" />
+                            )}
+                          </span>
                         </span>
                       )}
                     </span>
@@ -89,6 +111,12 @@ export function Footer() {
               : method.label === "Phone"
               ? "text-cyber-purple"
               : "text-cyber-blue";
+          const glowColor =
+            method.label === "GitHub"
+              ? "#FF1493"
+              : method.label === "Phone"
+              ? "#8A2BE2"
+              : "#00BFFF";
           return (
             <span key={method.label}>
               {method.link ? (
@@ -101,11 +129,23 @@ export function Footer() {
                   className={`text-xl ${colorClass} hover:scale-110 transition-all duration-200`}
                   title={method.label === "GitHub" ? "GitHub" : method.value}
                 >
-                  {IconComponent && <IconComponent className="w-5 h-5" />}
+                  <span
+                    style={{ "--glow-color": glowColor } as React.CSSProperties}
+                  >
+                    {IconComponent && (
+                      <IconComponent className="w-5 h-5 techy-glow" />
+                    )}
+                  </span>
                 </a>
               ) : (
                 <span className={`text-xl ${colorClass}`} title={method.value}>
-                  {IconComponent && <IconComponent className="w-5 h-5" />}
+                  <span
+                    style={{ "--glow-color": glowColor } as React.CSSProperties}
+                  >
+                    {IconComponent && (
+                      <IconComponent className="w-5 h-5 techy-glow" />
+                    )}
+                  </span>
                 </span>
               )}
             </span>

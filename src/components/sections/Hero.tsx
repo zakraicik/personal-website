@@ -1,5 +1,4 @@
 "use client";
-
 import { motion } from "framer-motion";
 import { useSectionVisibility } from "@/context/SectionVisibilityContext";
 
@@ -12,18 +11,15 @@ export function Hero() {
   };
 
   return (
-    <section
-      id="home"
-      className="min-h-screen flex flex-col justify-center section-padding relative overflow-hidden"
-    >
+    <section id="home" className="relative overflow-hidden">
       <div className="cyber-grid pointer-events-none w-full h-full left-0 top-0 absolute overflow-x-hidden" />
 
-      <div className="px-4 md:px-6 w-full max-w-full mx-auto flex-1 flex items-center justify-center relative z-10">
+      <div className="px-4 md:px-6 w-full max-w-full mx-auto relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="w-full max-w-6xl"
+          className="w-full max-w-6xl mx-auto"
         >
           <div className="space-y-6 sm:space-y-8 text-center">
             <div className="space-y-3 sm:space-y-4">
@@ -45,7 +41,6 @@ export function Hero() {
                 Data Scientist, Builder, Storyteller, Creator
               </motion.p>
             </div>
-
             <motion.div
               className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center w-full max-w-md mx-auto"
               initial={{ opacity: 0, y: 20 }}
@@ -57,12 +52,6 @@ export function Hero() {
                 className="glass-button flex-1 text-center bg-transparent border border-cyber-purple/50 hover:border-cyber-purple hover:bg-transparent text-sm sm:text-lg py-2 px-4 cursor-pointer transition-all duration-300"
               >
                 <span>View My Work</span>
-              </button>
-              <button
-                onClick={() => handleNavigate("contact")}
-                className="glass-button flex-1 text-center bg-transparent border border-cyber-purple/50 hover:border-cyber-purple hover:bg-transparent text-sm sm:text-lg py-2 px-4 cursor-pointer transition-all duration-300"
-              >
-                <span>Contact Me</span>
               </button>
             </motion.div>
           </div>

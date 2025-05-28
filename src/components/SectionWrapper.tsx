@@ -21,7 +21,7 @@ export function SectionWrapper({ id, children }: SectionWrapperProps) {
     return (
       <section
         id={id}
-        className="absolute inset-0 w-full h-screen flex flex-col justify-center"
+        className="absolute inset-0 w-full h-full flex flex-col justify-center"
         style={{
           transform: "translateY(0vh)",
           opacity: isHome ? 1 : 0,
@@ -55,7 +55,7 @@ export function SectionWrapper({ id, children }: SectionWrapperProps) {
   return (
     <section
       id={id}
-      className={`absolute inset-0 w-full h-screen flex flex-col justify-center transition-all duration-700 ease-out ${
+      className={`absolute inset-0 w-full h-full flex flex-col justify-center transition-all duration-700 ease-out ${
         isVisible
           ? "opacity-100 z-10"
           : Math.abs(sectionIndex - visibleIndex) === 1

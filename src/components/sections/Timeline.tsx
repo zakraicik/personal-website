@@ -55,10 +55,7 @@ export function TimelineSection() {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const { visibleSection } = useSectionVisibility();
-  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const timelineContainerRef = useRef<HTMLDivElement | null>(null);
-  const sectionRef = useRef<HTMLDivElement | null>(null);
-  const expandedItemRef = useRef<HTMLDivElement | null>(null);
   const { width } = useWindowSize();
   const isClient = useIsClient();
 
@@ -71,372 +68,288 @@ export function TimelineSection() {
     }
   }, [visibleSection]);
 
-  useEffect(() => {
-    if (expandedIndex === null) {
-      setHoveredIndex(null);
-    }
-  }, [expandedIndex]);
-
   const toggleExpand = (index: number) => {
     setExpandedIndex((current) => (current === index ? null : index));
   };
 
-  const centerExpandedCard = () => {
-    const expandedItem = expandedItemRef.current;
-    if (!expandedItem) return;
+  const renderExpandedCard = (item: any, index: number) => {
+    const isHovered = hoveredIndex === index;
 
-    const itemRect = expandedItem.getBoundingClientRect();
-    const viewportCenter = window.innerHeight / 2;
-    const itemCenter = itemRect.top + itemRect.height / 2;
-    const scrollOffset = itemCenter - viewportCenter;
-
-    window.scrollBy({
-      top: scrollOffset,
-      behavior: "smooth",
-    });
-  };
-
-  const centerTimelineSection = () => {
-    if (!sectionRef.current) return;
-
-    const section = sectionRef.current;
-    const sectionRect = section.getBoundingClientRect();
-    const viewportHeight = window.innerHeight;
-
-    const sectionCenter = sectionRect.top + sectionRect.height / 2;
-    const viewportCenter = viewportHeight / 2;
-    const scrollAdjustment = sectionCenter - viewportCenter;
-
-    if (Math.abs(scrollAdjustment) > 20) {
-      window.scrollBy({
-        top: scrollAdjustment,
-        behavior: "smooth",
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (!isClient) return;
-
-    if (width >= 768) {
-      if (expandedIndex !== null) {
-        const timer = setTimeout(() => {
-          centerExpandedCard();
-        }, 450);
-        return () => clearTimeout(timer);
-      } else {
-        const timer = setTimeout(() => {
-          centerTimelineSection();
-        }, 450);
-        return () => clearTimeout(timer);
-      }
-    } else {
-      if (expandedIndex !== null) {
-        const timer = setTimeout(() => {
-          centerExpandedCard();
-        }, 350);
-        return () => clearTimeout(timer);
-      } else {
-        const timer = setTimeout(() => {
-          centerTimelineSection();
-        }, 350);
-        return () => clearTimeout(timer);
-      }
-    }
-  }, [expandedIndex, width, isClient]);
-
-  if (!isClient) {
     return (
-      <section
-        ref={sectionRef}
-        id="timeline"
-        className="min-h-screen flex flex-col justify-center section-padding relative overflow-hidden"
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-transparent"
+        onClick={() => setExpandedIndex(null)}
       >
-        <div className="cyber-grid pointer-events-none w-full h-full left-0 top-0 absolute overflow-x-hidden" />
-        <div className="px-4 md:px-6 w-full max-w-full mx-auto flex-1 flex items-center justify-center relative z-10">
-          <div className="w-full max-w-4xl">
-            <div className="animate-pulse">
-              <div className="h-8 bg-gray-300/20 rounded mb-4"></div>
-              <div className="h-6 bg-gray-300/20 rounded mb-4"></div>
-              <div className="h-6 bg-gray-300/20 rounded mb-4"></div>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  return (
-    <section
-      ref={sectionRef}
-      id="timeline"
-      className="min-h-screen flex flex-col justify-center section-padding relative overflow-hidden"
-    >
-      <div className="cyber-grid pointer-events-none w-full h-full left-0 top-0 absolute overflow-x-hidden" />
-
-      <div className="px-4 md:px-6 w-full max-w-full mx-auto flex-1 flex items-center justify-center relative z-10">
-        {isMobile && expandedIndex !== null && (
+        {/* Match the SectionWrapper padding */}
+        <div className="px-6 md:px-14 lg:px-22 w-full max-w-4xl mx-auto">
           <motion.div
-            ref={expandedItemRef}
+            key={`expanded-${item.title}`}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 flex items-center justify-center z-50 p-4"
-            style={{ backgroundColor: "rgba(0, 0, 0, 0.3)" }}
+            className="glass-border bg-cyber-dark/5 backdrop-blur-md rounded-lg border border-cyber-dark/10 shadow-lg relative w-full"
+            onClick={(e) => e.stopPropagation()}
           >
-            <motion.div
-              className="bg-cyber-dark/5 backdrop-blur-md rounded-lg border border-cyber-dark/10 p-4 cursor-pointer hover:bg-gradient-to-r hover:from-cyber-purple/10 hover:via-cyber-blue/10 hover:to-cyber-pink/10 transition-all duration-300 w-[90vw] max-w-[400px]"
-              onClick={() => toggleExpand(expandedIndex)}
-              aria-expanded={true}
+            <button
+              onClick={() => setExpandedIndex(null)}
+              onMouseEnter={() => setHoveredIndex(index)}
+              onMouseLeave={() => setHoveredIndex(null)}
+              className="w-full p-4 sm:p-6 flex flex-col items-start justify-between focus:outline-none hover:bg-gradient-to-r hover:from-cyber-purple/10 hover:via-cyber-blue/10 hover:to-cyber-pink/10 transition-all duration-300 cursor-pointer gap-3 sm:gap-0"
             >
-              <div className="flex items-start justify-between mb-2">
-                <Typography
-                  variant="subtitle1"
-                  component="span"
-                  className="gradient-text font-medium font-bold !text-[14px] flex-1 leading-tight"
-                >
-                  {sortedTimelineData[expandedIndex].title}
-                </Typography>
-                <Typography className="text-white/70 !text-[11px] ml-3 flex-shrink-0">
-                  {`${sortedTimelineData[expandedIndex].startYear} - ${sortedTimelineData[expandedIndex].endYear}`}
-                </Typography>
+              <div className="flex flex-col w-full min-w-0">
+                <div className="flex items-center justify-between w-full gap-3 sm:gap-4 mb-1">
+                  <h3
+                    className={`font-medium text-[13px] md:text-[16px] flex-shrink-0 transition-all duration-300 ${
+                      isHovered ? "gradient-text" : "text-white"
+                    }`}
+                  >
+                    {item.title}
+                  </h3>
+                  <span className="text-white/70 text-[11px] md:text-[13px] flex-shrink-0">
+                    {`${item.startYear} - ${item.endYear}`}
+                  </span>
+                </div>
+                <p className="text-white/80 text-[11px] md:text-[13px] text-left">
+                  {item.subtitle}
+                </p>
               </div>
-              <Typography className="text-white/80 !text-[11px] mb-3 leading-relaxed">
-                {sortedTimelineData[expandedIndex].subtitle}
-              </Typography>
+            </button>
 
-              <motion.div
-                key={`expand-${expandedIndex}`}
-                initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                animate={{
-                  opacity: 1,
-                  height: "auto",
-                  marginTop: 12,
-                }}
-                exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                transition={{
-                  duration: 0.4,
-                  ease: [0.25, 0.46, 0.45, 0.94],
-                }}
-                style={{ overflow: "hidden" }}
-              >
-                {Array.isArray(
-                  sortedTimelineData[expandedIndex].description
-                ) ? (
-                  <div className="mt-3 space-y-2">
-                    {sortedTimelineData[expandedIndex].description.map(
-                      (desc, i) => (
-                        <div key={i}>
-                          <div className="text-white/70 text-[11px] py-1 text-left">
-                            {desc}
-                          </div>
-                          {i <
-                            sortedTimelineData[expandedIndex].description
-                              .length -
-                              1 && (
-                            <div className="w-full h-px bg-white/20 my-1" />
-                          )}
-                        </div>
-                      )
-                    )}
-                  </div>
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
+              className="overflow-hidden border-t border-cyber-blue/20"
+            >
+              <div className="p-4 space-y-1">
+                {Array.isArray(item.description) ? (
+                  item.description.map((desc: string, i: number) => (
+                    <div key={i}>
+                      <motion.div
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{
+                          duration: 0.3,
+                          delay: 0.2 + i * 0.1,
+                        }}
+                        className="text-white/80 text-[11px] md:text-[13px] py-0.5 text-left"
+                      >
+                        {desc}
+                      </motion.div>
+                      {i < item.description.length - 1 && (
+                        <div className="w-full h-px bg-white/20 my-1" />
+                      )}
+                    </div>
+                  ))
                 ) : (
-                  <Typography className="mt-3 text-white/70 !text-[11px] w-full text-left">
-                    {sortedTimelineData[expandedIndex].description}
-                  </Typography>
+                  <motion.div
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: 0.2 }}
+                    className="text-white/80 text-[11px] md:text-[13px] py-0.5 text-left"
+                  >
+                    {item.description}
+                  </motion.div>
                 )}
-              </motion.div>
+              </div>
             </motion.div>
           </motion.div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderCollapsedCard = (item: any, index: number) => {
+    const isHovered = hoveredIndex === index;
+
+    return (
+      <motion.div
+        key={`${item.title}-${index}`}
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: index * 0.1 }}
+        className={`glass-border bg-cyber-dark/5 backdrop-blur-md rounded-lg border border-cyber-dark/10 p-4 cursor-pointer hover:bg-gradient-to-r hover:from-cyber-purple/10 hover:via-cyber-blue/10 hover:to-cyber-pink/10 transition-all duration-300 ${
+          isMobile ? "w-[calc(100vw-120px)] max-w-[300px]" : ""
+        }`}
+        onClick={() => toggleExpand(index)}
+        onMouseEnter={() => setHoveredIndex(index)}
+        onMouseLeave={() => setHoveredIndex(null)}
+      >
+        {isMobile ? (
+          <div className="flex flex-col w-full min-w-0">
+            <div className="flex items-center justify-between w-full gap-3 mb-1">
+              <h3
+                className={`font-medium text-[13px] md:text-[16px] flex-1 leading-tight transition-all duration-300 text-white`}
+              >
+                {item.title}
+              </h3>
+              <span className="text-white/70 text-[11px] md:text-[13px] flex-shrink-0">
+                {`${item.startYear} - ${item.endYear}`}
+              </span>
+            </div>
+            <p className="text-white/80 text-[11px] md:text-[13px] leading-relaxed">
+              {item.subtitle}
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col w-full min-w-0">
+            <div
+              className={`flex items-center justify-between w-full gap-4 ${
+                index % 2 === 0 ? "" : "flex-row-reverse"
+              }`}
+            >
+              <h3
+                className={`font-medium text-[13px] md:text-[16px] transition-all duration-300 ${
+                  !isMobile && isHovered ? "gradient-text" : "text-white"
+                }`}
+              >
+                {item.title}
+              </h3>
+              <span className="text-white/70 text-[11px] md:text-[13px] flex-shrink-0">
+                {`${item.startYear} - ${item.endYear}`}
+              </span>
+            </div>
+            <p
+              className={`text-white/80 text-[11px] md:text-[13px] mt-1 ${
+                index % 2 === 0 ? "text-left" : "text-right"
+              }`}
+            >
+              {item.subtitle}
+            </p>
+          </div>
         )}
+      </motion.div>
+    );
+  };
 
-        <motion.div
-          ref={timelineContainerRef}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{
-            opacity: isMobile && expandedIndex !== null ? 0 : 1,
-            y: 0,
-          }}
-          transition={{ duration: 0.5 }}
-          className="w-full max-w-4xl"
-        >
-          <Timeline
-            position={isMobile ? "right" : "alternate"}
-            className="p-4"
-            sx={{
-              ...(isMobile && {
-                "& .MuiTimelineItem-root": {
-                  "&:before": {
-                    flex: 0,
-                    padding: 0,
-                  },
-                },
-                "& .MuiTimelineItem-root .MuiTimelineItem-content": {
-                  paddingLeft: "32px",
-                },
-                "& .MuiTimelineSeparator-root": {
-                  marginRight: "16px",
-                },
-                paddingLeft: "0px",
-                display: "flex",
-                justifyContent: "center",
-              }),
-            }}
+  if (!isClient) {
+    return (
+      <div className="flex-1 flex items-center justify-center py-4">
+        <div className="w-full max-w-4xl relative z-10">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-300/20 rounded mb-4"></div>
+            <div className="h-6 bg-gray-300/20 rounded mb-4"></div>
+            <div className="h-6 bg-gray-300/20 rounded mb-4"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <section id="timeline" className="relative overflow-hidden">
+      <div className="cyber-grid pointer-events-none w-full h-full left-0 top-0 absolute overflow-x-hidden" />
+
+      <div className="flex-1 flex items-center justify-center py-4">
+        <div className="px-4 md:px-6 w-full max-w-full mx-auto relative z-10">
+          <motion.div
+            ref={timelineContainerRef}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="w-full max-w-4xl mx-auto"
           >
-            {sortedTimelineData.map((item, index) => {
-              const isExpanded = expandedIndex === index;
-              const isHovered = hoveredIndex === index;
-
-              return (
-                <TimelineItem key={index}>
-                  <TimelineSeparator>
-                    <TimelineConnector className="bg-cyber-blue/30" />
-                    <TimelineDot
-                      sx={{
-                        backgroundColor:
-                          item.type === "education" ? "#00BFFF" : "#8A2BE2",
-                      }}
-                    >
-                      {item.type === "education" ? (
-                        <SchoolIcon className="text-white" />
-                      ) : (
-                        <WorkIcon className="text-white" />
-                      )}
-                    </TimelineDot>
-                    <TimelineConnector className="bg-cyber-blue/30" />
-                  </TimelineSeparator>
-                  <TimelineContent
+            <AnimatePresence mode="wait">
+              {expandedIndex !== null ? (
+                // Expanded state: show only the expanded card, perfectly centered
+                renderExpandedCard(
+                  sortedTimelineData[expandedIndex],
+                  expandedIndex
+                )
+              ) : (
+                // Collapsed state: show timeline
+                <motion.div
+                  key="collapsed-timeline"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                >
+                  <Timeline
+                    position={isMobile ? "right" : "alternate"}
+                    className="p-4"
                     sx={{
-                      py: "12px",
-                      px: isMobile ? 0 : 2,
+                      ...(isMobile && {
+                        "& .MuiTimelineItem-root": {
+                          "&:before": {
+                            flex: 0,
+                            padding: 0,
+                          },
+                        },
+                        "& .MuiTimelineItem-root .MuiTimelineItem-content": {
+                          paddingLeft: "32px",
+                        },
+                        "& .MuiTimelineSeparator-root": {
+                          marginRight: "16px",
+                        },
+                        paddingLeft: "0px",
+                        display: "flex",
+                        justifyContent: "center",
+                      }),
                     }}
                   >
-                    <motion.div
-                      ref={(el) => {
-                        itemRefs.current[index] = el;
-                      }}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
-                      className={`bg-cyber-dark/5 backdrop-blur-md rounded-lg border border-cyber-dark/10 p-4 cursor-pointer hover:bg-gradient-to-r hover:from-cyber-purple/10 hover:via-cyber-blue/10 hover:to-cyber-pink/10 transition-all duration-300 ${
-                        isMobile ? "w-[calc(100vw-120px)] max-w-[300px]" : ""
-                      }`}
-                      onClick={() => toggleExpand(index)}
-                      onMouseEnter={() => setHoveredIndex(index)}
-                      onMouseLeave={() => setHoveredIndex(null)}
-                      aria-expanded={isExpanded}
-                    >
-                      {isMobile ? (
-                        <>
-                          <div className="flex items-start justify-between mb-2">
-                            <Typography
-                              variant="subtitle1"
-                              component="span"
-                              className={`font-medium font-bold !text-[14px] flex-1 leading-tight transition-all duration-300 ${
-                                isHovered
-                                  ? "gradient-text"
-                                  : item.type === "education"
-                                  ? "text-cyber-blue"
-                                  : "text-cyber-purple"
-                              }`}
-                            >
-                              {item.title}
-                            </Typography>
-                            <Typography className="text-white/70 !text-[11px] ml-3 flex-shrink-0">
-                              {`${item.startYear} - ${item.endYear}`}
-                            </Typography>
-                          </div>
-                          <Typography className="text-white/80 !text-[11px] mb-3 leading-relaxed">
-                            {item.subtitle}
-                          </Typography>
-                        </>
-                      ) : (
-                        <>
-                          <div
-                            className={`flex items-center justify-between ${
-                              index % 2 === 0 ? "" : "flex-row-reverse"
-                            }`}
-                          >
-                            <Typography
-                              variant="subtitle1"
-                              component="span"
-                              className={`font-medium font-bold !text-[16px] transition-all duration-300 ${
-                                isHovered
-                                  ? "gradient-text"
-                                  : item.type === "education"
-                                  ? "text-cyber-blue"
-                                  : "text-cyber-purple"
-                              }`}
-                            >
-                              {item.title}
-                            </Typography>
-                            <Typography className="text-white/70 !text-[12px] ml-4 mr-4">
-                              {`${item.startYear} - ${item.endYear}`}
-                            </Typography>
-                          </div>
-                          <Typography className="text-white/80 !text-[12px] mt-1 mb-3">
-                            {item.subtitle}
-                          </Typography>
-                        </>
-                      )}
-                      <AnimatePresence mode="wait">
-                        {isExpanded && !isMobile && (
-                          <motion.div
-                            key={`expand-${index}`}
-                            initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                            animate={{
-                              opacity: 1,
-                              height: "auto",
-                              marginTop: 12,
+                    {sortedTimelineData.map((item, index) => (
+                      <TimelineItem key={index}>
+                        <TimelineSeparator>
+                          <TimelineConnector className="bg-cyber-blue/30" />
+                          <TimelineDot
+                            sx={{
+                              backgroundColor: "transparent",
+                              boxShadow: "none",
+                              border: `2px solid ${
+                                item.type === "education"
+                                  ? "#FF1493"
+                                  : "#8A2BE2"
+                              }`,
                             }}
-                            exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                            transition={{
-                              duration: 0.4,
-                              ease: [0.25, 0.46, 0.45, 0.94],
-                            }}
-                            style={{ overflow: "hidden" }}
                           >
-                            {Array.isArray(item.description) ? (
-                              <div className="mt-3 space-y-2">
-                                {item.description.map((desc, i) => (
-                                  <div key={i}>
-                                    <div
-                                      className={`text-white/70 py-1 ${
-                                        index % 2 === 0
-                                          ? "text-[12px] text-left"
-                                          : "text-[12px] text-right"
-                                      }`}
-                                    >
-                                      {desc}
-                                    </div>
-                                    {i < item.description.length - 1 && (
-                                      <div className="w-full h-px bg-white/20 my-1" />
-                                    )}
-                                  </div>
-                                ))}
-                              </div>
-                            ) : (
-                              <Typography
-                                className={`mt-3 text-white/70 w-full ${
-                                  index % 2 === 0
-                                    ? "!text-[12px] text-left"
-                                    : "!text-[12px] text-right"
-                                }`}
+                            {item.type === "education" ? (
+                              <span
+                                style={
+                                  {
+                                    "--glow-color": "#FF1493",
+                                  } as React.CSSProperties
+                                }
                               >
-                                {item.description}
-                              </Typography>
+                                <SchoolIcon
+                                  style={{ color: "#FF1493" }}
+                                  className="techy-glow"
+                                />
+                              </span>
+                            ) : (
+                              <span
+                                style={
+                                  {
+                                    "--glow-color": "#8A2BE2",
+                                  } as React.CSSProperties
+                                }
+                              >
+                                <WorkIcon
+                                  style={{ color: "#8A2BE2" }}
+                                  className="techy-glow"
+                                />
+                              </span>
                             )}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </motion.div>
-                  </TimelineContent>
-                </TimelineItem>
-              );
-            })}
-          </Timeline>
-        </motion.div>
+                          </TimelineDot>
+                          <TimelineConnector className="bg-cyber-blue/30" />
+                        </TimelineSeparator>
+                        <TimelineContent
+                          sx={{
+                            py: "12px",
+                            px: isMobile ? 0 : 2,
+                          }}
+                        >
+                          {renderCollapsedCard(item, index)}
+                        </TimelineContent>
+                      </TimelineItem>
+                    ))}
+                  </Timeline>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        </div>
       </div>
     </section>
   );

@@ -150,4 +150,52 @@ body.resizing {
     @apply bg-white/80 shadow-2xl;
     transform: translateY(-2px) scale(1.03);
   }
+
+  .glass-border {
+    position: relative;
+    border-radius: 0.5rem; /* rounded-lg */
+    overflow: hidden;
+    z-index: 0;
+  }
+  .glass-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 0.5rem;
+    padding: 1px;
+    background: linear-gradient(135deg, #8a2be2, #00bfff 50%, #ff1493);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .glass-border > * {
+    position: relative;
+    z-index: 2;
+  }
+
+  .cyber-glow {
+    box-shadow: 0 0 16px 2px #8a2be2, 0 0 32px 4px #00bfff, 0 0 48px 8px #ff1493;
+    transition: box-shadow 0.3s;
+  }
+  .cyber-glow:hover {
+    box-shadow: 0 0 32px 8px #8a2be2, 0 0 64px 16px #00bfff,
+      0 0 96px 24px #ff1493;
+  }
+}
+
+@keyframes techy-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 6px var(--glow-color, #ff1493));
+  }
+  50% {
+    filter: drop-shadow(0 0 16px var(--glow-color, #ff1493));
+  }
+}
+
+.techy-glow {
+  animation: techy-glow 1.8s infinite;
 }
