@@ -197,8 +197,8 @@ const Skills = () => {
         >
           {selectedCategory && (
             <div
-              className={`w-full h-full flex flex-col overflow-hidden max-w-[320px] xs:max-w-full ${
-                !isMobile ? "max-w-2xl mx-auto" : ""
+              className={`w-full h-full flex flex-col overflow-hidden max-w-[320px] xs:max-w-full sm:max-w-4xl ${
+                !isMobile ? "mx-auto" : ""
               }`}
             >
               <div className="flex items-center justify-between mb-4 xs:mb-6 flex-shrink-0">
