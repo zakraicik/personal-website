@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { DesktopNavigation } from "@/components/DesktopNavigation";
@@ -8,6 +9,18 @@ import { NavigationProvider } from "@/components/NavigationProvider";
 import { Footer } from "@/components/sections/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
+
+export const metadata: Metadata = {
+  title: "Zak Raicik - Data Scientist, Builder, Storyteller, Creator",
+  description:
+    "Data scientist with passion for learning and practical experience across the full development stack.",
+  openGraph: {
+    title: "Zak Raicik - Data Scientist, Builder, Storyteller, Creator",
+    description:
+      "Data scientist with passion for learning and practical experience across the full development stack.",
+    images: ["/og-image.png"],
+  },
+};
 
 export default function RootLayout({
   children,
