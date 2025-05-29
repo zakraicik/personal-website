@@ -6,10 +6,13 @@
    CSS CUSTOM PROPERTIES
    ============================================================================= */
 :root {
-  /* Colors */
-  --foreground-rgb: 10, 10, 31;
-  --background-start-rgb: 25, 5, 35;
-  --background-end-rgb: 0, 0, 0;
+  /* Colors - Using explicit hex values for consistency */
+  --foreground: #0a0a1f;
+  --background-start: #19051f;
+  --background-end: #000000;
+  --foreground-light: #f0f0ff;
+  --background-start-light: #0a0a1f;
+  --background-end-light: #141428;
 
   /* Cyber Theme Colors */
   --cyber-blue: #00bfff;
@@ -28,11 +31,20 @@
   --z-mobile-button: 100;
 }
 
+/* Wide color gamut displays (P3) - Enhanced colors for compatible displays */
+@media (color-gamut: p3) {
+  :root {
+    --cyber-blue: color(display-p3 0 0.75 1);
+    --cyber-purple: color(display-p3 0.54 0.17 0.89);
+    --cyber-pink: color(display-p3 1 0.08 0.58);
+  }
+}
+
 @media (prefers-color-scheme: light) {
   :root {
-    --foreground-rgb: 240, 240, 255;
-    --background-start-rgb: 10, 10, 31;
-    --background-end-rgb: 20, 20, 40;
+    --foreground: var(--foreground-light);
+    --background-start: var(--background-start-light);
+    --background-end: var(--background-end-light);
   }
 }
 
@@ -43,6 +55,9 @@
 *::before,
 *::after {
   box-sizing: border-box;
+  /* Force consistent color rendering across browsers */
+  color-interpolation: sRGB;
+  color-rendering: optimizeQuality;
 }
 
 html {
@@ -58,11 +73,11 @@ body {
   height: 100vh; /* fallback */
   height: 100dvh; /* modern browsers */
   overflow: hidden;
-  color: rgb(var(--foreground-rgb));
+  color: var(--foreground);
   background: linear-gradient(
     to bottom,
-    rgb(var(--background-start-rgb)),
-    rgb(var(--background-end-rgb))
+    var(--background-start),
+    var(--background-end)
   );
   overscroll-behavior: none;
   touch-action: manipulation;
@@ -151,11 +166,11 @@ body.resizing {
   }
 
   .bg-cyber-blue\/5 {
-    background-color: rgba(0, 191, 255, 0.05);
+    background-color: color-mix(in srgb, var(--cyber-blue) 5%, transparent);
   }
 
   .bg-cyber-blue\/10 {
-    background-color: rgba(0, 191, 255, 0.1);
+    background-color: color-mix(in srgb, var(--cyber-blue) 10%, transparent);
   }
 
   .border-cyber-blue {
@@ -163,7 +178,7 @@ body.resizing {
   }
 
   .border-cyber-purple\/50 {
-    border-color: rgba(138, 43, 226, 0.5);
+    border-color: color-mix(in srgb, var(--cyber-purple) 50%, transparent);
   }
 
   .border-cyber-purple {
@@ -171,7 +186,7 @@ body.resizing {
   }
 
   .shadow-cyber-blue\/40 {
-    box-shadow: 0 0 0 1px rgba(0, 191, 255, 0.4);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--cyber-blue) 40%, transparent);
   }
 
   /* Hover Scale Classes */
@@ -197,18 +212,22 @@ body.resizing {
 
   /* Backdrop Blur with Fallback */
   .backdrop-blur-fallback {
-    @apply bg-black/80;
+    background-color: rgba(0, 0, 0, 0.8);
   }
 
   @supports (backdrop-filter: blur(12px)) {
     .backdrop-blur-fallback {
-      @apply bg-black/40 backdrop-blur-md;
+      background-color: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(12px);
     }
   }
 
   /* Cards & Surfaces */
   .cyber-card {
-    @apply relative overflow-hidden rounded-lg bg-white/10 backdrop-blur-sm border border-white/10 shadow-[0_0_10px_rgba(191,219,254,0.2)];
+    @apply relative overflow-hidden rounded-lg backdrop-blur-sm border shadow-lg;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 10px rgba(191, 219, 254, 0.2);
   }
 
   .cyber-card::before {
@@ -217,7 +236,7 @@ body.resizing {
   }
 
   .cyber-card:hover::before {
-    @apply opacity-10;
+    opacity: 0.1;
   }
 
   /* Buttons */
@@ -227,15 +246,17 @@ body.resizing {
 
   .cyber-button::after {
     content: "";
-    @apply absolute inset-0 bg-white opacity-0 transition-opacity duration-300;
+    @apply absolute inset-0 opacity-0 transition-opacity duration-300;
+    background-color: rgba(255, 255, 255, 0.1);
   }
 
   .cyber-button:hover::after {
-    @apply opacity-10;
+    opacity: 1;
   }
 
   .glass-button {
-    @apply relative rounded-full px-8 py-4 text-lg text-cyber-dark bg-white/60 backdrop-blur-xl border-none shadow-xl overflow-hidden transition-all duration-300 flex items-center justify-center;
+    @apply relative rounded-full px-8 py-4 text-lg text-cyber-dark backdrop-blur-xl border-none shadow-xl overflow-hidden transition-all duration-300 flex items-center justify-center;
+    background-color: rgba(255, 255, 255, 0.6);
     box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.08),
       0 1.5px 6px 0 rgba(138, 43, 226, 0.08);
   }
@@ -271,7 +292,8 @@ body.resizing {
   }
 
   .glass-button:hover {
-    @apply bg-white/80 shadow-2xl;
+    background-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     transform: translateY(-2px) scale(1.03);
   }
 
@@ -368,7 +390,8 @@ body.resizing {
 
   /* Visual Effects */
   .cyber-grid {
-    @apply absolute inset-0 opacity-10;
+    @apply absolute inset-0;
+    opacity: 0.1;
     background-image: linear-gradient(
         rgba(0, 191, 255, 0.3) 1px,
         transparent 1px
@@ -388,12 +411,14 @@ body.resizing {
   }
 
   .glitch-text::before {
-    @apply text-cyber-pink -translate-x-1;
+    color: var(--cyber-pink);
+    transform: translateX(-1px);
     animation: glitch 1s linear infinite;
   }
 
   .glitch-text::after {
-    @apply text-cyber-blue translate-x-1;
+    color: var(--cyber-blue);
+    transform: translateX(1px);
     animation: glitch 1s linear infinite reverse;
   }
 
