@@ -7,24 +7,22 @@ import { TimelineSection } from "@/components/sections/Timeline";
 
 export default function Home() {
   return (
-    <div className="relative w-full h-full overflow-hidden">
-      <div className="absolute inset-0 z-0">
-        <SectionWrapper id="home">
-          <Hero />
-        </SectionWrapper>
-        <SectionWrapper id="about">
-          <About />
-        </SectionWrapper>
-        <SectionWrapper id="portfolio">
-          <Portfolio />
-        </SectionWrapper>
-        <SectionWrapper id="timeline">
-          <TimelineSection />
-        </SectionWrapper>
-        <SectionWrapper id="skills">
-          <Skills />
-        </SectionWrapper>
-      </div>
+    <div className="relative w-full h-full">
+      <SectionWrapper id="home">
+        <Hero />
+      </SectionWrapper>
+      <SectionWrapper id="about">
+        <About />
+      </SectionWrapper>
+      <SectionWrapper id="portfolio">
+        <Portfolio />
+      </SectionWrapper>
+      <SectionWrapper id="timeline">
+        <TimelineSection />
+      </SectionWrapper>
+      <SectionWrapper id="skills">
+        <Skills />
+      </SectionWrapper>
     </div>
   );
 }

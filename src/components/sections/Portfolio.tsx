@@ -2,7 +2,6 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { HiExternalLink, HiChevronDown } from "react-icons/hi";
-
 import { useState, useEffect, useRef } from "react";
 import { useSectionVisibility } from "@/context/SectionVisibilityContext";
 import { projects } from "@/data/projects";
@@ -51,7 +50,6 @@ export function Portfolio() {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const { visibleSection } = useSectionVisibility();
-  const sectionRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { width } = useWindowSize();
   const isClient = useIsClient();
@@ -77,8 +75,8 @@ export function Portfolio() {
         className="fixed inset-0 z-50 flex items-center justify-center bg-transparent"
         onClick={() => setExpandedIndex(null)}
       >
-        {/* Match the SectionWrapper padding + Portfolio component padding */}
-        <div className="px-3 xs:px-4 sm:px-6 md:px-14 lg:px-22 w-full max-w-4xl mx-auto">
+        {/* Use consistent max-width with other sections */}
+        <div className="w-full max-w-4xl mx-auto px-4">
           <motion.div
             key={`expanded-${project.title}`}
             initial={{ opacity: 0, scale: 0.9 }}
@@ -264,58 +262,45 @@ export function Portfolio() {
 
   if (!isClient) {
     return (
-      <div className="flex-1 flex items-center justify-center py-4">
-        <div className="w-full max-w-4xl relative z-10">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-300/20 rounded mb-4"></div>
-            <div className="h-6 bg-gray-300/20 rounded mb-4"></div>
-            <div className="h-6 bg-gray-300/20 rounded mb-4"></div>
-          </div>
+      <div className="w-full max-w-4xl mx-auto">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-300/20 rounded mb-4"></div>
+          <div className="h-6 bg-gray-300/20 rounded mb-4"></div>
+          <div className="h-6 bg-gray-300/20 rounded mb-4"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <section
-      ref={sectionRef}
-      id="portfolio"
-      className="relative overflow-hidden min-h-screen flex items-center"
-    >
-      <div className="cyber-grid pointer-events-none w-full h-full left-0 top-0 absolute overflow-x-hidden" />
-
-      <div className="flex-1 flex items-center justify-center py-4 xs:py-6 sm:py-4">
-        <div className="px-1 xs:px-2 sm:px-4 md:px-6 w-full max-w-full mx-auto relative z-10">
-          <motion.div
-            ref={containerRef}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="w-full max-w-4xl mx-auto"
-          >
-            <AnimatePresence mode="wait">
-              {expandedIndex !== null ? (
-                // Expanded state: show only the expanded card, perfectly centered
-                renderExpandedCard(projects[expandedIndex], expandedIndex)
-              ) : (
-                // Collapsed state: show all cards in a list
-                <motion.div
-                  key="collapsed-view"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="space-y-3 xs:space-y-4 sm:space-y-6 md:space-y-8"
-                >
-                  {projects.map((project, index) =>
-                    renderCollapsedCard(project, index)
-                  )}
-                </motion.div>
+    <div className="w-full max-w-4xl mx-auto">
+      <motion.div
+        ref={containerRef}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <AnimatePresence mode="wait">
+          {expandedIndex !== null ? (
+            // Expanded state: show only the expanded card, perfectly centered
+            renderExpandedCard(projects[expandedIndex], expandedIndex)
+          ) : (
+            // Collapsed state: show all cards in a list
+            <motion.div
+              key="collapsed-view"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-3 xs:space-y-4 sm:space-y-6 md:space-y-8"
+            >
+              {projects.map((project, index) =>
+                renderCollapsedCard(project, index)
               )}
-            </AnimatePresence>
-          </motion.div>
-        </div>
-      </div>
-    </section>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+    </div>
   );
 }

@@ -1,47 +1,13 @@
-import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Navigation } from "@/components/Navigation";
+import { DesktopNavigation } from "@/components/DesktopNavigation";
+import { MobileNavigation } from "@/components/MobileNavigation";
 import { AnimatedDotsBackground } from "@/components/AnimatedDotsBackground";
 import { SectionVisibilityProvider } from "@/context/SectionVisibilityContext";
+import { NavigationProvider } from "@/components/NavigationProvider";
 import { Footer } from "@/components/sections/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-  title: "Zak Raicik",
-  description:
-    "Data Scientist & Full Stack Developer | Building the future of web applications",
-  metadataBase: new URL("https://wwww.zakraicik.me"),
-  openGraph: {
-    title: "Zak Raicik",
-    description:
-      "Data Scientist & Full Stack Developer | Building the future of web applications",
-    url: "https://zakraicik.me",
-    siteName: "Zak Raicik",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Data Scientist & Full Stack Developer | Building the future of web applications",
-      },
-    ],
-    locale: "en_US",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Zak Raicik",
-    description:
-      "Data Scientist & Full Stack Developer | Building the future of web applications",
-    images: ["/og-image.png"],
-    creator: "@zakraicik",
-  },
-  icons: {
-    icon: "/favicon.ico",
-  },
-};
 
 export default function RootLayout({
   children,
@@ -51,39 +17,39 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, viewport-fit=cover"
+        />
       </head>
-      <body className={`${inter.className} antialiased overflow-x-hidden`}>
+      <body className={`${inter.className} antialiased`}>
         <SectionVisibilityProvider>
-          <AnimatedDotsBackground />
-
-          {/* Mobile Layout: Full height with nav/footer spacing */}
-          <div className="md:hidden h-screen flex flex-col">
-            {/* Navigation area - allocated space */}
-            <div className="flex-shrink-0 h-16 flex items-center justify-center relative z-50">
-              <Navigation />
+          <NavigationProvider>
+            {/* Background layer */}
+            <div className="fixed inset-0 z-0">
+              <AnimatedDotsBackground />
             </div>
 
-            {/* Main content area - takes remaining space exactly */}
-            <main className="flex-1 overflow-y-auto relative">{children}</main>
+            {/* Desktop Navigation - positioned by layout */}
+            <div className="fixed left-8 top-1/2 -translate-y-1/2 hidden md:block z-50">
+              <DesktopNavigation />
+            </div>
 
-            {/* Footer area - smaller allocated space */}
-            <div className="flex-shrink-0 h-16 flex items-center justify-center relative z-40">
+            {/* Mobile Navigation - positioned by layout */}
+            <div className="fixed top-4 left-4 md:hidden z-[100]">
+              <MobileNavigation />
+            </div>
+
+            {/* Main content container */}
+            <div className="relative h-screen-safe overflow-hidden z-10">
+              <div className="absolute inset-0">{children}</div>
+            </div>
+
+            {/* Footer */}
+            <div className="fixed bottom-6 left-0 right-0 z-50">
               <Footer />
             </div>
-          </div>
-
-          {/* Desktop Layout: Fixed grid layout with proper height */}
-          <div className="hidden md:block h-screen">
-            <Navigation />
-            <div className="grid grid-cols-[140px_1fr] min-h-screen">
-              <aside></aside>
-              <main className="pl-16 flex flex-col justify-center min-h-screen">
-                {children}
-              </main>
-            </div>
-            <Footer />
-          </div>
+          </NavigationProvider>
         </SectionVisibilityProvider>
       </body>
     </html>

@@ -21,14 +21,14 @@ export function SectionWrapper({ id, children }: SectionWrapperProps) {
     return (
       <section
         id={id}
-        className="absolute inset-0 w-full h-full flex flex-col justify-center"
+        className="absolute inset-0 w-full h-full flex flex-col justify-center items-center"
         style={{
-          transform: "translateY(0vh)",
+          transform: "translateY(0%)",
           opacity: isHome ? 1 : 0,
           zIndex: isHome ? 10 : 0,
         }}
       >
-        <div className="px-4 md:px-8 lg:px-16 py-16 h-full flex flex-col justify-center w-full">
+        <div className="w-full h-full flex flex-col justify-center items-center px-4 md:px-8 lg:px-16">
           {children}
         </div>
       </section>
@@ -50,12 +50,13 @@ export function SectionWrapper({ id, children }: SectionWrapperProps) {
   const sectionIndex = sectionOrder.indexOf(id);
   const visibleIndex = sectionOrder.indexOf(currentVisibleSection);
 
-  const translateY = (sectionIndex - visibleIndex) * 100;
+  // Use percentage instead of vh for more reliable cross-browser behavior
+  const translatePercent = (sectionIndex - visibleIndex) * 100;
 
   return (
     <section
       id={id}
-      className={`absolute inset-0 w-full h-full flex flex-col justify-center transition-all duration-700 ease-out ${
+      className={`absolute inset-0 w-full h-full flex flex-col justify-center items-center transition-all duration-700 ease-out ${
         isVisible
           ? "opacity-100 z-10"
           : Math.abs(sectionIndex - visibleIndex) === 1
@@ -63,11 +64,11 @@ export function SectionWrapper({ id, children }: SectionWrapperProps) {
           : "opacity-0 z-0"
       }`}
       style={{
-        transform: `translateY(${translateY}vh)`,
+        transform: `translateY(${translatePercent}%)`,
         filter: isVisible ? "blur(0px)" : "blur(1px)",
       }}
     >
-      <div className="px-4 md:px-8 lg:px-16 py-16 h-full flex flex-col justify-center w-full">
+      <div className="w-full h-full flex flex-col justify-center items-center px-4 md:px-8 lg:px-16">
         {children}
       </div>
     </section>

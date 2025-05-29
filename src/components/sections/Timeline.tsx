@@ -89,8 +89,8 @@ export function TimelineSection() {
         className="fixed inset-0 z-50 flex items-center justify-center bg-transparent"
         onClick={() => setExpandedIndex(null)}
       >
-        {/* Match the SectionWrapper padding */}
-        <div className="px-3 xs:px-4 sm:px-6 md:px-14 lg:px-22 w-full max-w-4xl mx-auto">
+        {/* Use consistent max-width with other sections */}
+        <div className="w-full max-w-4xl mx-auto px-4">
           <motion.div
             key={`expanded-${item.title}`}
             initial={{ opacity: 0, scale: 0.9 }}
@@ -236,142 +236,128 @@ export function TimelineSection() {
 
   if (!isClient) {
     return (
-      <div className="flex-1 flex items-center justify-center py-4">
-        <div className="w-full max-w-4xl relative z-10">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-300/20 rounded mb-4"></div>
-            <div className="h-6 bg-gray-300/20 rounded mb-4"></div>
-            <div className="h-6 bg-gray-300/20 rounded mb-4"></div>
-          </div>
+      <div className="w-full max-w-4xl mx-auto">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-300/20 rounded mb-4"></div>
+          <div className="h-6 bg-gray-300/20 rounded mb-4"></div>
+          <div className="h-6 bg-gray-300/20 rounded mb-4"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <section
-      id="timeline"
-      className="relative overflow-hidden min-h-screen flex items-center"
-    >
-      <div className="cyber-grid pointer-events-none w-full h-full left-0 top-0 absolute overflow-x-hidden" />
-
-      <div className="flex-1 flex items-center justify-center py-4 xs:py-6 sm:py-4">
-        <div className="px-2 xs:px-4 md:px-6 w-full max-w-full mx-auto relative z-10">
-          <motion.div
-            ref={timelineContainerRef}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="w-full max-w-4xl mx-auto"
-          >
-            <AnimatePresence mode="wait">
-              {expandedIndex !== null ? (
-                // Expanded state: show only the expanded card, perfectly centered
-                renderExpandedCard(
-                  sortedTimelineData[expandedIndex] as TimelineItemData,
-                  expandedIndex
-                )
-              ) : (
-                // Collapsed state: show timeline
-                <motion.div
-                  key="collapsed-timeline"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.15 }}
-                >
-                  <Timeline
-                    position={isMobile ? "right" : "alternate"}
-                    className="p-2 xs:p-4"
-                    sx={{
-                      ...(isMobile && {
-                        "& .MuiTimelineItem-root": {
-                          "&:before": {
-                            flex: 0,
-                            padding: 0,
-                          },
-                        },
-                        "& .MuiTimelineItem-root .MuiTimelineItem-content": {
-                          paddingLeft: "32px",
-                        },
-                        "& .MuiTimelineSeparator-root": {
-                          marginRight: "16px",
-                        },
-                        paddingLeft: "0px",
-                        display: "flex",
-                        justifyContent: "center",
-                      }),
-                    }}
-                  >
-                    {sortedTimelineData.map((item, index) => (
-                      <TimelineItem key={index}>
-                        <TimelineSeparator>
-                          <TimelineConnector className="bg-cyber-blue/30" />
-                          <TimelineDot
-                            sx={{
-                              backgroundColor: "transparent",
-                              boxShadow: "none",
-                              border: `2px solid ${
-                                item.type === "education"
-                                  ? "#FF1493"
-                                  : "#8A2BE2"
-                              }`,
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
+    <div className="w-full max-w-4xl mx-auto">
+      <motion.div
+        ref={timelineContainerRef}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <AnimatePresence mode="wait">
+          {expandedIndex !== null ? (
+            // Expanded state: show only the expanded card, perfectly centered
+            renderExpandedCard(
+              sortedTimelineData[expandedIndex] as TimelineItemData,
+              expandedIndex
+            )
+          ) : (
+            // Collapsed state: show timeline
+            <motion.div
+              key="collapsed-timeline"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+            >
+              <Timeline
+                position={isMobile ? "right" : "alternate"}
+                className="p-2 xs:p-4"
+                sx={{
+                  ...(isMobile && {
+                    "& .MuiTimelineItem-root": {
+                      "&:before": {
+                        flex: 0,
+                        padding: 0,
+                      },
+                    },
+                    "& .MuiTimelineItem-root .MuiTimelineItem-content": {
+                      paddingLeft: "32px",
+                    },
+                    "& .MuiTimelineSeparator-root": {
+                      marginRight: "16px",
+                    },
+                    paddingLeft: "0px",
+                    display: "flex",
+                    justifyContent: "center",
+                  }),
+                }}
+              >
+                {sortedTimelineData.map((item, index) => (
+                  <TimelineItem key={index}>
+                    <TimelineSeparator>
+                      <TimelineConnector className="bg-cyber-blue/30" />
+                      <TimelineDot
+                        sx={{
+                          backgroundColor: "transparent",
+                          boxShadow: "none",
+                          border: `2px solid ${
+                            item.type === "education" ? "#FF1493" : "#8A2BE2"
+                          }`,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        {item.type === "education" ? (
+                          <span
+                            style={
+                              {
+                                "--glow-color": "#FF1493",
+                              } as React.CSSProperties
+                            }
                           >
-                            {item.type === "education" ? (
-                              <span
-                                style={
-                                  {
-                                    "--glow-color": "#FF1493",
-                                  } as React.CSSProperties
-                                }
-                              >
-                                <SchoolIcon
-                                  style={{
-                                    color: "#FF1493",
-                                  }}
-                                  className="techy-glow"
-                                />
-                              </span>
-                            ) : (
-                              <span
-                                style={
-                                  {
-                                    "--glow-color": "#8A2BE2",
-                                  } as React.CSSProperties
-                                }
-                              >
-                                <WorkIcon
-                                  style={{
-                                    color: "#8A2BE2",
-                                  }}
-                                  className="techy-glow"
-                                />
-                              </span>
-                            )}
-                          </TimelineDot>
-                          <TimelineConnector className="bg-cyber-blue/30" />
-                        </TimelineSeparator>
-                        <TimelineContent
-                          sx={{
-                            py: "12px",
-                            px: isMobile ? 0 : 2,
-                          }}
-                        >
-                          {renderCollapsedCard(item as TimelineItemData, index)}
-                        </TimelineContent>
-                      </TimelineItem>
-                    ))}
-                  </Timeline>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-        </div>
-      </div>
-    </section>
+                            <SchoolIcon
+                              style={{
+                                color: "#FF1493",
+                              }}
+                              className="techy-glow"
+                            />
+                          </span>
+                        ) : (
+                          <span
+                            style={
+                              {
+                                "--glow-color": "#8A2BE2",
+                              } as React.CSSProperties
+                            }
+                          >
+                            <WorkIcon
+                              style={{
+                                color: "#8A2BE2",
+                              }}
+                              className="techy-glow"
+                            />
+                          </span>
+                        )}
+                      </TimelineDot>
+                      <TimelineConnector className="bg-cyber-blue/30" />
+                    </TimelineSeparator>
+                    <TimelineContent
+                      sx={{
+                        py: "12px",
+                        px: isMobile ? 0 : 2,
+                      }}
+                    >
+                      {renderCollapsedCard(item as TimelineItemData, index)}
+                    </TimelineContent>
+                  </TimelineItem>
+                ))}
+              </Timeline>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+    </div>
   );
 }

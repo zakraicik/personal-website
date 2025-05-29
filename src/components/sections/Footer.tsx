@@ -16,107 +16,28 @@ GitHubIcon.displayName = "GitHubIcon";
 
 export function Footer() {
   return (
-    <footer className="w-full fixed bottom-0 left-0 z-40 bg-transparent py-2 px-4 mb-4">
-      {/* Desktop: exactly match Hero structure */}
-      <div className="hidden md:block">
-        <div className="grid grid-cols-[140px_1fr] w-full">
-          <div /> {/* sidebar space */}
-          <main className="md:pl-16">
-            <div className="px-4 md:px-6 w-full max-w-full mx-auto flex-1 flex items-center justify-center text-center relative z-10">
-              <div className="inline-flex gap-6 justify-center items-center">
-                {contactMethods.map((method) => {
-                  let IconComponent = icons[method.icon];
-                  if (method.icon === "GitHub") {
-                    IconComponent = GitHubIcon;
-                  }
-                  const colorClass =
-                    method.label === "GitHub"
-                      ? "text-cyber-pink"
-                      : method.label === "Phone"
-                      ? "text-cyber-purple"
-                      : "text-cyber-blue";
-                  const glowColor =
-                    method.label === "GitHub"
-                      ? "#FF1493"
-                      : method.label === "Phone"
-                      ? "#8A2BE2"
-                      : "#00BFFF";
-                  return (
-                    <span key={method.label}>
-                      {method.link ? (
-                        <a
-                          href={method.link}
-                          target={
-                            method.icon === "GitHub" ? "_blank" : undefined
-                          }
-                          rel={
-                            method.icon === "GitHub"
-                              ? "noopener noreferrer"
-                              : undefined
-                          }
-                          className={`text-xl ${colorClass} hover:scale-110 transition-all duration-200`}
-                          title={
-                            method.label === "GitHub" ? "GitHub" : method.value
-                          }
-                        >
-                          <span
-                            style={
-                              {
-                                "--glow-color": glowColor,
-                              } as React.CSSProperties
-                            }
-                          >
-                            {IconComponent && (
-                              <IconComponent className="w-5 h-5 techy-glow" />
-                            )}
-                          </span>
-                        </a>
-                      ) : (
-                        <span
-                          className={`text-xl ${colorClass}`}
-                          title={method.value}
-                        >
-                          <span
-                            style={
-                              {
-                                "--glow-color": glowColor,
-                              } as React.CSSProperties
-                            }
-                          >
-                            {IconComponent && (
-                              <IconComponent className="w-5 h-5 techy-glow" />
-                            )}
-                          </span>
-                        </span>
-                      )}
-                    </span>
-                  );
-                })}
-              </div>
-            </div>
-          </main>
-        </div>
-      </div>
-
-      {/* Mobile: simple centered layout */}
-      <div className="md:hidden max-w-4xl mx-auto w-full flex justify-center items-center gap-6 text-sm px-4">
+    <footer className="w-full h-full flex items-center justify-center px-4">
+      <div className="flex gap-6 items-center">
         {contactMethods.map((method) => {
           let IconComponent = icons[method.icon];
           if (method.icon === "GitHub") {
             IconComponent = GitHubIcon;
           }
+
           const colorClass =
             method.label === "GitHub"
               ? "text-cyber-pink"
               : method.label === "Phone"
               ? "text-cyber-purple"
               : "text-cyber-blue";
+
           const glowColor =
             method.label === "GitHub"
               ? "#FF1493"
               : method.label === "Phone"
               ? "#8A2BE2"
               : "#00BFFF";
+
           return (
             <span key={method.label}>
               {method.link ? (
@@ -126,7 +47,7 @@ export function Footer() {
                   rel={
                     method.icon === "GitHub" ? "noopener noreferrer" : undefined
                   }
-                  className={`text-xl ${colorClass} hover:scale-110 transition-all duration-200`}
+                  className={`${colorClass} hover:scale-110 transition-all duration-200`}
                   title={method.label === "GitHub" ? "GitHub" : method.value}
                 >
                   <span
@@ -138,7 +59,7 @@ export function Footer() {
                   </span>
                 </a>
               ) : (
-                <span className={`text-xl ${colorClass}`} title={method.value}>
+                <span className={colorClass} title={method.value}>
                   <span
                     style={{ "--glow-color": glowColor } as React.CSSProperties}
                   >

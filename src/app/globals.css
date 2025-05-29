@@ -2,15 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
-html,
-body {
-  overflow-x: hidden;
-}
-
+/* =============================================================================
+   CSS CUSTOM PROPERTIES
+   ============================================================================= */
 :root {
+  /* Colors */
   --foreground-rgb: 10, 10, 31;
-  --background-start-rgb: 25, 5, 35; /* Dark purple */
-  --background-end-rgb: 0, 0, 0; /* Black */
+  --background-start-rgb: 25, 5, 35;
+  --background-end-rgb: 0, 0, 0;
+
+  /* Cyber Theme Colors */
+  --cyber-blue: #00bfff;
+  --cyber-purple: #8a2be2;
+  --cyber-pink: #ff1493;
+  --cyber-dark: #0a0a1f;
+
+  /* Z-Index Scale */
+  --z-background: 0;
+  --z-content: 10;
+  --z-section-inactive: 5;
+  --z-navigation: 49;
+  --z-footer: 50;
+  --z-mobile-overlay: 90;
+  --z-mobile-menu: 95;
+  --z-mobile-button: 100;
 }
 
 @media (prefers-color-scheme: light) {
@@ -21,21 +36,76 @@ body {
   }
 }
 
+/* =============================================================================
+   GLOBAL RESET & BASE STYLES
+   ============================================================================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100vh; /* fallback */
+  height: 100dvh; /* modern browsers */
+  overflow: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
+  margin: 0;
+  padding: 0;
+  height: 100vh; /* fallback */
+  height: 100dvh; /* modern browsers */
+  overflow: hidden;
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
     to bottom,
     rgb(var(--background-start-rgb)),
     rgb(var(--background-end-rgb))
   );
-  min-height: 100vh;
+  overscroll-behavior: none;
+  touch-action: manipulation;
+}
+
+/* =============================================================================
+   DEVICE-SPECIFIC FIXES
+   ============================================================================= */
+
+/* iOS Safari specific fixes */
+@supports (-webkit-touch-callout: none) {
+  html,
+  body {
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    position: fixed;
+    width: 100%;
+  }
+}
+
+/* Mobile menu body lock */
+body.menu-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
 }
 
 body.resizing {
   scroll-behavior: auto !important;
 }
 
+/* =============================================================================
+   COMPONENT CLASSES
+   ============================================================================= */
 @layer components {
+  /* Layout & Spacing */
   .section-padding {
     @apply py-16 md:py-24;
   }
@@ -44,20 +114,101 @@ body.resizing {
     @apply px-4 md:px-6 lg:px-8;
   }
 
+  /* Typography */
   .heading-1 {
-    @apply text-4xl md:text-5xl lg:text-6xl font-bold font-cyber;
+    @apply text-4xl md:text-5xl lg:text-6xl font-bold;
   }
 
   .heading-2 {
-    @apply text-3xl md:text-4xl font-bold font-cyber;
+    @apply text-3xl md:text-4xl font-bold;
   }
 
   .heading-3 {
-    @apply text-2xl md:text-3xl font-semibold font-cyber;
+    @apply text-2xl md:text-3xl font-semibold;
   }
 
+  /* Font Families */
+  .font-cyber {
+    font-family: "Orbitron", "Inter", monospace, sans-serif;
+    font-weight: 500;
+  }
+
+  /* Cyber Theme Colors */
+  .text-cyber-blue {
+    color: var(--cyber-blue);
+  }
+
+  .text-cyber-purple {
+    color: var(--cyber-purple);
+  }
+
+  .text-cyber-pink {
+    color: var(--cyber-pink);
+  }
+
+  .text-cyber-dark {
+    color: var(--cyber-dark);
+  }
+
+  .bg-cyber-blue\/5 {
+    background-color: rgba(0, 191, 255, 0.05);
+  }
+
+  .bg-cyber-blue\/10 {
+    background-color: rgba(0, 191, 255, 0.1);
+  }
+
+  .border-cyber-blue {
+    border-color: var(--cyber-blue);
+  }
+
+  .border-cyber-purple\/50 {
+    border-color: rgba(138, 43, 226, 0.5);
+  }
+
+  .border-cyber-purple {
+    border-color: var(--cyber-purple);
+  }
+
+  .shadow-cyber-blue\/40 {
+    box-shadow: 0 0 0 1px rgba(0, 191, 255, 0.4);
+  }
+
+  /* Hover Scale Classes */
+  .hover\:scale-102:hover {
+    transform: scale(1.02);
+  }
+
+  /* Gradients */
+  .bg-cyber-gradient {
+    background: linear-gradient(
+      135deg,
+      var(--cyber-purple),
+      var(--cyber-blue) 50%,
+      var(--cyber-pink)
+    );
+  }
+
+  /* Consistent Height Classes */
+  .h-screen-safe {
+    height: 100vh; /* fallback */
+    height: 100dvh; /* modern browsers */
+  }
+
+  /* Backdrop Blur with Fallback */
+  .backdrop-blur-fallback {
+    @apply bg-black/80;
+  }
+
+  @supports (backdrop-filter: blur(12px)) {
+    .backdrop-blur-fallback {
+      @apply bg-black/40 backdrop-blur-md;
+    }
+  }
+
+  /* Cards & Surfaces */
   .cyber-card {
-    @apply relative overflow-hidden rounded-lg bg-white/10 backdrop-blur-sm border border-cyber-purple/10 shadow-[0_0_10px_rgba(191,219,254,0.2)];
+    @apply relative overflow-hidden rounded-lg bg-white/10 backdrop-blur-sm border border-white/10 shadow-[0_0_10px_rgba(191,219,254,0.2)];
   }
 
   .cyber-card::before {
@@ -69,8 +220,9 @@ body.resizing {
     @apply opacity-10;
   }
 
+  /* Buttons */
   .cyber-button {
-    @apply relative overflow-hidden rounded-full bg-cyber-gradient px-6 py-3 text-white font-cyber transition-all duration-300 hover:shadow-lg hover:shadow-cyber-purple/20;
+    @apply relative overflow-hidden rounded-full bg-cyber-gradient px-6 py-3 text-white transition-all duration-300 hover:shadow-lg;
   }
 
   .cyber-button::after {
@@ -82,36 +234,8 @@ body.resizing {
     @apply opacity-10;
   }
 
-  .cyber-grid {
-    @apply absolute inset-0 bg-cyber-grid bg-[length:20px_20px] opacity-10;
-  }
-
-  .glitch-text {
-    @apply relative;
-  }
-
-  .glitch-text::before,
-  .glitch-text::after {
-    content: attr(data-text);
-    @apply absolute inset-0;
-  }
-
-  .glitch-text::before {
-    @apply text-cyber-pink -translate-x-1;
-    animation: glitch 1s linear infinite;
-  }
-
-  .glitch-text::after {
-    @apply text-cyber-blue translate-x-1;
-    animation: glitch 1s linear infinite reverse;
-  }
-
-  .gradient-text {
-    @apply bg-cyber-gradient bg-clip-text text-transparent;
-  }
-
   .glass-button {
-    @apply relative rounded-full px-8 py-4 font-cyber text-lg text-cyber-dark bg-white/60 backdrop-blur-xl border-none shadow-xl overflow-hidden transition-all duration-300 flex items-center justify-center;
+    @apply relative rounded-full px-8 py-4 text-lg text-cyber-dark bg-white/60 backdrop-blur-xl border-none shadow-xl overflow-hidden transition-all duration-300 flex items-center justify-center;
     box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.08),
       0 1.5px 6px 0 rgba(138, 43, 226, 0.08);
   }
@@ -151,12 +275,67 @@ body.resizing {
     transform: translateY(-2px) scale(1.03);
   }
 
-  .glass-border {
-    position: relative;
-    border-radius: 0.5rem; /* rounded-lg */
+  /* Hero Button - Specific styling for hero section with gradient border */
+  .hero-button {
+    @apply relative rounded-full flex-1 text-center bg-transparent cursor-pointer transition-all duration-300 w-full min-h-[44px] flex items-center justify-center;
+
+    /* Responsive text sizing */
+    font-size: 0.75rem; /* text-xs */
+    padding: 0.5rem 0.75rem; /* py-2 px-3 */
+    border-radius: 9999px;
     overflow: hidden;
     z-index: 0;
   }
+
+  /* Gradient border for hero button */
+  .hero-button::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    padding: 1px;
+    background: linear-gradient(135deg, #8a2be2, #00bfff 50%, #ff1493);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Responsive sizing for hero button */
+  @media (min-width: 475px) {
+    /* xs breakpoint */
+    .hero-button {
+      font-size: 0.875rem; /* text-sm */
+      padding: 0.5rem 1rem; /* py-2 px-4 */
+    }
+  }
+
+  @media (min-width: 640px) {
+    /* sm breakpoint */
+    .hero-button {
+      font-size: 1.125rem; /* text-lg */
+      padding: 0.5rem 1rem; /* py-2 px-4 */
+    }
+  }
+
+  .hero-button > span {
+    @apply bg-cyber-gradient bg-clip-text text-transparent relative z-10;
+  }
+
+  .hero-button:hover {
+    transform: scale(1.02);
+  }
+
+  /* Borders & Effects */
+  .glass-border {
+    position: relative;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    z-index: 0;
+  }
+
   .glass-border::before {
     content: "";
     position: absolute;
@@ -171,6 +350,7 @@ body.resizing {
     pointer-events: none;
     z-index: 1;
   }
+
   .glass-border > * {
     position: relative;
     z-index: 2;
@@ -180,12 +360,51 @@ body.resizing {
     box-shadow: 0 0 16px 2px #8a2be2, 0 0 32px 4px #00bfff, 0 0 48px 8px #ff1493;
     transition: box-shadow 0.3s;
   }
+
   .cyber-glow:hover {
     box-shadow: 0 0 32px 8px #8a2be2, 0 0 64px 16px #00bfff,
       0 0 96px 24px #ff1493;
   }
+
+  /* Visual Effects */
+  .cyber-grid {
+    @apply absolute inset-0 opacity-10;
+    background-image: linear-gradient(
+        rgba(0, 191, 255, 0.3) 1px,
+        transparent 1px
+      ),
+      linear-gradient(90deg, rgba(0, 191, 255, 0.3) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  .glitch-text {
+    @apply relative;
+  }
+
+  .glitch-text::before,
+  .glitch-text::after {
+    content: attr(data-text);
+    @apply absolute inset-0;
+  }
+
+  .glitch-text::before {
+    @apply text-cyber-pink -translate-x-1;
+    animation: glitch 1s linear infinite;
+  }
+
+  .glitch-text::after {
+    @apply text-cyber-blue translate-x-1;
+    animation: glitch 1s linear infinite reverse;
+  }
+
+  .gradient-text {
+    @apply bg-cyber-gradient bg-clip-text text-transparent;
+  }
 }
 
+/* =============================================================================
+   ANIMATIONS
+   ============================================================================= */
 @keyframes techy-glow {
   0%,
   100% {
@@ -193,6 +412,40 @@ body.resizing {
   }
   50% {
     filter: drop-shadow(0 0 16px var(--glow-color, #ff1493));
+  }
+}
+
+@keyframes glitch {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10% {
+    transform: translateX(-2px);
+  }
+  20% {
+    transform: translateX(2px);
+  }
+  30% {
+    transform: translateX(-1px);
+  }
+  40% {
+    transform: translateX(1px);
+  }
+  50% {
+    transform: translateX(-2px);
+  }
+  60% {
+    transform: translateX(2px);
+  }
+  70% {
+    transform: translateX(-1px);
+  }
+  80% {
+    transform: translateX(1px);
+  }
+  90% {
+    transform: translateX(-2px);
   }
 }
 
