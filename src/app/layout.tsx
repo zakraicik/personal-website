@@ -49,7 +49,7 @@ export default function RootLayout({
             </div>
 
             {/* Main content container */}
-            <div className="relative h-screen-safe overflow-hidden z-10 md:grid md:grid-cols-[14rem_1fr]">
+            <div className="relative h-screen-safe overflow-hidden z-10 md:grid md:grid-cols-[14rem_1fr] ios-fixed-wrapper">
               {/* Desktop Navigation - reserved column */}
               <div className="hidden md:flex items-center justify-start pl-8">
                 <DesktopNavigation />

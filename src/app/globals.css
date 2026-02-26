@@ -121,6 +121,15 @@ body.resizing {
   scroll-behavior: auto !important;
 }
 
+/* iOS: keep the app shell fixed to avoid rubber-banding gaps */
+@supports (-webkit-touch-callout: none) {
+  .ios-fixed-wrapper {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+  }
+}
+
 /* =============================================================================
    COMPONENT CLASSES
    ============================================================================= */
