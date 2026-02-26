@@ -62,16 +62,19 @@
 
 html {
   height: 100vh; /* fallback */
-  height: 100dvh; /* modern browsers */
+  height: 100dvh; /* dynamic viewport */
+  height: 100svh; /* stable viewport on mobile */
   overflow: hidden;
   -webkit-text-size-adjust: 100%;
+  background-color: #000000;
 }
 
 body {
   margin: 0;
   padding: 0;
   height: 100vh; /* fallback */
-  height: 100dvh; /* modern browsers */
+  height: 100dvh; /* dynamic viewport */
+  height: 100svh; /* stable viewport on mobile */
   overflow: hidden;
   color: var(--foreground);
   background: linear-gradient(
@@ -79,6 +82,7 @@ body {
     var(--background-start),
     var(--background-end)
   );
+  background-color: #000000;
   overscroll-behavior: none;
   touch-action: manipulation;
 }
@@ -93,6 +97,7 @@ body {
   body {
     height: 100vh;
     height: 100dvh;
+    height: 100svh;
   }
 
   body {
@@ -114,6 +119,15 @@ body.menu-open {
 
 body.resizing {
   scroll-behavior: auto !important;
+}
+
+/* iOS: keep the app shell fixed to avoid rubber-banding gaps */
+@supports (-webkit-touch-callout: none) {
+  .ios-fixed-wrapper {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+  }
 }
 
 /* =============================================================================
@@ -207,7 +221,8 @@ body.resizing {
   /* Consistent Height Classes */
   .h-screen-safe {
     height: 100vh; /* fallback */
-    height: 100dvh; /* modern browsers */
+    height: 100dvh; /* dynamic viewport */
+    height: 100svh; /* stable viewport on mobile */
   }
 
   /* Backdrop Blur with Fallback */
