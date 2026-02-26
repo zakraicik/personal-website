@@ -4,21 +4,14 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HiMenu, HiX } from "react-icons/hi";
 import { useSectionVisibility } from "../context/SectionVisibilityContext";
-
-const navItems = [
-  { name: "Home", href: "#home" },
-  { name: "About", href: "#about" },
-  { name: "Portfolio", href: "#portfolio" },
-  { name: "Timeline", href: "#timeline" },
-  { name: "Skills", href: "#skills" },
-];
+import { DEFAULT_SECTION_ID, NAV_ITEMS } from "@/data/navigation";
 
 export function MobileNavigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const { setVisibleSection, visibleSection } = useSectionVisibility();
 
-  const activeSection = visibleSection || "home";
+  const activeSection = visibleSection || DEFAULT_SECTION_ID;
 
   const navigateToSection = useCallback(
     (section: string) => {
@@ -35,8 +28,7 @@ export function MobileNavigation() {
     [activeSection, isTransitioning, setVisibleSection]
   );
 
-  const handleNavClick = (href: string) => {
-    const section = href.substring(1);
+  const handleNavClick = (section: string) => {
     navigateToSection(section);
     setIsMobileMenuOpen(false);
   };
@@ -72,15 +64,15 @@ export function MobileNavigation() {
 
       // Only handle vertical swipes
       if (Math.abs(diffY) > 50 && diffX < 100) {
-        const currentIndex = navItems.findIndex(
-          (item) => item.href.substring(1) === activeSection
+        const currentIndex = NAV_ITEMS.findIndex(
+          (item) => item.id === activeSection
         );
 
-        if (diffY > 0 && currentIndex < navItems.length - 1) {
-          const nextSection = navItems[currentIndex + 1].href.substring(1);
+        if (diffY > 0 && currentIndex < NAV_ITEMS.length - 1) {
+          const nextSection = NAV_ITEMS[currentIndex + 1].id;
           navigateToSection(nextSection);
         } else if (diffY < 0 && currentIndex > 0) {
-          const prevSection = navItems[currentIndex - 1].href.substring(1);
+          const prevSection = NAV_ITEMS[currentIndex - 1].id;
           navigateToSection(prevSection);
         }
       }
@@ -186,8 +178,8 @@ export function MobileNavigation() {
             className="fixed left-0 top-0 w-72 backdrop-blur-fallback border-r border-white/10 shadow-2xl z-[95] h-screen-safe"
           >
             <div className="pt-20 pb-6">
-              {navItems.map((item, index) => {
-                const section = item.href.substring(1);
+              {NAV_ITEMS.map((item, index) => {
+                const section = item.id;
                 const isActive = activeSection === section;
 
                 return (
@@ -199,7 +191,7 @@ export function MobileNavigation() {
                       duration: 0.3,
                       delay: index * 0.1,
                     }}
-                    onClick={() => handleNavClick(item.href)}
+                    onClick={() => handleNavClick(item.id)}
                     disabled={isTransitioning}
                     className={`w-full flex items-center px-6 py-4 text-left transition-all duration-300 group ${
                       isTransitioning ? "opacity-50" : ""

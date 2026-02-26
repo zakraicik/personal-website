@@ -2,14 +2,7 @@
 
 import { useEffect } from "react";
 import { useSectionVisibility } from "../context/SectionVisibilityContext";
-
-const navItems = [
-  { name: "Home", href: "#home" },
-  { name: "About", href: "#about" },
-  { name: "Portfolio", href: "#portfolio" },
-  { name: "Timeline", href: "#timeline" },
-  { name: "Skills", href: "#skills" },
-];
+import { DEFAULT_SECTION_ID, SECTION_IDS } from "@/data/navigation";
 
 export function NavigationProvider({
   children,
@@ -21,13 +14,12 @@ export function NavigationProvider({
   // Initialize navigation from URL hash
   useEffect(() => {
     const hash = window.location.hash.replace("#", "");
-    const sections = navItems.map((item) => item.href.substring(1));
 
-    if (hash && sections.includes(hash)) {
+    if (hash && SECTION_IDS.includes(hash)) {
       setVisibleSection(hash);
     } else {
-      setVisibleSection("home");
-      window.history.replaceState(null, "", "#home");
+      setVisibleSection(DEFAULT_SECTION_ID);
+      window.history.replaceState(null, "", `#${DEFAULT_SECTION_ID}`);
     }
   }, [setVisibleSection]);
 

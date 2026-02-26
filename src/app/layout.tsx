@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { DesktopNavigation } from "@/components/DesktopNavigation";
 import { MobileNavigation } from "@/components/MobileNavigation";
@@ -8,9 +7,10 @@ import { SectionVisibilityProvider } from "@/context/SectionVisibilityContext";
 import { NavigationProvider } from "@/components/NavigationProvider";
 import { Footer } from "@/components/sections/Footer";
 
-const inter = Inter({ subsets: ["latin"] });
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "Zak Raicik - Data Scientist, Builder, Storyteller, Creator",
   description:
     "Data scientist with passion for learning and practical experience across the full development stack.",
@@ -35,17 +35,12 @@ export default function RootLayout({
           content="width=device-width, initial-scale=1, viewport-fit=cover"
         />
       </head>
-      <body className={`${inter.className} antialiased`}>
+      <body className="antialiased">
         <SectionVisibilityProvider>
           <NavigationProvider>
             {/* Background layer */}
             <div className="fixed inset-0 z-0">
               <AnimatedDotsBackground />
-            </div>
-
-            {/* Desktop Navigation - positioned by layout */}
-            <div className="fixed left-8 top-1/2 -translate-y-1/2 hidden md:block z-50">
-              <DesktopNavigation />
             </div>
 
             {/* Mobile Navigation - positioned by layout */}
@@ -54,8 +49,15 @@ export default function RootLayout({
             </div>
 
             {/* Main content container */}
-            <div className="relative h-screen-safe overflow-hidden z-10">
-              <div className="absolute inset-0">{children}</div>
+            <div className="relative h-screen-safe overflow-hidden z-10 md:grid md:grid-cols-[14rem_1fr]">
+              {/* Desktop Navigation - reserved column */}
+              <div className="hidden md:flex items-center justify-start pl-8">
+                <DesktopNavigation />
+              </div>
+
+              <div className="relative h-full w-full">
+                <div className="absolute inset-0">{children}</div>
+              </div>
             </div>
 
             {/* Footer */}

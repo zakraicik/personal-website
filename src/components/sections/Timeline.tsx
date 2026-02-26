@@ -12,37 +12,8 @@ import WorkIcon from "@mui/icons-material/Work";
 import { useState, useRef, useEffect } from "react";
 import { timelineData } from "@/data/timelineData";
 import { useSectionVisibility } from "@/context/SectionVisibilityContext";
-
-function useWindowSize() {
-  const [windowSize, setWindowSize] = useState({
-    width: typeof window !== "undefined" ? window.innerWidth : 0,
-  });
-
-  useEffect(() => {
-    function handleResize() {
-      setWindowSize({
-        width: window.innerWidth,
-      });
-    }
-
-    window.addEventListener("resize", handleResize);
-    handleResize();
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  return windowSize;
-}
-
-function useIsClient() {
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  return isClient;
-}
+import { useWindowWidth } from "@/hooks/useWindowWidth";
+import { useIsClient } from "@/hooks/useIsClient";
 
 const sortedTimelineData = [...timelineData].sort((a, b) => {
   const parseYear = (year: string) =>
@@ -65,7 +36,7 @@ export function TimelineSection() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const { visibleSection } = useSectionVisibility();
   const timelineContainerRef = useRef<HTMLDivElement | null>(null);
-  const { width } = useWindowSize();
+  const width = useWindowWidth();
   const isClient = useIsClient();
 
   const isMobile = isClient && width < 768;

@@ -1,10 +1,11 @@
 import { contactMethods } from "@/data/contact";
 import { HiMail, HiPhone } from "react-icons/hi";
+import { FaXTwitter } from "react-icons/fa6";
 import React from "react";
 
 type IconComponent = React.ComponentType<{ className?: string }>;
 
-const icons: Record<string, IconComponent> = { HiMail, HiPhone };
+const icons: Record<string, IconComponent> = { HiMail, HiPhone, FaXTwitter };
 
 const GitHubIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg className={className} fill="currentColor" viewBox="0 0 24 24">
@@ -38,15 +39,16 @@ export function Footer() {
               ? "#8A2BE2"
               : "#00BFFF";
 
+          const isExternal =
+            method.icon === "GitHub" || method.icon === "FaXTwitter";
+
           return (
             <span key={method.label}>
               {method.link ? (
                 <a
                   href={method.link}
-                  target={method.icon === "GitHub" ? "_blank" : undefined}
-                  rel={
-                    method.icon === "GitHub" ? "noopener noreferrer" : undefined
-                  }
+                  target={isExternal ? "_blank" : undefined}
+                  rel={isExternal ? "noopener noreferrer" : undefined}
                   className={`${colorClass} hover:scale-110 transition-all duration-200`}
                   title={method.label === "GitHub" ? "GitHub" : method.value}
                 >

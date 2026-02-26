@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Personal Website
 
-## Getting Started
+Single-page portfolio site built with Next.js, TypeScript, Tailwind CSS, Framer Motion, and MUI timeline components.
 
-First, run the development server:
+## Requirements
+
+- Node.js 20+
+- npm 10+
+
+## Local Development
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `npm run dev`: start local dev server
+- `npm run build`: production build
+- `npm run start`: run production server
+- `npm run lint`: run Next.js ESLint checks
+- `npm run test`: run Vitest unit tests once
+- `npm run test:watch`: run Vitest in watch mode
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+- `src/app`: App Router layout/page and global CSS
+- `src/components`: navigation, wrappers, background, and section components
+- `src/context`: section visibility context (hash-driven state)
+- `src/data`: content/config data (projects, timeline, skills, contact, navigation)
+- `src/hooks`: shared client/window hooks
+- `tests/unit`: unit/component tests
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Navigation Model
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The app is hash-driven and section-based (`#home`, `#about`, `#portfolio`, `#timeline`, `#skills`):
 
-## Deploy on Vercel
+- URL hash is source of truth for active section.
+- `SectionVisibilityContext` syncs hash changes into app state.
+- `NavigationProvider` validates/falls back to `#home`.
+- `SectionWrapper` handles per-section transition state.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Testing
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Current tests cover:
+
+- `SectionVisibilityContext`
+- `NavigationProvider`
+- `SectionWrapper`
+- `DesktopNavigation`
+
+Run:
+
+```bash
+npm run test
+```
+
+## Notes
+
+- The app no longer depends on runtime Google Fonts fetching for builds.
+- See [AGENT.md](./AGENT.md) for implementation and cleanup guidance used during ongoing refactors.

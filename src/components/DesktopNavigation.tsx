@@ -3,21 +3,14 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
 import { useSectionVisibility } from "../context/SectionVisibilityContext";
-
-const navItems = [
-  { name: "Home", href: "#home" },
-  { name: "About", href: "#about" },
-  { name: "Portfolio", href: "#portfolio" },
-  { name: "Timeline", href: "#timeline" },
-  { name: "Skills", href: "#skills" },
-];
+import { DEFAULT_SECTION_ID, NAV_ITEMS } from "@/data/navigation";
 
 export function DesktopNavigation() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const { setVisibleSection, visibleSection } = useSectionVisibility();
   const lastWheelTime = useRef(0);
 
-  const activeSection = visibleSection || "home";
+  const activeSection = visibleSection || DEFAULT_SECTION_ID;
 
   const navigateToSection = useCallback(
     (section: string) => {
@@ -40,8 +33,8 @@ export function DesktopNavigation() {
         return;
       if (isTransitioning) return;
 
-      const currentIndex = navItems.findIndex(
-        (item) => item.href.substring(1) === activeSection
+      const currentIndex = NAV_ITEMS.findIndex(
+        (item) => item.id === activeSection
       );
 
       if (
@@ -50,22 +43,22 @@ export function DesktopNavigation() {
         event.key === " "
       ) {
         event.preventDefault();
-        if (currentIndex < navItems.length - 1) {
-          const nextSection = navItems[currentIndex + 1].href.substring(1);
+        if (currentIndex < NAV_ITEMS.length - 1) {
+          const nextSection = NAV_ITEMS[currentIndex + 1].id;
           navigateToSection(nextSection);
         }
       } else if (event.key === "ArrowUp" || event.key === "PageUp") {
         event.preventDefault();
         if (currentIndex > 0) {
-          const prevSection = navItems[currentIndex - 1].href.substring(1);
+          const prevSection = NAV_ITEMS[currentIndex - 1].id;
           navigateToSection(prevSection);
         }
       } else if (event.key === "Home") {
         event.preventDefault();
-        navigateToSection("home");
+        navigateToSection(DEFAULT_SECTION_ID);
       } else if (event.key === "End") {
         event.preventDefault();
-        navigateToSection(navItems[navItems.length - 1].href.substring(1));
+        navigateToSection(NAV_ITEMS[NAV_ITEMS.length - 1].id);
       }
     },
     [activeSection, isTransitioning, navigateToSection]
@@ -84,15 +77,15 @@ export function DesktopNavigation() {
         event.preventDefault();
         lastWheelTime.current = now;
 
-        const currentIndex = navItems.findIndex(
-          (item) => item.href.substring(1) === activeSection
+        const currentIndex = NAV_ITEMS.findIndex(
+          (item) => item.id === activeSection
         );
 
-        if (event.deltaY > 0 && currentIndex < navItems.length - 1) {
-          const nextSection = navItems[currentIndex + 1].href.substring(1);
+        if (event.deltaY > 0 && currentIndex < NAV_ITEMS.length - 1) {
+          const nextSection = NAV_ITEMS[currentIndex + 1].id;
           navigateToSection(nextSection);
         } else if (event.deltaY < 0 && currentIndex > 0) {
-          const prevSection = navItems[currentIndex - 1].href.substring(1);
+          const prevSection = NAV_ITEMS[currentIndex - 1].id;
           navigateToSection(prevSection);
         }
       }
@@ -100,8 +93,7 @@ export function DesktopNavigation() {
     [activeSection, isTransitioning, navigateToSection]
   );
 
-  const handleNavClick = (href: string) => {
-    const section = href.substring(1);
+  const handleNavClick = (section: string) => {
     navigateToSection(section);
   };
 
@@ -117,16 +109,16 @@ export function DesktopNavigation() {
 
   return (
     <nav className="flex flex-col items-start space-y-4">
-      {navItems.map((item) => {
-        const section = item.href.substring(1);
+      {NAV_ITEMS.map((item) => {
+        const section = item.id;
         const isActive = activeSection === section;
 
         return (
           <button
             key={item.name}
-            onClick={() => handleNavClick(item.href)}
+            onClick={() => handleNavClick(item.id)}
             disabled={isTransitioning}
-            className={`group relative flex items-center font-cyber px-4 py-3 rounded-lg transition-all duration-300 ${
+            className={`group relative flex items-center justify-start w-40 font-cyber px-4 py-3 rounded-lg transition-all duration-300 ${
               isTransitioning ? "opacity-50 cursor-not-allowed" : ""
             } ${
               isActive

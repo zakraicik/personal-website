@@ -39,12 +39,25 @@ export const timelineData: TimelineItem[] = [
     title: "Director of Data Science",
     subtitle: "Corvus (Acquired by Travelers)",
     startYear: "2021",
-    endYear: "Present",
+    endYear: "2025",
     description: [
       "Led cross-functional data science teams building enterprise ML systems that delivered measurable business impact",
       "Established scalable infrastructure that accelerated feature deployment for ML solutions",
       "Implemented A/B testing platforms, risk assessment models, and customer retention solutions",
       "Created robust data validation frameworks and clear business-aligned metrics for stakeholders",
+    ],
+  },
+  {
+    type: "work",
+    title: "Senior Data Scientist",
+    subtitle: "Gauntlet",
+    startYear: "2025",
+    endYear: "Present",
+    description: [
+      "Client facing data scientist helping to build the future of finance.",
+      "Lead engagements focused on using data science to solve problems related to incentive optimizaiton, tokenomics, and risk management.",
+      "Architecting, implementing, and stewarding end-to-end data infrastructure using Dagster and GCP",
+      "Make business recommendations to the executive and cross-functional teams (e.g. cost-benefit, forecasting, experiment analysis) effectively through findings from quantitative information",
     ],
   },
   {

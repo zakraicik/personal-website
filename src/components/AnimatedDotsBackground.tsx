@@ -3,15 +3,32 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useMemo, useEffect, useState } from "react";
+import { DEFAULT_SECTION_ID, SECTION_IDS } from "@/data/navigation";
+
+const BRAND_COLORS = ["#8A2BE2", "#00BFFF", "#FF1493"];
+
+interface DotConfig {
+  x: number;
+  y: number;
+  size: number;
+  color: string;
+  animateX: number;
+  animateY: number;
+  duration: number;
+  delay: number;
+}
+
+interface AccentConfig {
+  x: number;
+  y: number;
+  size: number;
+  color: string;
+  duration: number;
+  delay: number;
+}
 
 const generateBubblePositions = (count: number) => {
   const positions = [];
-
-  const colors = [
-    "#8A2BE2", // cyber-purple
-    "#00BFFF", // cyber-blue
-    "#FF1493", // cyber-pink
-  ];
 
   for (let i = 0; i < count; i++) {
     const x = Math.random() * 100;
@@ -25,7 +42,7 @@ const generateBubblePositions = (count: number) => {
     const moveDuration = 15 + Math.random() * 20; // 15-35 seconds
     const scaleDuration = 8 + Math.random() * 12; // 8-20 seconds
 
-    const color = colors[Math.floor(Math.random() * colors.length)];
+    const color = BRAND_COLORS[Math.floor(Math.random() * BRAND_COLORS.length)];
 
     const isLarge = Math.random() > 0.7;
     const size = isLarge ? baseSize * 1.5 : baseSize;
@@ -47,6 +64,28 @@ const generateBubblePositions = (count: number) => {
   return positions;
 };
 
+const generateMicroDots = (count: number): DotConfig[] =>
+  Array.from({ length: count }).map((_, i) => ({
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    size: 5 + Math.random() * 8,
+    color: BRAND_COLORS[i % BRAND_COLORS.length],
+    animateX: Math.random() * 20 - 10,
+    animateY: Math.random() * 20 - 10,
+    duration: 20 + Math.random() * 30,
+    delay: i * 2,
+  }));
+
+const generateAccentDots = (count: number): AccentConfig[] =>
+  Array.from({ length: count }).map((_, i) => ({
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    size: 60 + Math.random() * 40,
+    color: BRAND_COLORS[i % BRAND_COLORS.length],
+    duration: 25 + Math.random() * 15,
+    delay: i * 5,
+  }));
+
 export function AnimatedDotsBackground({
   count = 25,
   className = "",
@@ -55,7 +94,7 @@ export function AnimatedDotsBackground({
   className?: string;
 }) {
   const [isMounted, setIsMounted] = useState(false);
-  const [activeSection, setActiveSection] = useState("home");
+  const [activeSection, setActiveSection] = useState(DEFAULT_SECTION_ID);
 
   useEffect(() => {
     setIsMounted(true);
@@ -63,7 +102,7 @@ export function AnimatedDotsBackground({
 
   useEffect(() => {
     const handleHashChange = () => {
-      const hash = window.location.hash.replace("#", "") || "home";
+      const hash = window.location.hash.replace("#", "") || DEFAULT_SECTION_ID;
       setActiveSection(hash);
     };
 
@@ -83,17 +122,20 @@ export function AnimatedDotsBackground({
     () => (isMounted ? generateBubblePositions(count) : []),
     [count, isMounted]
   );
+  const microDots = useMemo(
+    () => (isMounted ? generateMicroDots(15) : []),
+    [isMounted]
+  );
+  const accentDots = useMemo(
+    () => (isMounted ? generateAccentDots(3) : []),
+    [isMounted]
+  );
 
-  const sectionOrder = [
-    "home",
-    "about",
-    "portfolio",
-    "timeline",
-    "skills",
-    "contact",
-  ];
-  const sectionIndex = sectionOrder.indexOf(activeSection);
-  const progressRatio = sectionIndex / (sectionOrder.length - 1); // 0 to 1
+  const currentSection = SECTION_IDS.includes(activeSection)
+    ? activeSection
+    : DEFAULT_SECTION_ID;
+  const sectionIndex = SECTION_IDS.indexOf(currentSection);
+  const progressRatio = sectionIndex / (SECTION_IDS.length - 1); // 0 to 1
 
   const overlayOpacity = progressRatio * 0.6;
 
@@ -142,63 +184,50 @@ export function AnimatedDotsBackground({
         />
       ))}
 
-      {Array.from({ length: 15 }).map((_, i) => {
-        const colors = ["#8A2BE2", "#00BFFF", "#FF1493"];
-        const color = colors[i % colors.length];
-        const size = 5 + Math.random() * 8;
-        const x = Math.random() * 100;
-        const y = Math.random() * 100;
-        const duration = 20 + Math.random() * 30;
-
+      {microDots.map((dot, i) => {
         return (
           <motion.div
             key={`micro-${i}`}
             style={{
               position: "absolute",
-              left: `${x}%`,
-              top: `${y}%`,
-              width: `${size}px`,
-              height: `${size}px`,
+              left: `${dot.x}%`,
+              top: `${dot.y}%`,
+              width: `${dot.size}px`,
+              height: `${dot.size}px`,
               borderRadius: "50%",
-              backgroundColor: color,
+              backgroundColor: dot.color,
               opacity: 0.01,
               filter: "blur(1.5px)",
               zIndex: 2,
             }}
             animate={{
-              x: [0, Math.random() * 20 - 10],
-              y: [0, Math.random() * 20 - 10],
+              x: [0, dot.animateX],
+              y: [0, dot.animateY],
               scale: [1, 1.2, 1],
               opacity: [0.01, 0.02, 0.01],
             }}
             transition={{
-              duration: duration,
+              duration: dot.duration,
               repeat: Infinity,
               ease: "easeInOut",
-              delay: i * 2,
+              delay: dot.delay,
             }}
           />
         );
       })}
 
-      {Array.from({ length: 3 }).map((_, i) => {
-        const colors = ["#8A2BE2", "#00BFFF", "#FF1493"];
-        const color = colors[i % colors.length];
-        const size = 60 + Math.random() * 40;
-        const x = Math.random() * 100;
-        const y = Math.random() * 100;
-
+      {accentDots.map((dot, i) => {
         return (
           <motion.div
             key={`accent-${i}`}
             style={{
               position: "absolute",
-              left: `${x}%`,
-              top: `${y}%`,
-              width: `${size}px`,
-              height: `${size}px`,
+              left: `${dot.x}%`,
+              top: `${dot.y}%`,
+              width: `${dot.size}px`,
+              height: `${dot.size}px`,
               borderRadius: "50%",
-              background: `radial-gradient(circle, ${color}08 0%, ${color}02 70%, transparent 100%)`,
+              background: `radial-gradient(circle, ${dot.color}08 0%, ${dot.color}02 70%, transparent 100%)`,
               filter: "blur(3px)",
               zIndex: 2,
             }}
@@ -207,10 +236,10 @@ export function AnimatedDotsBackground({
               opacity: [0.1, 0.15, 0.1],
             }}
             transition={{
-              duration: 25 + Math.random() * 15,
+              duration: dot.duration,
               repeat: Infinity,
               ease: "easeInOut",
-              delay: i * 5,
+              delay: dot.delay,
             }}
           />
         );

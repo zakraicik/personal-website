@@ -2,6 +2,7 @@
 
 import { ReactNode, useEffect, useState } from "react";
 import { useSectionVisibility } from "../context/SectionVisibilityContext";
+import { DEFAULT_SECTION_ID, SECTION_IDS } from "@/data/navigation";
 
 interface SectionWrapperProps {
   id: string;
@@ -17,7 +18,7 @@ export function SectionWrapper({ id, children }: SectionWrapperProps) {
   }, []);
 
   if (!isClient) {
-    const isHome = id === "home";
+    const isHome = id === DEFAULT_SECTION_ID;
     return (
       <section
         id={id}
@@ -35,20 +36,14 @@ export function SectionWrapper({ id, children }: SectionWrapperProps) {
     );
   }
 
-  const currentVisibleSection = visibleSection || "home";
+  const candidateSection = visibleSection || DEFAULT_SECTION_ID;
+  const currentVisibleSection = SECTION_IDS.includes(candidateSection)
+    ? candidateSection
+    : DEFAULT_SECTION_ID;
   const isVisible = currentVisibleSection === id;
 
-  const sectionOrder = [
-    "home",
-    "about",
-    "portfolio",
-    "timeline",
-    "skills",
-    "contact",
-  ];
-
-  const sectionIndex = sectionOrder.indexOf(id);
-  const visibleIndex = sectionOrder.indexOf(currentVisibleSection);
+  const sectionIndex = SECTION_IDS.indexOf(id);
+  const visibleIndex = SECTION_IDS.indexOf(currentVisibleSection);
 
   // Use percentage instead of vh for more reliable cross-browser behavior
   const translatePercent = (sectionIndex - visibleIndex) * 100;
