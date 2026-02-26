@@ -4,6 +4,8 @@ import React, { useState, useEffect, useMemo } from "react";
 import { skills } from "@/data/skills";
 import { motion } from "framer-motion";
 import { useSectionVisibility } from "@/context/SectionVisibilityContext";
+import { useWindowWidth } from "@/hooks/useWindowWidth";
+import { useIsClient } from "@/hooks/useIsClient";
 
 interface Category {
   name: string;
@@ -77,47 +79,8 @@ const calculateGridLayout = (
   });
 };
 
-function useWindowSize() {
-  const [windowSize, setWindowSize] = useState({
-    width: typeof window !== "undefined" ? window.innerWidth : 0,
-  });
-
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-
-    function handleResize() {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        setWindowSize({
-          width: window.innerWidth,
-        });
-      }, 150);
-    }
-
-    window.addEventListener("resize", handleResize);
-    handleResize();
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      clearTimeout(timeoutId);
-    };
-  }, []);
-
-  return windowSize;
-}
-
-function useIsClient() {
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  return isClient;
-}
-
 const Skills = () => {
-  const { width } = useWindowSize();
+  const width = useWindowWidth({ debounceMs: 150 });
   const isMobile = width < 768;
   const isVerySmall = width < 375;
   const isClient = useIsClient();

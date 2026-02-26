@@ -20,14 +20,14 @@ export const projects: Project[] = [
     ],
   },
   {
-    title: "Special Train",
-    description: "Ethereum price forecasting model",
-    tags: ["Python", "AWS", "Github Actions"],
-    link: "https://github.com/zakraicik/special-train",
+    title: "Near Marketplace Agent",
+    description: "Autonomous marketplace agent for NEAR Protocol",
+    tags: ["TypeScript", "Node.js", "AWS"],
+    link: "https://github.com/zakraicik/near-marketplace-agent",
     details: [
-      "Developed an automated data pipeline that retrieves Ethereum price data at 5-minute intervals, stores it in AWS S3, and preprocesses it into LSTM-ready formats with scaled training/validation/test sets orchestrated through weekly GitHub Actions.",
-      "Engineered an LSTM neural network using Keras Tuner for hyperparameter optimization to minimize validation MAE loss, with AWS SageMaker integration for scalable cloud training and automatic model persistence to S3 for production inference.",
-      "Built a comprehensive evaluation framework that generates performance visualizations comparing actual vs. predicted Ethereum prices on unseen test data, providing clear accuracy metrics and prediction insights for time-series forecasting",
+      "Built a configurable candidate‑selection engine in TypeScript that blends tag and content signals with weighted scoring, minimum thresholds, and guardrail filters to avoid zero‑candidate runs in noisy marketplaces.",
+      "Implemented a fallback selection pass that relaxes strict filters when no candidates are found, ensuring resilience without sacrificing safety constraints around budget, keyword exclusions, and text length.",
+      "Delivered the feature with full CLI‑driven configuration, updated documentation, and expanded unit tests/lint checks to keep the selection logic deterministic and production‑ready",
     ],
   },
   {

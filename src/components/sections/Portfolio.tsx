@@ -5,6 +5,8 @@ import { HiExternalLink, HiChevronDown } from "react-icons/hi";
 import { useState, useEffect, useRef } from "react";
 import { useSectionVisibility } from "@/context/SectionVisibilityContext";
 import { projects } from "@/data/projects";
+import { useWindowWidth } from "@/hooks/useWindowWidth";
+import { useIsClient } from "@/hooks/useIsClient";
 
 // Define the Project interface
 interface Project {
@@ -15,43 +17,12 @@ interface Project {
   details?: string[];
 }
 
-function useWindowSize() {
-  const [windowSize, setWindowSize] = useState({
-    width: typeof window !== "undefined" ? window.innerWidth : 0,
-  });
-
-  useEffect(() => {
-    function handleResize() {
-      setWindowSize({
-        width: window.innerWidth,
-      });
-    }
-
-    window.addEventListener("resize", handleResize);
-    handleResize();
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  return windowSize;
-}
-
-function useIsClient() {
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  return isClient;
-}
-
 export function Portfolio() {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const { visibleSection } = useSectionVisibility();
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const { width } = useWindowSize();
+  const width = useWindowWidth();
   const isClient = useIsClient();
 
   const isMobile = isClient && width < 768;

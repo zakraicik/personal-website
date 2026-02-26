@@ -28,4 +28,11 @@ export const contactMethods: ContactMethod[] = [
     link: "https://github.com/zakraicik",
     colorClass: "bg-cyber-pink/20 border-cyber-pink/30 text-cyber-pink",
   },
+  {
+    icon: "FaXTwitter",
+    label: "X",
+    value: "@zraic",
+    link: "https://x.com/zraic",
+    colorClass: "bg-cyber-blue/20 border-cyber-blue/30 text-cyber-blue",
+  },
 ];
