@@ -151,7 +151,7 @@ export function TimelineSection() {
         transition={{ duration: 0.5 }}
         className={`glass-border bg-cyber-dark/5 backdrop-blur-md rounded-lg border border-cyber-dark/10 cursor-pointer hover:bg-gradient-to-r hover:from-cyber-purple/10 hover:via-cyber-blue/10 hover:to-cyber-pink/10 transition-all duration-300 p-3 xs:p-4 flex items-center ${
           isMobile
-            ? "w-[calc(100vw-100px)] xs:w-[calc(100vw-120px)] max-w-[280px] xs:max-w-[320px]"
+            ? "w-full"
             : "max-w-full"
         }`}
         onClick={() => toggleExpand(index)}
@@ -252,15 +252,13 @@ export function TimelineSection() {
                         padding: 0,
                       },
                     },
-                    "& .MuiTimelineItem-root .MuiTimelineItem-content": {
-                      paddingLeft: "32px",
-                    },
                     "& .MuiTimelineSeparator-root": {
-                      marginRight: "16px",
+                      marginRight: "12px",
                     },
-                    paddingLeft: "0px",
-                    display: "flex",
-                    justifyContent: "center",
+                    maxWidth: "340px",
+                    margin: "0 auto",
+                    paddingLeft: "8px",
+                    paddingRight: "8px",
                   }),
                 }}
               >

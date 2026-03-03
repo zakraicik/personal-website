@@ -61,7 +61,7 @@ export default function RootLayout({
             </div>
 
             {/* Footer */}
-            <div className="fixed bottom-6 left-0 right-0 z-50">
+            <div className="fixed bottom-6 left-0 md:left-[14rem] right-0 z-50">
               <Footer />
             </div>
           </NavigationProvider>
