@@ -11,6 +11,21 @@ export function NavigationProvider({
 }) {
   const { setVisibleSection } = useSectionVisibility();
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Tab") document.documentElement.classList.add("keyboard-focus");
+      else if (event.key.startsWith("Arrow")) document.documentElement.classList.remove("keyboard-focus");
+    };
+    const handlePointerDown = () => document.documentElement.classList.remove("keyboard-focus");
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("pointerdown", handlePointerDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("pointerdown", handlePointerDown);
+      document.documentElement.classList.remove("keyboard-focus");
+    };
+  }, []);
+
   // Initialize navigation from URL hash
   useEffect(() => {
     const hash = window.location.hash.replace("#", "");

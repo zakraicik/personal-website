@@ -1,10 +1,13 @@
 export interface Skill {
   name: string;
-  level: "Beginner" | "Intermediate" | "Advanced" | "Expert";
+  level?: "Beginner" | "Intermediate" | "Advanced" | "Expert";
   category: string;
 }
 
 export const skills: Skill[] = [
+  { name: "Dagster", category: "Data Engineering" },
+  { name: "BigQuery", category: "Databases" },
+  { name: "Hex", category: "Data Visualization & BI" },
   { name: "Python", level: "Expert", category: "Programming Languages" },
   { name: "SQL", level: "Expert", category: "Programming Languages" },
   { name: "JavaScript", level: "Advanced", category: "Programming Languages" },
@@ -55,7 +58,7 @@ export const skills: Skill[] = [
     level: "Advanced",
     category: "DevOps & Infrastructure",
   },
-  { name: "DBT", level: "Intermediate", category: "DevOps & Infrastructure" },
+  { name: "dbt", level: "Intermediate", category: "DevOps & Infrastructure" },
   {
     name: "Airflow",
     level: "Intermediate",
@@ -99,7 +102,7 @@ export const skills: Skill[] = [
     category: "LLM Technologies",
   },
   {
-    name: "PyTorch LLM Fine-tuning",
+    name: "Language model fine-tuning",
     level: "Advanced",
     category: "LLM Technologies",
   },

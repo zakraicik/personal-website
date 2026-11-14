@@ -7,7 +7,6 @@ export interface NavigationItem {
 export const NAV_ITEMS: NavigationItem[] = [
   { id: "home", name: "Home", href: "#home" },
   { id: "about", name: "About", href: "#about" },
-  { id: "portfolio", name: "Portfolio", href: "#portfolio" },
   { id: "timeline", name: "Timeline", href: "#timeline" },
   { id: "skills", name: "Skills", href: "#skills" },
 ];
