@@ -1,64 +1,26 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { profile } from "@/data/profile";
+
+const topics = ["Right now", "How I work", "Before Evoke", "Off the clock"];
 
 export function About() {
+  const [topic, setTopic] = useState(0);
   return (
-    <div className="w-full max-w-4xl mx-auto">
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="space-y-8 text-center lg:text-left"
-      >
-        <motion.p
-          className="text-base md:text-lg lg:text-xl text-white/90 font-medium leading-relaxed"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          I&apos;m a{" "}
-          <span className="gradient-text font-semibold">data scientist</span>{" "}
-          with a passion for learning and practical experience across the{" "}
-          <span className="gradient-text font-semibold">
-            full development stack
-          </span>{" "}
-          — yes, I actually built this website with Next.js (and only broke it
-          twice!).
-        </motion.p>
+    <div className="section-body bounded-section about-body">
+      <div className="section-heading"><p className="eyebrow">01 / Behind the models</p><h2 id="about-heading">Builder. Leader.<br /><span className="accent-text">Still learning.</span></h2></div>
+      <div className="about-layout">
+        <div className="about-main">
+          <div className="about-topics" role="group" aria-label="About topics">{topics.map((label, index) => <button key={label} aria-pressed={topic === index} onClick={() => setTopic(index)}>{label}</button>)}</div>
 
-        <motion.p
-          className="text-base md:text-lg lg:text-xl text-white/90 font-medium leading-relaxed"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-        >
-          My approach:{" "}
-          <span className="gradient-text font-semibold">
-            understand the problem deeply
-          </span>
-          , then build{" "}
-          <span className="gradient-text font-semibold">
-            data-driven solutions
-          </span>{" "}
-          that address real-world challenges effectively. I excel at{" "}
-          <span className="gradient-text font-semibold">leading teams</span> and
-          inspiring others to develop thorough problem understanding before
-          selecting the optimal tools and architecture.
-        </motion.p>
-
-        <motion.p
-          className="text-base md:text-lg lg:text-xl text-white/90 font-medium leading-relaxed"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
-        >
-          When I&apos;m not coding, I&apos;m enjoying life in{" "}
-          <span className="gradient-text font-semibold">San Diego</span> with my
-          wife and dog, secretly indulging in my guilty pleasure —{" "}
-          <span className="gradient-text font-semibold">Cheetos</span>.
-        </motion.p>
-      </motion.div>
+          <div className="about-copy" aria-live="polite" aria-atomic="true">{profile.about.map((paragraph, index) =>
+            <p key={paragraph} className={topic === index ? "is-visible" : ""} aria-hidden={topic !== index}>{paragraph}</p>
+          )}</div>
+          <div className="location-note"><span className="status-dot" />{profile.location}</div>
+        </div>
+        <div className="about-aside" aria-hidden="true"><span className="eyebrow">How I work</span><ol><li><span>01</span>Understand the problem.</li><li><span>02</span>Find the signal.</li><li><span>03</span>Build, learn, improve.</li></ol><span className="about-signoff">Stay curious. Get your hands dirty.</span></div>
+      </div>
     </div>
   );
 }

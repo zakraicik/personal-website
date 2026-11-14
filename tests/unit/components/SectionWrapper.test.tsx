@@ -1,64 +1,32 @@
 import React from "react";
-import { render, waitFor } from "@testing-library/react";
-import { useEffect } from "react";
+import { render, screen } from "@testing-library/react";
 import { SectionWrapper } from "@/components/SectionWrapper";
-import {
-  SectionVisibilityProvider,
-  useSectionVisibility,
-} from "@/context/SectionVisibilityContext";
+import { SectionVisibilityProvider } from "@/context/SectionVisibilityContext";
 
-function SectionController({ section }: { section: string }) {
-  const { setVisibleSection } = useSectionVisibility();
-
-  useEffect(() => {
-    setVisibleSection(section);
-  }, [section, setVisibleSection]);
-
-  return null;
-}
-
-function renderWrappedSection(id: string, activeSection: string) {
-  return render(
-    <SectionVisibilityProvider>
-      <SectionController section={activeSection} />
-      <SectionWrapper id={id}>
-        <div>Section Content</div>
-      </SectionWrapper>
-    </SectionVisibilityProvider>
-  );
+function renderSection(hash: string) {
+  window.history.replaceState(null, "", hash);
+  return render(<SectionVisibilityProvider><SectionWrapper id="about"><h2 id="about-heading">About</h2><button>Read more</button></SectionWrapper></SectionVisibilityProvider>);
 }
 
 describe("SectionWrapper", () => {
-  it("renders active section at translateY(0%) with active styling", async () => {
-    window.history.replaceState(null, "", "#about");
-    const { container } = renderWrappedSection("about", "about");
-
-    await waitFor(() => {
-      const section = container.querySelector("#about");
-      expect(section).toHaveClass("opacity-100", "z-10");
-      expect(section).toHaveStyle({ transform: "translateY(0%)" });
-    });
+  it("exposes the active section as a named region", () => {
+    const { container } = renderSection("#about");
+    expect(screen.getByRole("region", { name: "About" })).toHaveStyle({ transform: "translateY(0px)" });
+    expect(container.querySelector("section")).not.toHaveAttribute("inert");
   });
 
-  it("renders adjacent inactive section offset by one viewport", async () => {
-    window.history.replaceState(null, "", "#home");
-    const { container } = renderWrappedSection("about", "home");
-
-    await waitFor(() => {
-      const section = container.querySelector("#about");
-      expect(section).toHaveClass("opacity-60", "z-[5]");
-      expect(section).toHaveStyle({ transform: "translateY(100%)" });
-    });
+  it("hides inactive content from assistive technology and keyboard focus", () => {
+    const { container } = renderSection("#home");
+    const section = container.querySelector("section");
+    expect(section).toHaveAttribute("inert");
+    expect(section).toHaveAttribute("aria-hidden", "true");
+    expect(section).toHaveStyle({ transform: "translateY(12px)" });
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 
-  it("falls back to home when section state is unknown", async () => {
-    window.history.replaceState(null, "", "#unknown");
-    const { container } = renderWrappedSection("about", "unknown");
-
-    await waitFor(() => {
-      const section = container.querySelector("#about");
-      expect(section).toHaveClass("opacity-60", "z-[5]");
-      expect(section).toHaveStyle({ transform: "translateY(100%)" });
-    });
+  it("falls back to home when the hash is invalid", () => {
+    const { container } = renderSection("#unknown");
+    expect(container.querySelector("section")).toHaveStyle({ transform: "translateY(12px)" });
+    expect(window.location.hash).toBe("#home");
   });
 });

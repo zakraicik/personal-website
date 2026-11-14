@@ -1,332 +1,62 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
-import Timeline from "@mui/lab/Timeline";
-import TimelineItem from "@mui/lab/TimelineItem";
-import TimelineSeparator from "@mui/lab/TimelineSeparator";
-import TimelineConnector from "@mui/lab/TimelineConnector";
-import TimelineContent from "@mui/lab/TimelineContent";
-import TimelineDot from "@mui/lab/TimelineDot";
-import SchoolIcon from "@mui/icons-material/School";
-import WorkIcon from "@mui/icons-material/Work";
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
+import { HiArrowUpRight, HiAcademicCap, HiBriefcase, HiArrowRight, HiArrowPath, HiCircleStack, HiCpuChip, HiShieldCheck, HiCube, HiChartBar, HiChatBubbleLeftRight, HiCommandLine, HiCloud } from "react-icons/hi2";
+import { SiPython, SiScikitlearn, SiGooglebigquery, SiGithubactions } from "react-icons/si";
+import type { IconType } from "react-icons";
 import { timelineData } from "@/data/timelineData";
-import { useSectionVisibility } from "@/context/SectionVisibilityContext";
-import { useWindowWidth } from "@/hooks/useWindowWidth";
-import { useIsClient } from "@/hooks/useIsClient";
+import { ChoicePicker } from "@/components/ChoicePicker";
 
-const sortedTimelineData = [...timelineData].sort((a, b) => {
-  const parseYear = (year: string) =>
-    year.toLowerCase() === "present" ? 9999 : parseInt(year);
-  return parseYear(b.endYear) - parseYear(a.endYear);
-});
-
-// Define the TimelineItemData interface
-interface TimelineItemData {
-  title: string;
-  subtitle: string;
-  startYear: string;
-  endYear: string;
-  type: string;
-  description: string | string[];
-}
+const entries = [...timelineData].sort((a, b) =>
+  (b.endYear === "Present" ? Infinity : Number(b.endYear)) - (a.endYear === "Present" ? Infinity : Number(a.endYear)));
+const toolIcons: Record<string, IconType> = {
+  Python: SiPython, "scikit-learn": SiScikitlearn, dbt: HiCube,
+  BigQuery: SiGooglebigquery, AWS: HiCloud, "GitHub Actions": SiGithubactions,
+  Classification: HiCpuChip, "Anomaly detection": HiChartBar,
+  "LM fine-tuning": HiChatBubbleLeftRight, "Agent evaluation": HiCommandLine,
+};
 
 export function TimelineSection() {
-  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const { visibleSection } = useSectionVisibility();
-  const timelineContainerRef = useRef<HTMLDivElement | null>(null);
-  const width = useWindowWidth();
-  const isClient = useIsClient();
-
-  const isMobile = isClient && width < 768;
-
-  useEffect(() => {
-    if (visibleSection === "timeline") {
-      setExpandedIndex(null);
-      setHoveredIndex(null);
-    }
-  }, [visibleSection]);
-
-  const toggleExpand = (index: number) => {
-    setExpandedIndex((current) => (current === index ? null : index));
-  };
-
-  const renderExpandedCard = (item: TimelineItemData, index: number) => {
-    const isHovered = hoveredIndex === index;
-
-    return (
-      <div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-transparent"
-        onClick={() => setExpandedIndex(null)}
-      >
-        {/* Use consistent max-width with other sections */}
-        <div className="w-full max-w-4xl mx-auto px-4">
-          <motion.div
-            key={`expanded-${item.title}`}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ duration: 0.3 }}
-            className="glass-border bg-cyber-dark/5 backdrop-blur-md rounded-lg border border-cyber-dark/10 shadow-lg relative w-full max-w-[320px] xs:max-w-full sm:max-w-none mx-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setExpandedIndex(null)}
-              onMouseEnter={() => setHoveredIndex(index)}
-              onMouseLeave={() => setHoveredIndex(null)}
-              className="w-full p-3 xs:p-4 sm:p-6 flex flex-col items-start justify-between focus:outline-none hover:bg-gradient-to-r hover:from-cyber-purple/10 hover:via-cyber-blue/10 hover:to-cyber-pink/10 transition-all duration-300 cursor-pointer gap-2 xs:gap-3 sm:gap-0"
-            >
-              <div className="flex flex-col w-full min-w-0">
-                <div className="flex items-center justify-between w-full gap-2 xs:gap-3 sm:gap-4 mb-1">
-                  <h3
-                    className={`font-medium text-xs xs:text-[13px] md:text-[16px] flex-shrink-0 transition-all duration-300 leading-tight ${
-                      isHovered ? "gradient-text" : "text-white"
-                    }`}
-                  >
-                    {item.title}
-                  </h3>
-                  <span className="text-white/70 text-[10px] xs:text-[11px] md:text-[13px] flex-shrink-0">
-                    {`${item.startYear} - ${item.endYear}`}
-                  </span>
-                </div>
-                <p className="text-white/80 text-[10px] xs:text-[11px] md:text-[13px] text-left leading-relaxed">
-                  {item.subtitle}
-                </p>
-              </div>
-            </button>
-
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              transition={{ duration: 0.3, delay: 0.1 }}
-              className="overflow-hidden border-t border-cyber-blue/20"
-            >
-              <div className="p-3 xs:p-4 sm:p-4 space-y-0.5 xs:space-y-1">
-                {Array.isArray(item.description) ? (
-                  item.description.map((desc: string, i: number) => (
-                    <div key={i}>
-                      <motion.div
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{
-                          duration: 0.3,
-                          delay: 0.2 + i * 0.1,
-                        }}
-                        className="text-white/80 text-[10px] xs:text-[11px] md:text-[13px] py-0.5 text-left leading-relaxed"
-                      >
-                        {desc}
-                      </motion.div>
-                      {i < item.description.length - 1 && (
-                        <div className="w-full h-px bg-white/20 my-0.5 xs:my-1" />
-                      )}
-                    </div>
-                  ))
-                ) : (
-                  <motion.div
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, delay: 0.2 }}
-                    className="text-white/80 text-[10px] xs:text-[11px] md:text-[13px] py-0.5 text-left leading-relaxed"
-                  >
-                    {item.description}
-                  </motion.div>
-                )}
-              </div>
-            </motion.div>
-          </motion.div>
-        </div>
-      </div>
-    );
-  };
-
-  const renderCollapsedCard = (item: TimelineItemData, index: number) => {
-    const isHovered = hoveredIndex === index;
-
-    return (
-      <motion.div
-        key={`${item.title}-${index}`}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className={`glass-border bg-cyber-dark/5 backdrop-blur-md rounded-lg border border-cyber-dark/10 cursor-pointer hover:bg-gradient-to-r hover:from-cyber-purple/10 hover:via-cyber-blue/10 hover:to-cyber-pink/10 transition-all duration-300 p-3 xs:p-4 flex items-center ${
-          isMobile
-            ? "w-full"
-            : "max-w-full"
-        }`}
-        onClick={() => toggleExpand(index)}
-        onMouseEnter={() => setHoveredIndex(index)}
-        onMouseLeave={() => setHoveredIndex(null)}
-      >
-        {isMobile ? (
-          <div className="flex flex-col w-full min-w-0">
-            <div className="flex items-center justify-between w-full gap-2 xs:gap-3 mb-1">
-              <h3
-                className={`font-medium text-xs xs:text-[13px] md:text-[16px] flex-1 leading-tight transition-all duration-300 text-white`}
-              >
-                {item.title}
-              </h3>
-              <span className="text-white/70 text-[10px] xs:text-[11px] md:text-[13px] flex-shrink-0">
-                {`${item.startYear} - ${item.endYear}`}
-              </span>
-            </div>
-            <p className="text-white/80 text-[10px] xs:text-[11px] md:text-[13px] leading-relaxed">
-              {item.subtitle}
-            </p>
-          </div>
-        ) : (
-          <div className="flex flex-col w-full min-w-0">
-            <div
-              className={`flex items-center justify-between w-full gap-4 ${
-                index % 2 === 0 ? "" : "flex-row-reverse"
-              }`}
-            >
-              <h3
-                className={`font-medium text-xs xs:text-[13px] md:text-[16px] transition-all duration-300 leading-tight ${
-                  !isMobile && isHovered ? "gradient-text" : "text-white"
-                }`}
-              >
-                {item.title}
-              </h3>
-              <span className="text-white/70 text-[10px] xs:text-[11px] md:text-[13px] flex-shrink-0">
-                {`${item.startYear} - ${item.endYear}`}
-              </span>
-            </div>
-            <p
-              className={`text-white/80 text-[10px] xs:text-[11px] md:text-[13px] mt-1 leading-relaxed ${
-                index % 2 === 0 ? "text-left" : "text-right"
-              }`}
-            >
-              {item.subtitle}
-            </p>
-          </div>
-        )}
-      </motion.div>
-    );
-  };
-
-  if (!isClient) {
-    return (
-      <div className="w-full max-w-4xl mx-auto">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-300/20 rounded mb-4"></div>
-          <div className="h-6 bg-gray-300/20 rounded mb-4"></div>
-          <div className="h-6 bg-gray-300/20 rounded mb-4"></div>
-        </div>
-      </div>
-    );
-  }
+  const [selected, setSelected] = useState(0);
+  const item = entries[selected];
+  const selectEntry = (index: number) => setSelected(index);
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
-      <motion.div
-        ref={timelineContainerRef}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <AnimatePresence mode="wait">
-          {expandedIndex !== null ? (
-            // Expanded state: show only the expanded card, perfectly centered
-            renderExpandedCard(
-              sortedTimelineData[expandedIndex] as TimelineItemData,
-              expandedIndex
-            )
-          ) : (
-            // Collapsed state: show timeline
-            <motion.div
-              key="collapsed-timeline"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
-            >
-              <Timeline
-                position={isMobile ? "right" : "alternate"}
-                className="p-2 xs:p-4"
-                sx={{
-                  ...(isMobile && {
-                    "& .MuiTimelineItem-root": {
-                      "&:before": {
-                        flex: 0,
-                        padding: 0,
-                      },
-                    },
-                    "& .MuiTimelineSeparator-root": {
-                      marginRight: "12px",
-                    },
-                    maxWidth: "340px",
-                    margin: "0 auto",
-                    paddingLeft: "8px",
-                    paddingRight: "8px",
-                  }),
-                }}
-              >
-                {sortedTimelineData.map((item, index) => (
-                  <TimelineItem key={index}>
-                    <TimelineSeparator>
-                      <TimelineConnector className="bg-cyber-blue/30" />
-                      <TimelineDot
-                        sx={{
-                          backgroundColor: "transparent",
-                          boxShadow: "none",
-                          border: `2px solid ${
-                            item.type === "education" ? "#FF1493" : "#8A2BE2"
-                          }`,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        {item.type === "education" ? (
-                          <span
-                            style={
-                              {
-                                "--glow-color": "#FF1493",
-                              } as React.CSSProperties
-                            }
-                          >
-                            <SchoolIcon
-                              style={{
-                                color: "#FF1493",
-                              }}
-                              className="techy-glow"
-                            />
-                          </span>
-                        ) : (
-                          <span
-                            style={
-                              {
-                                "--glow-color": "#8A2BE2",
-                              } as React.CSSProperties
-                            }
-                          >
-                            <WorkIcon
-                              style={{
-                                color: "#8A2BE2",
-                              }}
-                              className="techy-glow"
-                            />
-                          </span>
-                        )}
-                      </TimelineDot>
-                      <TimelineConnector className="bg-cyber-blue/30" />
-                    </TimelineSeparator>
-                    <TimelineContent
-                      sx={{
-                        py: "12px",
-                        px: isMobile ? 0 : 2,
-                      }}
-                    >
-                      {renderCollapsedCard(item as TimelineItemData, index)}
-                    </TimelineContent>
-                  </TimelineItem>
-                ))}
-              </Timeline>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
+    <div className="section-body bounded-section timeline-body">
+      <div className="section-heading"><p className="eyebrow">02 / The journey</p><h2 id="timeline-heading">Always <span className="accent-text">building.</span></h2><p>Machine learning, financial systems, and the teams behind them.</p></div>
+      <div className="compact-selector">
+        <ChoicePicker label="Choose an experience" value={String(selected)} choices={entries.map((entry, index) => ({ value: String(index), label: `${entry.subtitle}: ${entry.title}` }))} onChange={value => selectEntry(Number(value))} />
+      </div>
+      <div className="timeline-workspace">
+        <div className="experience-index" role="group" aria-label="Experience and education">
+          {entries.map((entry, index) => <button key={entry.title} aria-pressed={selected === index} onClick={() => selectEntry(index)}>
+            {entry.type === "education" ? <HiAcademicCap aria-hidden="true" /> : <HiBriefcase aria-hidden="true" />}
+            <span><strong>{entry.subtitle}</strong><span>{entry.title}</span></span>
+          </button>)}
+        </div>
+        <article className="experience-card" aria-live="polite" aria-atomic="true">
+          <div className="experience-card-header">
+            <span className="experience-date mono">{item.startMonth ? `${item.startMonth} ` : ""}{item.startYear} to {item.endMonth ? `${item.endMonth} ` : ""}{item.endYear}</span>
+            <h3>{item.title}</h3>
+            <p className="experience-company">{item.link ? <a href={item.link} target="_blank" rel="noopener noreferrer" aria-label={`${item.subtitle} (opens in a new tab)`}>{item.subtitle}<HiArrowUpRight aria-hidden="true" /></a> : item.subtitle}</p>
+            {item.summary && <p className="experience-summary">{item.summary}</p>}
+          </div>
+          <ul className="experience-points" key={item.title}>{item.description.map(text => <li key={text}><span className="experience-point-marker" aria-hidden="true">↳</span><span>{text}</span></li>)}</ul>
+          <div className="experience-extras">
+            <div className="experience-flow" aria-label="The work at a glance">
+              <div className="experience-flow-nodes">{item.flow.map((label, index) => {
+                const Icon = [HiCircleStack, HiCpuChip, item.type === "education" ? HiAcademicCap : HiShieldCheck][index];
+                return <div className="experience-flow-part" key={label}><div className="experience-flow-node"><Icon aria-hidden="true" /><span>{label}</span></div>{index < 2 && <HiArrowRight className="experience-flow-arrow" aria-hidden="true" />}</div>;
+              })}</div>
+              {item.loop && <div className="experience-loop"><HiArrowPath aria-hidden="true" /><span>{item.loop}</span></div>}
+            </div>
+            <div className="experience-toolbox"><span className="eyebrow">Tools & concepts</span><ul>{item.tools.map(tool => {
+              const Icon = toolIcons[tool] || HiCube;
+              return <li key={tool}><Icon aria-hidden="true" />{tool}</li>;
+            })}</ul></div>
+          </div>
+        </article>
+      </div>
     </div>
   );
 }

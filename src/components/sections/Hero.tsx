@@ -1,61 +1,36 @@
 "use client";
-import { motion } from "framer-motion";
+
+import { HiArrowUpRight, HiCommandLine, HiCpuChip, HiBolt } from "react-icons/hi2";
 import { useSectionVisibility } from "@/context/SectionVisibilityContext";
+import { profile } from "@/data/profile";
+import { contactMethods } from "@/data/contact";
 
 export function Hero() {
-  const { setVisibleSection } = useSectionVisibility();
-
-  const handleNavigate = (section: string) => {
-    setVisibleSection(section);
-    window.history.replaceState(null, "", `#${section}`);
-  };
-
+  const { navigateToSection } = useSectionVisibility();
   return (
-    <div className="w-full max-w-6xl mx-auto text-center">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="space-y-4 xs:space-y-6 sm:space-y-8"
-      >
-        {/* Heading section */}
-        <div className="space-y-2 xs:space-y-3 sm:space-y-4">
-          <motion.h1
-            className="text-2xl xs:text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold mb-2 xs:mb-3 sm:mb-6 text-white/80 leading-tight"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <span>Hi, I&apos;m </span>
-            <span className="gradient-text">Zak Raicik</span>
-          </motion.h1>
-
-          <motion.p
-            className="text-sm xs:text-base sm:text-lg md:text-2xl lg:text-3xl text-white/80 mb-3 xs:mb-4 sm:mb-8 max-w-[280px] xs:max-w-xs sm:max-w-2xl mx-auto px-1 xs:px-2 sm:px-4 leading-relaxed"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
-            Data Scientist, Builder,{" "}
-            <span className="whitespace-nowrap">Storyteller, Creator</span>
-          </motion.p>
+    <div className="hero section-body">
+      <div className="hero-main">
+        <p className="eyebrow"><span className="status-dot" />{profile.name} / {profile.role}</p>
+        <h1 id="home-heading">Always curious.<br /><span className="accent-text">Always building<span className="violet-text">.</span></span></h1>
+        <p className="hero-description">{profile.introduction}</p>
+        <div className="hero-actions">
+          <a className="primary-button" href="#timeline" onClick={event => {
+            if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+            event.preventDefault(); navigateToSection("timeline");
+          }}>Explore my experience <HiArrowUpRight aria-hidden="true" /></a>
+          <a className="text-link" href={contactMethods.find(method => method.label === "Email")?.link}>Say hello <span aria-hidden="true">↗</span></a>
         </div>
-
-        {/* CTA Button */}
-        <motion.div
-          className="flex flex-col sm:flex-row gap-2 xs:gap-3 sm:gap-4 justify-center items-center w-full max-w-[280px] xs:max-w-md mx-auto"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
-        >
-          <button
-            onClick={() => handleNavigate("portfolio")}
-            className="hero-button"
-          >
-            <span>View My Work</span>
-          </button>
-        </motion.div>
-      </motion.div>
+      </div>
+      <div className="signal-visual" aria-hidden="true">
+        <div className="signal-topline"><span className="signal-sticker">HOW I’M WIRED</span><span className="mono">WORK / PLAY</span></div>
+        <div className="signal-stage"><div className="signal-stage-icon"><HiCommandLine /></div><div><span className="signal-stage-label">THE START</span><strong>Follow the question.</strong><p>Across industries and disciplines</p></div></div>
+        <div className="signal-connector"><span />↓<span /></div>
+        <div className="signal-stage model-stage"><div className="signal-stage-icon"><HiCpuChip /></div><div><span className="signal-stage-label">THE CRAFT</span><strong>Make something useful.</strong><p>Machine learning, from idea to production</p></div></div>
+        <div className="signal-connector"><span />↓<span /></div>
+        <div className="signal-stage detection-stage"><div className="signal-stage-icon"><HiBolt /></div><div><span className="signal-stage-label">THE PEOPLE</span><strong>Lead. Build. Keep learning.</strong><p>Teams, code, and hard problems</p></div></div>
+        <div className="signal-caption"><span className="status-dot" />A generalist’s curiosity. An engineer’s follow-through.</div>
+      </div>
+      <div className="hero-focus">{profile.focus.map(focus => <span key={focus}><span className="focus-cross" aria-hidden="true">+</span>{focus}</span>)}</div>
     </div>
   );
 }
